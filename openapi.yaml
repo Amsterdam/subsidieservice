@@ -3,7 +3,7 @@ swagger: "2.0"
 info:
   title: "Subsidy Allocation API"
   description: "Manage and allocate subsidies"
-  version: "1.0.0"
+  version: "1.0"
 
 host: "localhost"
 basePath: "/v1"
@@ -216,28 +216,28 @@ paths:
           schema:
             type: array
             items:                
-              $ref: "#/definitions/Citizen"
+              $ref: "#/definitions/CitizenBase"
               
     put:
       tags: 
       - "citizen"
       summary: "Create a new Citizen"
       consumes:
-      - "application/nl.kpmg.v1.Citizen+json"
+      - "application/nl.kpmg.v1.CitizenBase+json"
       produces: 
-      - "application/nl.kpmg.v1.Citizen+json"
+      - "application/nl.kpmg.v1.CitizenBase+json"
       responses:
         201:
           description: Created
           schema:
-            $ref: "#/definitions/Citizen"
+            $ref: "#/definitions/CitizenBase"
       parameters:
         - in: "body"
           name: "body"
           description: "Citizen to add"
           required: True
           schema:
-            $ref: "#/definitions/Citizen"
+            $ref: "#/definitions/CitizenBase"
                   
   /citizen/{id}:
     get:
@@ -348,7 +348,8 @@ definitions:
     allOf:
     - $ref: "#/definitions/Account"
     
-  Citizen:
+  
+  CitizenBase:
     description: "A Citizen of Amsterdam who may be recieving Subsidies"
     type: object
     properties:
@@ -356,14 +357,25 @@ definitions:
         type: number
       realName:
         type: string
-      accounts:
-        type: array
-        items:
-          $ref: "#/definitions/CitizenAccount"
-      subsidies:
-        type: array
-        items: 
-          $ref: "#/definitions/SubsidyBase"
+
+  Citizen:
+    description: "A Citizen of Amsterdam who may be recieving Subsidies"
+    allOf:
+    - $ref: "#/definitions/CitizenBase"
+    - type: object
+      properties:
+        id:
+          type: number
+        realName:
+          type: string
+        accounts:
+          type: array
+          items:
+            $ref: "#/definitions/CitizenAccount"
+        subsidies:
+          type: array
+          items: 
+            $ref: "#/definitions/SubsidyBase"
     
   SubsidyBase:
     description: "A recurring allocation of funds made available from a Master Account to a recipient Citizen's Account"
@@ -428,3 +440,10 @@ definitions:
       dateTime:
         type: string
         format: date-time
+
+      
+      
+      
+      
+      
+    
