@@ -1,0 +1,371 @@
+---
+openapi: "3.0.0"
+info:
+  title: "Subsidy Allocation API"
+  description: "Manage and allocate subsidies"
+  version: 1.0.0
+
+servers:
+  - url: /localhost/v1
+    description: "Local development"
+
+tags:
+- name: "user"
+  description: "Create, read, update, and delete users."
+- name: "masterAccount"
+  description:  "Create, read, update, and delete Master Accounts."
+- name: "citizen"
+  description:  "Create, read, update, and delete Citizens."
+
+
+paths:
+  /user:
+    get:
+      tags: 
+      - "user"
+      summary: "Returns a list of users."
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    put:
+      tags: 
+      - "user"
+      summary: "Create a new user"
+      responses:
+        201:
+          description: Created
+          content:
+            application/nl.kpmg.User+json:
+              schema:
+                $ref: "#/components/schemas/User"
+      requestBody:
+        description: "User to add"
+        required: True
+        content:
+          application/nl.kpmg.User+json:
+              schema:
+                $ref: "#/components/schemas/User"
+                  
+  /user/{username}:
+    get:
+      tags: 
+      - "user"
+      summary: "Returns a specific user"
+      responses:
+        200:
+          description: OK
+          content:
+            application/nl.kpmg.User+json:
+              schema:
+                $ref: "#/components/schemas/User"
+    post:
+      tags: 
+      - "user"
+      summary: "Edit a user's information"
+      responses:
+        200:
+          description: OK
+          content:
+            application/nl.kpmg.User+json:
+              schema:
+                $ref: "#/components/schemas/User"
+      requestBody:
+        description: "User details to be updated"
+        required: True
+        content:
+          application/nl.kpmg.User+json:
+              schema:
+                $ref: "#/components/schemas/User"
+    delete:
+      tags: 
+      - "user"
+      summary: "Remove a user"
+      responses:
+        200:
+          description: OK
+
+  /masterAccount:
+    get:
+      tags: 
+      - "masterAccount"
+      summary: "Returns a list of masterAccounts."
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MasterAccount"
+    put:
+      tags: 
+      - "masterAccount"
+      summary: "Create a new masterAccount"
+      responses:
+        201:
+          description: Created
+          content:
+            application/nl.kpmg.MasterAccount+json:
+              schema:
+                $ref: "#/components/schemas/MasterAccount"
+      requestBody:
+        description: "Master Account to add"
+        required: True
+        content:
+          application/nl.kpmg.MasterAccount+json:
+              schema:
+                $ref: "#/components/schemas/MasterAccount"
+                  
+  /masterAccount/{id}:
+    get:
+      tags: 
+      - "masterAccount"
+      summary: "Returns a specific masterAccount"
+      responses:
+        200:
+          description: OK
+          content:
+            application/nl.kpmg.MasterAccount+json:
+              schema:
+                $ref: "#/components/schemas/MasterAccount"
+    post:
+      tags: 
+      - "masterAccount"
+      summary: "Edit a masterAccount's information"
+      responses:
+        200:
+          description: OK
+          content:
+            application/nl.kpmg.MasterAccount+json:
+              schema:
+                $ref: "#/components/schemas/MasterAccount"
+      requestBody:
+        description: "Master Account details to be updated"
+        required: True
+        content:
+          application/nl.kpmg.MasterAccount+json:
+              schema:
+                $ref: "#/components/schemas/MasterAccount"
+    delete:
+      tags: 
+      - "masterAccount"
+      summary: "Remove a Master Account"
+      responses:
+        200:
+          description: OK
+
+  /citizen:
+    get:
+      tags: 
+      - "citizen"
+      summary: "Returns a list of citizens."
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Citizen"
+    put:
+      tags: 
+      - "citizen"
+      summary: "Create a new citizen"
+      responses:
+        201:
+          description: Created
+          content:
+            application/nl.kpmg.Citizen+json:
+              schema:
+                $ref: "#/components/schemas/Citizen"
+      requestBody:
+        description: "Citizen to add"
+        required: True
+        content:
+          application/nl.kpmg.Citizen+json:
+              schema:
+                $ref: "#/components/schemas/Citizen"
+                  
+  /citizen/{id}:
+    get:
+      tags: 
+      - "citizen"
+      summary: "Returns a specific citizen"
+      responses:
+        200:
+          description: OK
+          content:
+            application/nl.kpmg.Citizen+json:
+              schema:
+                $ref: "#/components/schemas/Citizen"
+    post:
+      tags: 
+      - "citizen"
+      summary: "Edit a citizen's information"
+      responses:
+        200:
+          description: OK
+          content:
+            application/nl.kpmg.Citizen+json:
+              schema:
+                $ref: "#/components/schemas/Citizen"
+      requestBody:
+        description: "Citizen details to be updated"
+        required: True
+        content:
+          application/nl.kpmg.Citizen+json:
+              schema:
+                $ref: "#/components/schemas/Citizen"
+    delete:
+      tags: 
+      - "citizen"
+      summary: "Remove a Citizen"
+      responses:
+        200:
+          description: OK
+
+
+         
+components:
+  schemas:
+    User:
+      description: "A user of the Subsidy Allocation API"
+      type: object
+      properties:
+        username:
+          type: string
+        realName:
+          type: string
+        email:
+          type: string
+          format: email
+    
+    Account:
+      description: "A bank account"
+      type: object
+      properties:
+        name:
+          type: string
+        accountType:
+          type: string
+        iban:
+          type: string
+    
+    MasterAccount:
+      description: "A master Account serves as the source for a specific class of Subsidy"
+      allOf:
+      - $ref: "#/components/schemas/Account"
+      - type: object
+        properties:
+          balance:
+            type: number
+            format: float
+            default: 0.00
+          subsidies:
+            type: array
+            items:
+              $ref: "#/components/schemas/SubsidyBase"
+          viewers:
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+          admins:
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+              
+    CitizenAccount:
+      description: "An Account belonging to a Citizen"
+      allOf:
+      - $ref: "#/components/schemas/Account"
+      
+    Citizen:
+      description: "A Citizen of Amsterdam who may be recieving Subsidies"
+      type: object
+      properties:
+        id:
+          type: number
+        realName:
+          type: string
+        accounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Account"
+        subsidies:
+          type: array
+          items: 
+            $ref: "#/components/schemas/SubsidyBase"
+      
+    SubsidyBase:
+      description: "A recurring allocation of funds made available from a Master Account to a recipient Citizen's Account"
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        master:
+          $ref: "#/components/schemas/Master"
+        recipient:
+          $ref: "#/components/schemas/Citizen"
+        creator:
+          $ref: "#/components/schemas/User"
+        approver1:
+          $ref: "#/components/schemas/User"
+        approver2:
+          $ref: "#/components/schemas/User"
+        approveDate1:
+          type: string
+          format: date-time
+        approveDate2:
+          type: string
+          format: date-time
+        frequency:
+          type: string
+          enum:
+          - "daily"
+          - "weekly"
+          - "bi-weekly"
+          - "monthly"
+          - "yearly"
+        amount:
+          type: number
+          minimum: 0
+        expiry:
+          type: string
+          format: date-time
+      
+    Subsidy:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/SubsidyBase"
+      - type: object
+        properties:
+          transactions:
+            type: array
+            items:
+              $ref: "#/components/schemas/Transaction"
+    
+    Transaction:
+      type: object
+      properties:
+        from:
+          oneOf:
+          - $ref: "#/components/schemas/Account"
+          - type: string
+        to:
+          type: string
+        amount:
+          type: number
+          minimum: 0
+        dateTime:
+          type: string
+          format: date-time
