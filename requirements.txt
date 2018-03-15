@@ -1,0 +1,26 @@
+aenum==2.0.8
+bunq-sdk==0.12.4
+certifi==2018.1.18
+chardet==3.0.4
+click==6.7
+clickclick==1.2.2
+connexion==1.1.9
+Flask==0.12.2
+idna==2.5
+inflection==0.3.1
+itsdangerous==0.24
+Jinja2==2.10
+jsonschema==2.6.0
+MarkupSafe==1.0
+pycryptodomex==3.4.6
+pymongo==3.6.1
+python-dateutil==2.6.0
+PyYAML==3.12
+requests==2.18.1
+simplejson==3.11.1
+six==1.11.0
+-e git+https://git.kpmg.nl/KPMG-NL-AABD/ClientProjects/GemeenteAmsterdam/SubsidyService.git@25397306975b9ae3ccbf02f724f7ed511c6077fc#egg=subsidy_service&subdirectory=subsidy_service
+-e git+https://git.kpmg.nl/KPMG-NL-AABD/ClientProjects/GemeenteAmsterdam/SubsidyService.git@25397306975b9ae3ccbf02f724f7ed511c6077fc#egg=swagger_server&subdirectory=python-flask-server
+swagger-spec-validator==2.1.0
+urllib3==1.21.1
+Werkzeug==0.14.1

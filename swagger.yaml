@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  title: "Subsidy Allocation API"
+  title: "subsidy Allocation API"
   description: "Manage and allocate subsidies"
   version: "1.0"
 
@@ -12,18 +12,22 @@ schemes:
 - "http"
 
 tags:
-- name: "user"
+- name: "users"
   description: "Create, read, update, and delete users."
-- name: "masterAccount"
-  description:  "Create, read, update, and delete Master Accounts."
-- name: "citizen"
-  description:  "Create, read, update, and delete Citizens."
+- name: "master-accounts"
+  description:  "Create, read, update, and delete master accounts."
+- name: "citizens"
+  description:  "Create, read, update, and delete citizens."
+- name: "subsidies"
+  description:  "Create, read, update, and delete subsidies."
+- name: "actions"
+  description: "Perform actions with side effects"
 
 paths:
-  /user:
+  /users:
     get:
       tags: 
-      - "user"
+      - "users"
       summary: "Returns a list of users."
       produces:
       - "application/json"
@@ -33,59 +37,59 @@ paths:
           schema:
             type: array
             items:                
-              $ref: "#/definitions/User"
-    put:
+              $ref: "#/definitions/user"
+    post:
       tags: 
-      - "user"
+      - "users"
       summary: "Create a new user"
       consumes:
-      - "application/nl.kpmg.v1.User+json"
+      - "application/nl.kpmg.v1.user+json"
       produces: 
-      - "application/nl.kpmg.v1.User+json"
+      - "application/nl.kpmg.v1.user+json"
       responses:
         201:
           description: Created
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/user"
       parameters:
         - in: "body"
           name: "body"
-          description: "User to add"
+          description: "user to add"
           required: True
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/user"
                   
-  /user/{username}:
+  /users/{username}:
     get:
       tags: 
-      - "user"
+      - "users"
       summary: "Returns a specific user"
       produces:
-      - "application/nl.kpmg.v1.User+json"
+      - "application/nl.kpmg.v1.user+json"
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/user"
       parameters: 
       - in: "path"
         name: "username"
         type: "string"
         required: true
         
-    post:
+    put:
       tags: 
-      - "user"
-      summary: "Edit a user's information"
+      - "users"
+      summary: "Re-upload user's information"
       consumes:
-      - "application/nl.kpmg.v1.User+json"
+      - "application/nl.kpmg.v1.user+json"
       produces:
-      - "application/nl.kpmg.v1.User+json"
+      - "application/nl.kpmg.v1.user+json"
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/user"
       parameters: 
       - in: "path"
         name: "username"
@@ -93,14 +97,39 @@ paths:
         required: true
       - in: "body"
         name: "body"
-        description: "User details to be updated"
+        description: "user details"
         required: True
         schema:
-          $ref: "#/definitions/User"
+          $ref: "#/definitions/user"
+
+    patch:
+      tags: 
+      - "users"
+      summary: "Edit a user's information"
+      consumes:
+      - "application/nl.kpmg.v1.user+json"
+      produces:
+      - "application/nl.kpmg.v1.user+json"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/user"
+      parameters: 
+      - in: "path"
+        name: "username"
+        type: "string"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "user properties to be updated"
+        required: True
+        schema:
+          $ref: "#/definitions/user"
         
     delete:
       tags: 
-      - "user"
+      - "users"
       summary: "Remove a user"
       responses:
         200:
@@ -111,11 +140,11 @@ paths:
         type: "string"
         required: true
 
-  /masterAccount:
+  /master-accounts:
     get:
       tags: 
-      - "masterAccount"
-      summary: "Returns a list of MasterAccounts."
+      - "master-accounts"
+      summary: "Returns a list of master-accounts."
       produces:
       - "application/json"
       responses:
@@ -124,60 +153,60 @@ paths:
           schema:
             type: array
             items:                
-              $ref: "#/definitions/MasterAccount"
+              $ref: "#/definitions/master-account"
               
-    put:
+    post:
       tags: 
-      - "masterAccount"
-      summary: "Create a new Master Account"
+      - "master-accounts"
+      summary: "Create a new master-account"
       consumes:
-      - "application/nl.kpmg.v1.MasterAccount+json"
+      - "application/nl.kpmg.v1.master-account+json"
       produces: 
-      - "application/nl.kpmg.v1.MasterAccount+json"
+      - "application/nl.kpmg.v1.master-account+json"
       responses:
         201:
           description: Created
           schema:
-            $ref: "#/definitions/MasterAccount"
+            $ref: "#/definitions/master-account"
       parameters:
         - in: "body"
           name: "body"
-          description: "MasterAccount to add"
+          description: "master-account to add"
           required: True
           schema:
-            $ref: "#/definitions/MasterAccount"
+            $ref: "#/definitions/master-account"
                   
-  /masterAccount/{id}:
+  /master-accounts/{id}:
     get:
       tags: 
-      - "masterAccount"
-      summary: "Returns a specific Master Account"
+      - "master-accounts"
+      summary: "Returns a specific master-account"
       produces:
-      - "application/nl.kpmg.v1.MasterAccount+json"
+      - "application/nl.kpmg.v1.master-account+json"
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/MasterAccount"
+            $ref: "#/definitions/master-account"
       parameters: 
       - in: "path"
         name: "id"
         type: "integer"
         required: true
         
-    post:
+    put:
       tags: 
-      - "masterAccount"
-      summary: "Edit a Master Account's information"
+      - "master-accounts"
+      summary: "Re-upload a master-account's information"
       consumes:
-      - "application/nl.kpmg.v1.MasterAccount+json"
+      - "application/nl.kpmg.v1.master-account+json"
       produces:
-      - "application/nl.kpmg.v1.MasterAccount+json"
+      - "application/nl.kpmg.v1.master-account+json"
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/MasterAccount"
+            $ref: "#/definitions/master-account"
       parameters: 
       - in: "path"
         name: "id"
@@ -185,15 +214,40 @@ paths:
         required: true
       - in: "body"
         name: "body"
-        description: "MasterAccount details to be updated"
+        description: "master-account details"
         required: True
         schema:
-          $ref: "#/definitions/MasterAccount"
+          $ref: "#/definitions/master-account"
+        
+    patch:
+      tags: 
+      - "master-accounts"
+      summary: "Edit a master-account's information"
+      consumes:
+      - "application/nl.kpmg.v1.master-account+json"
+      produces:
+      - "application/nl.kpmg.v1.master-account+json"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/master-account"
+      parameters: 
+      - in: "path"
+        name: "id"
+        type: "integer"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "master-account properties to be updated"
+        required: True
+        schema:
+          $ref: "#/definitions/master-account"
         
     delete:
       tags: 
-      - "masterAccount"
-      summary: "Remove a MasterAccount"
+      - "master-accounts"
+      summary: "Remove a master-account"
       responses:
         200:
           description: OK
@@ -203,11 +257,11 @@ paths:
         type: "integer"
         required: true
   
-  /citizen:
+  /citizens:
     get:
       tags: 
-      - "citizen"
-      summary: "Returns a list of Citizens."
+      - "citizens"
+      summary: "Returns a list of citizens."
       produces:
       - "application/json"
       responses:
@@ -216,60 +270,60 @@ paths:
           schema:
             type: array
             items:                
-              $ref: "#/definitions/CitizenBase"
+              $ref: "#/definitions/citizen-base"
               
-    put:
+    post:
       tags: 
-      - "citizen"
-      summary: "Create a new Citizen"
+      - "citizens"
+      summary: "Create a new citizen"
       consumes:
-      - "application/nl.kpmg.v1.CitizenBase+json"
+      - "application/nl.kpmg.v1.citizen+json"
       produces: 
-      - "application/nl.kpmg.v1.CitizenBase+json"
+      - "application/nl.kpmg.v1.citizen+json"
       responses:
         201:
           description: Created
           schema:
-            $ref: "#/definitions/CitizenBase"
+            $ref: "#/definitions/citizen"
       parameters:
         - in: "body"
           name: "body"
-          description: "Citizen to add"
+          description: "citizen to add"
           required: True
           schema:
-            $ref: "#/definitions/CitizenBase"
+            $ref: "#/definitions/citizen"
                   
-  /citizen/{id}:
+  /citizens/{id}:
     get:
       tags: 
-      - "citizen"
-      summary: "Returns a specific Citizen"
+      - "citizens"
+      summary: "Returns a specific citizen"
       produces:
-      - "application/nl.kpmg.v1.Citizen+json"
+      - "application/nl.kpmg.v1.citizen+json"
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Citizen"
+            $ref: "#/definitions/citizen"
       parameters: 
       - in: "path"
         name: "id"
         type: "integer"
         required: true
         
-    post:
+    put:
       tags: 
-      - "citizen"
-      summary: "Edit a Citizen's information"
+      - "citizens"
+      summary: "Re-upload a citizen's information"
       consumes:
-      - "application/nl.kpmg.v1.Citizen+json"
+      - "application/nl.kpmg.v1.citizen+json"
       produces:
-      - "application/nl.kpmg.v1.Citizen+json"
+      - "application/nl.kpmg.v1.citizen+json"
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Citizen"
+            $ref: "#/definitions/citizen"
       parameters: 
       - in: "path"
         name: "id"
@@ -277,15 +331,40 @@ paths:
         required: true
       - in: "body"
         name: "body"
-        description: "Citizen details to be updated"
+        description: "citizen details"
         required: True
         schema:
-          $ref: "#/definitions/Citizen"
+          $ref: "#/definitions/citizen"
+          
+    patch:
+      tags: 
+      - "citizens"
+      summary: "Edit a citizen's information"
+      consumes:
+      - "application/nl.kpmg.v1.citizen+json"
+      produces:
+      - "application/nl.kpmg.v1.citizen+json"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/citizen"
+      parameters: 
+      - in: "path"
+        name: "id"
+        type: "integer"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "citizen properties to be updated"
+        required: True
+        schema:
+          $ref: "#/definitions/citizen"
         
     delete:
       tags: 
-      - "citizen"
-      summary: "Remove a Citizen"
+      - "citizens"
+      summary: "Remove a citizen"
       responses:
         200:
           description: OK
@@ -295,10 +374,140 @@ paths:
         type: "integer"
         required: true
 
+  /subsidies:              
+    post:
+      tags: 
+      - "subsidies"
+      summary: "Create a new subsidy"
+      consumes:
+      - "application/nl.kpmg.v1.subsidy-base+json"
+      produces: 
+      - "application/nl.kpmg.v1.subsidy-base+json"
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/subsidy"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "subsidy to add"
+          required: True
+          schema:
+            $ref: "#/definitions/subsidy-base"
+                  
+  /subsidies/{id}:
+    get:
+      tags: 
+      - "subsidies"
+      summary: "Returns a specific subsidy"
+      produces:
+      - "application/nl.kpmg.v1.subsidy+json"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/subsidy"
+      parameters: 
+      - in: "path"
+        name: "id"
+        type: "integer"
+        required: true
+        
+    put:
+      tags: 
+      - "subsidies"
+      summary: "Re-upload a subsidy's information"
+      consumes:
+      - "application/nl.kpmg.v1.subsidy+json"
+      produces:
+      - "application/nl.kpmg.v1.subsidy+json"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/subsidy"
+      parameters: 
+      - in: "path"
+        name: "id"
+        type: "integer"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "subsidy details"
+        required: True
+        schema:
+          $ref: "#/definitions/subsidy"
+          
+    patch:
+      tags: 
+      - "subsidies"
+      summary: "Edit a subsidy's information"
+      consumes:
+      - "application/nl.kpmg.v1.subsidy+json"
+      produces:
+      - "application/nl.kpmg.v1.subsidy+json"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/subsidy"
+      parameters: 
+      - in: "path"
+        name: "id"
+        type: "integer"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "subsidy properties to be updated"
+        required: True
+        schema:
+          $ref: "#/definitions/subsidy"
+        
+    delete:
+      tags: 
+      - "subsidies"
+      summary: "Remove a subsidy"
+      responses:
+        200:
+          description: OK
+      parameters: 
+      - in: "path"
+        name: "id"
+        type: "integer"
+        required: true
+
+  /subsidies/{id}/actions/approve:
+    post:
+      tags: 
+        - "subsidies"
+        - "actions"
+      summary: "Approve a subsidy"
+      consumes:
+      - "application/nl.kpmg.v1.user+json"
+      produces:
+      - "application/nl.kpmg.v1.user+json"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/subsidy"
+      parameters: 
+      - in: "path"
+        name: "id"
+        type: "integer"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "user approving subsidy"
+        required: True
+        schema:
+          $ref: "#/definitions/user"
+
          
 definitions:
-  User:
-    description: "A user of the Subsidy Allocation API"
+  user:
+    description: "A user of the subsidy Allocation API"
     type: object
     properties:
       username:
@@ -309,7 +518,7 @@ definitions:
         type: string
         format: email
         
-  Account:
+  account:
     description: "A bank account"
     type: object
     properties:
@@ -320,37 +529,44 @@ definitions:
       iban:
         type: string
 
-  MasterAccount:
-    description: "A master Account serves as the source for a specific class of Subsidy"
+  master-account-base:
+    description: "A master-account-base serves as the source for a specific class of subsidy"
     allOf:
-    - $ref: "#/definitions/Account"
+    - $ref: "#/definitions/account"
     - type: object
       properties:
         balance:
           type: number
           format: float
           default: 0.00
+
+  master-account:
+    description: "A master-account serves as the source for a specific class of subsidy"
+    allOf:
+    - $ref: "#/definitions/master-account-base"
+    - type: object
+      properties:
         subsidies:
           type: array
           items:
-            $ref: "#/definitions/SubsidyBase"
+            $ref: "#/definitions/subsidy-base"
         viewers:
           type: array
           items:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/user"
         admins:
           type: array
           items:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/user"
             
-  CitizenAccount:
-    description: "An Account belonging to a Citizen"
+  citizen-account-base:
+    description: "An account belonging to a citizen"
     allOf:
-    - $ref: "#/definitions/Account"
+    - $ref: "#/definitions/account"
     
   
-  CitizenBase:
-    description: "A Citizen of Amsterdam who may be recieving Subsidies"
+  citizen-base:
+    description: "A citizen of Amsterdam who may be recieving subsidies"
     type: object
     properties:
       id:
@@ -358,10 +574,10 @@ definitions:
       realName:
         type: string
 
-  Citizen:
-    description: "A Citizen of Amsterdam who may be recieving Subsidies"
+  citizen:
+    description: "A citizen of Amsterdam who may be recieving subsidies"
     allOf:
-    - $ref: "#/definitions/CitizenBase"
+    - $ref: "#/definitions/citizen-base"
     - type: object
       properties:
         id:
@@ -371,14 +587,14 @@ definitions:
         accounts:
           type: array
           items:
-            $ref: "#/definitions/CitizenAccount"
+            $ref: "#/definitions/citizen-account-base"
         subsidies:
           type: array
           items: 
-            $ref: "#/definitions/SubsidyBase"
+            $ref: "#/definitions/subsidy-base"
     
-  SubsidyBase:
-    description: "A recurring allocation of funds made available from a Master Account to a recipient Citizen's Account"
+  subsidy-base:
+    description: "A recurring allocation of funds made available from a master-account to a recipient citizen's account"
     type: object
     properties:
       id:
@@ -386,15 +602,15 @@ definitions:
       name:
         type: string
       master:
-        $ref: "#/definitions/Master"
+        $ref: "#/definitions/master-account"
       recipient:
-        $ref: "#/definitions/Citizen"
+        $ref: "#/definitions/citizen-base"
       creator:
-        $ref: "#/definitions/User"
+        $ref: "#/definitions/user"
       approver1:
-        $ref: "#/definitions/User"
+        $ref: "#/definitions/user"
       approver2:
-        $ref: "#/definitions/User"
+        $ref: "#/definitions/user"
       approveDate1:
         type: string
         format: date-time
@@ -416,22 +632,22 @@ definitions:
         type: string
         format: date-time
     
-  Subsidy:
+  subsidy:
     type: object
     allOf:
-    - $ref: "#/definitions/SubsidyBase"
+    - $ref: "#/definitions/subsidy-base"
     - type: object
       properties:
         transactions:
           type: array
           items:
-            $ref: "#/definitions/Transaction"
+            $ref: "#/definitions/transaction"
 
-  Transaction:
+  transaction:
     type: object
     properties:
       from:
-        $ref: "#/definitions/Account"
+        $ref: "#/definitions/account"
       to:
         type: string
       amount:

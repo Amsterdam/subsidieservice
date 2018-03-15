@@ -1,0 +1,680 @@
+---
+swagger: "2.0"
+info:
+  description: "Manage and allocate subsidies"
+  version: "1.0"
+  title: "subsidy Allocation API"
+host: "localhost"
+basePath: "/v1"
+tags:
+- name: "users"
+  description: "Create, read, update, and delete users."
+- name: "master-accounts"
+  description: "Create, read, update, and delete master-accounts."
+- name: "citizens"
+  description: "Create, read, update, and delete citizens."
+- name: "subsidies"
+  description: "Create, read, update, and delete subsidies."
+- name: "actions"
+  description: "Perform actions with side effects"
+schemes:
+- "http"
+paths:
+  /users:
+    get:
+      tags:
+      - "users"
+      summary: "Returns a list of users."
+      operationId: "users_get"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/user"
+      x-swagger-router-controller: "swagger_server.controllers.users_controller"
+    post:
+      tags:
+      - "users"
+      summary: "Create a new user"
+      operationId: "users_post"
+      consumes:
+      - "application/nl.kpmg.v1.user+json"
+      produces:
+      - "application/nl.kpmg.v1.user+json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "user to add"
+        required: true
+        schema:
+          $ref: "#/definitions/user"
+      responses:
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/user"
+      x-swagger-router-controller: "swagger_server.controllers.users_controller"
+  /users/{username}:
+    get:
+      tags:
+      - "users"
+      summary: "Returns a specific user"
+      operationId: "users_username_get"
+      produces:
+      - "application/nl.kpmg.v1.user+json"
+      parameters:
+      - name: "username"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/user"
+      x-swagger-router-controller: "swagger_server.controllers.users_controller"
+    put:
+      tags:
+      - "users"
+      summary: "Re-upload user's information"
+      operationId: "users_username_put"
+      consumes:
+      - "application/nl.kpmg.v1.user+json"
+      produces:
+      - "application/nl.kpmg.v1.user+json"
+      parameters:
+      - name: "username"
+        in: "path"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "user details"
+        required: true
+        schema:
+          $ref: "#/definitions/user"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/user"
+      x-swagger-router-controller: "swagger_server.controllers.users_controller"
+    delete:
+      tags:
+      - "users"
+      summary: "Remove a user"
+      operationId: "users_username_delete"
+      parameters:
+      - name: "username"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+      x-swagger-router-controller: "swagger_server.controllers.users_controller"
+    patch:
+      tags:
+      - "users"
+      summary: "Edit a user's information"
+      operationId: "users_username_patch"
+      consumes:
+      - "application/nl.kpmg.v1.user+json"
+      produces:
+      - "application/nl.kpmg.v1.user+json"
+      parameters:
+      - name: "username"
+        in: "path"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "user properties to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/user"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/user"
+      x-swagger-router-controller: "swagger_server.controllers.users_controller"
+  /master-accounts:
+    get:
+      tags:
+      - "master-accounts"
+      summary: "Returns a list of master-accounts."
+      operationId: "master_accounts_get"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/master-account"
+      x-swagger-router-controller: "swagger_server.controllers.master_accounts_controller"
+    post:
+      tags:
+      - "master-accounts"
+      summary: "Create a new master-account"
+      operationId: "master_accounts_post"
+      consumes:
+      - "application/nl.kpmg.v1.master-account+json"
+      produces:
+      - "application/nl.kpmg.v1.master-account+json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "master-account to add"
+        required: true
+        schema:
+          $ref: "#/definitions/master-account"
+      responses:
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/master-account"
+      x-swagger-router-controller: "swagger_server.controllers.master_accounts_controller"
+  /master-accounts/{id}:
+    get:
+      tags:
+      - "master-accounts"
+      summary: "Returns a specific master-account"
+      operationId: "master_accounts_id_get"
+      produces:
+      - "application/nl.kpmg.v1.master-account+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/master-account"
+      x-swagger-router-controller: "swagger_server.controllers.master_accounts_controller"
+    put:
+      tags:
+      - "master-accounts"
+      summary: "Re-upload a master-account's information"
+      operationId: "master_accounts_id_put"
+      consumes:
+      - "application/nl.kpmg.v1.master-account+json"
+      produces:
+      - "application/nl.kpmg.v1.master-account+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "master-account details"
+        required: true
+        schema:
+          $ref: "#/definitions/master-account"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/master-account"
+      x-swagger-router-controller: "swagger_server.controllers.master_accounts_controller"
+    delete:
+      tags:
+      - "master-accounts"
+      summary: "Remove a master-account"
+      operationId: "master_accounts_id_delete"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+      x-swagger-router-controller: "swagger_server.controllers.master_accounts_controller"
+    patch:
+      tags:
+      - "master-accounts"
+      summary: "Edit a master-account's information"
+      operationId: "master_accounts_id_patch"
+      consumes:
+      - "application/nl.kpmg.v1.master-account+json"
+      produces:
+      - "application/nl.kpmg.v1.master-account+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "master-account properties to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/master-account"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/master-account"
+      x-swagger-router-controller: "swagger_server.controllers.master_accounts_controller"
+  /citizens:
+    get:
+      tags:
+      - "citizens"
+      summary: "Returns a list of citizens."
+      operationId: "citizens_get"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/citizen-base"
+      x-swagger-router-controller: "swagger_server.controllers.citizens_controller"
+    post:
+      tags:
+      - "citizens"
+      summary: "Create a new citizen"
+      operationId: "citizens_post"
+      consumes:
+      - "application/nl.kpmg.v1.citizen+json"
+      produces:
+      - "application/nl.kpmg.v1.citizen+json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "citizen to add"
+        required: true
+        schema:
+          $ref: "#/definitions/citizen"
+      responses:
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/citizen"
+      x-swagger-router-controller: "swagger_server.controllers.citizens_controller"
+  /citizens/{id}:
+    get:
+      tags:
+      - "citizens"
+      summary: "Returns a specific citizen"
+      operationId: "citizens_id_get"
+      produces:
+      - "application/nl.kpmg.v1.citizen+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/citizen"
+      x-swagger-router-controller: "swagger_server.controllers.citizens_controller"
+    put:
+      tags:
+      - "citizens"
+      summary: "Re-upload a citizen's information"
+      operationId: "citizens_id_put"
+      consumes:
+      - "application/nl.kpmg.v1.citizen+json"
+      produces:
+      - "application/nl.kpmg.v1.citizen+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "citizen details"
+        required: true
+        schema:
+          $ref: "#/definitions/citizen"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/citizen"
+      x-swagger-router-controller: "swagger_server.controllers.citizens_controller"
+    delete:
+      tags:
+      - "citizens"
+      summary: "Remove a citizen"
+      operationId: "citizens_id_delete"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+      x-swagger-router-controller: "swagger_server.controllers.citizens_controller"
+    patch:
+      tags:
+      - "citizens"
+      summary: "Edit a citizen's information"
+      operationId: "citizens_id_patch"
+      consumes:
+      - "application/nl.kpmg.v1.citizen+json"
+      produces:
+      - "application/nl.kpmg.v1.citizen+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "citizen properties to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/citizen"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/citizen"
+      x-swagger-router-controller: "swagger_server.controllers.citizens_controller"
+  /subsidies:
+    post:
+      tags:
+      - "subsidies"
+      summary: "Create a new subsidy"
+      operationId: "subsidies_post"
+      consumes:
+      - "application/nl.kpmg.v1.subsidy-base+json"
+      produces:
+      - "application/nl.kpmg.v1.subsidy-base+json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "subsidy to add"
+        required: true
+        schema:
+          $ref: "#/definitions/subsidy-base"
+      responses:
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/subsidy"
+      x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+  /subsidies/{id}:
+    get:
+      tags:
+      - "subsidies"
+      summary: "Returns a specific subsidy"
+      operationId: "subsidies_id_get"
+      produces:
+      - "application/nl.kpmg.v1.subsidy+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/subsidy"
+      x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+    put:
+      tags:
+      - "subsidies"
+      summary: "Re-upload a subsidy's information"
+      operationId: "subsidies_id_put"
+      consumes:
+      - "application/nl.kpmg.v1.subsidy+json"
+      produces:
+      - "application/nl.kpmg.v1.subsidy+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "subsidy details"
+        required: true
+        schema:
+          $ref: "#/definitions/subsidy"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/subsidy"
+      x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+    delete:
+      tags:
+      - "subsidies"
+      summary: "Remove a subsidy"
+      operationId: "subsidies_id_delete"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "OK"
+      x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+    patch:
+      tags:
+      - "subsidies"
+      summary: "Edit a subsidy's information"
+      operationId: "subsidies_id_patch"
+      consumes:
+      - "application/nl.kpmg.v1.subsidy+json"
+      produces:
+      - "application/nl.kpmg.v1.subsidy+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "subsidy properties to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/subsidy"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/subsidy"
+      x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+  /subsidies/{id}/actions/approve:
+    post:
+      tags:
+      - "subsidies"
+      - "actions"
+      summary: "Approve a subsidy"
+      operationId: "subsidies_id_actions_approve_post"
+      consumes:
+      - "application/nl.kpmg.v1.user+json"
+      produces:
+      - "application/nl.kpmg.v1.user+json"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "user approving subsidy"
+        required: true
+        schema:
+          $ref: "#/definitions/user"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/subsidy"
+      x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+definitions:
+  user:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      realName:
+        type: "string"
+      email:
+        type: "string"
+        format: "email"
+    description: "A user of the subsidy Allocation API"
+    example:
+      realName: "realName"
+      email: "email"
+      username: "username"
+  account:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      accountType:
+        type: "string"
+      iban:
+        type: "string"
+    description: "A bank account"
+  master-account-base:
+    allOf:
+    - $ref: "#/definitions/account"
+    - type: "object"
+      properties:
+        balance:
+          type: "number"
+          format: "float"
+          default: 0.0
+    description: "A master-account-base serves as the source for a specific class\
+      \ of subsidy"
+  master-account:
+    allOf:
+    - $ref: "#/definitions/master-account-base"
+    - type: "object"
+      properties:
+        subsidies:
+          type: "array"
+          items:
+            $ref: "#/definitions/subsidy-base"
+        viewers:
+          type: "array"
+          items:
+            $ref: "#/definitions/user"
+        admins:
+          type: "array"
+          items:
+            $ref: "#/definitions/user"
+    description: "A master-account serves as the source for a specific class of subsidy"
+  citizen-account-base:
+    allOf:
+    - $ref: "#/definitions/account"
+    - {}
+    description: "An account belonging to a citizen"
+  citizen-base:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      realName:
+        type: "string"
+    description: "A citizen of Amsterdam who may be recieving subsidies"
+    example:
+      realName: "realName"
+      id: 0.80082819046101150206595775671303272247314453125
+  citizen:
+    allOf:
+    - $ref: "#/definitions/citizen-base"
+    - type: "object"
+      properties:
+        id:
+          type: "number"
+        realName:
+          type: "string"
+        accounts:
+          type: "array"
+          items:
+            $ref: "#/definitions/citizen-account-base"
+        subsidies:
+          type: "array"
+          items:
+            $ref: "#/definitions/subsidy-base"
+    description: "A citizen of Amsterdam who may be recieving subsidies"
+  subsidy-base:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      master:
+        $ref: "#/definitions/master-account-base"
+      recipient:
+        $ref: "#/definitions/citizen-base"
+      creator:
+        $ref: "#/definitions/user"
+      approver1:
+        $ref: "#/definitions/user"
+      approver2:
+        $ref: "#/definitions/user"
+      approveDate1:
+        type: "string"
+        format: "date-time"
+      approveDate2:
+        type: "string"
+        format: "date-time"
+      frequency:
+        type: "string"
+        enum:
+        - "daily"
+        - "weekly"
+        - "bi-weekly"
+        - "monthly"
+        - "yearly"
+      amount:
+        type: "number"
+        minimum: 0
+      expiry:
+        type: "string"
+        format: "date-time"
+    description: "A recurring allocation of funds made available from a master-account\
+      \ to a recipient citizen's account"
+  subsidy:
+    allOf:
+    - $ref: "#/definitions/subsidy-base"
+    - type: "object"
+      properties:
+        transactions:
+          type: "array"
+          items:
+            $ref: "#/definitions/transaction"
+  transaction:
+    type: "object"
+    properties:
+      from:
+        $ref: "#/definitions/account"
+      to:
+        type: "string"
+      amount:
+        type: "number"
+        minimum: 0
+      dateTime:
+        type: "string"
+        format: "date-time"
