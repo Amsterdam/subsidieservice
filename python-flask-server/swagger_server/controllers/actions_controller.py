@@ -12,7 +12,7 @@ def subsidies_id_actions_approve_post(id, body):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
     :param body: user approving subsidy
     :type body: dict | bytes
 

@@ -18,34 +18,44 @@ class Citizen(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: float=None, real_name: str=None, accounts: List[CitizenAccountBase]=None, subsidies: List[SubsidyBase]=None):  # noqa: E501
+    def __init__(self, id: str=None, real_name: str=None, email: str=None, phone_number: str=None, accounts: List[CitizenAccountBase]=None, subsidies: List[SubsidyBase]=None):  # noqa: E501
         """Citizen - a model defined in Swagger
 
         :param id: The id of this Citizen.  # noqa: E501
-        :type id: float
+        :type id: str
         :param real_name: The real_name of this Citizen.  # noqa: E501
         :type real_name: str
+        :param email: The email of this Citizen.  # noqa: E501
+        :type email: str
+        :param phone_number: The phone_number of this Citizen.  # noqa: E501
+        :type phone_number: str
         :param accounts: The accounts of this Citizen.  # noqa: E501
         :type accounts: List[CitizenAccountBase]
         :param subsidies: The subsidies of this Citizen.  # noqa: E501
         :type subsidies: List[SubsidyBase]
         """
         self.swagger_types = {
-            'id': float,
+            'id': str,
             'real_name': str,
+            'email': str,
+            'phone_number': str,
             'accounts': List[CitizenAccountBase],
             'subsidies': List[SubsidyBase]
         }
 
         self.attribute_map = {
             'id': 'id',
-            'real_name': 'realName',
+            'real_name': 'real_name',
+            'email': 'email',
+            'phone_number': 'phone_number',
             'accounts': 'accounts',
             'subsidies': 'subsidies'
         }
 
         self._id = id
         self._real_name = real_name
+        self._email = email
+        self._phone_number = phone_number
         self._accounts = accounts
         self._subsidies = subsidies
 
@@ -61,22 +71,22 @@ class Citizen(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def id(self) -> float:
+    def id(self) -> str:
         """Gets the id of this Citizen.
 
 
         :return: The id of this Citizen.
-        :rtype: float
+        :rtype: str
         """
         return self._id
 
     @id.setter
-    def id(self, id: float):
+    def id(self, id: str):
         """Sets the id of this Citizen.
 
 
         :param id: The id of this Citizen.
-        :type id: float
+        :type id: str
         """
 
         self._id = id
@@ -101,6 +111,48 @@ class Citizen(Model):
         """
 
         self._real_name = real_name
+
+    @property
+    def email(self) -> str:
+        """Gets the email of this Citizen.
+
+
+        :return: The email of this Citizen.
+        :rtype: str
+        """
+        return self._email
+
+    @email.setter
+    def email(self, email: str):
+        """Sets the email of this Citizen.
+
+
+        :param email: The email of this Citizen.
+        :type email: str
+        """
+
+        self._email = email
+
+    @property
+    def phone_number(self) -> str:
+        """Gets the phone_number of this Citizen.
+
+
+        :return: The phone_number of this Citizen.
+        :rtype: str
+        """
+        return self._phone_number
+
+    @phone_number.setter
+    def phone_number(self, phone_number: str):
+        """Sets the phone_number of this Citizen.
+
+
+        :param phone_number: The phone_number of this Citizen.
+        :type phone_number: str
+        """
+
+        self._phone_number = phone_number
 
     @property
     def accounts(self) -> List[CitizenAccountBase]:

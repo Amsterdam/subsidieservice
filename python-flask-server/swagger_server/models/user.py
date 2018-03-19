@@ -15,7 +15,7 @@ class User(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, username: str=None, real_name: str=None, email: str=None):  # noqa: E501
+    def __init__(self, username: str=None, real_name: str=None, email: str=None, phone_number: str=None):  # noqa: E501
         """User - a model defined in Swagger
 
         :param username: The username of this User.  # noqa: E501
@@ -24,22 +24,27 @@ class User(Model):
         :type real_name: str
         :param email: The email of this User.  # noqa: E501
         :type email: str
+        :param phone_number: The phone_number of this User.  # noqa: E501
+        :type phone_number: str
         """
         self.swagger_types = {
             'username': str,
             'real_name': str,
-            'email': str
+            'email': str,
+            'phone_number': str
         }
 
         self.attribute_map = {
             'username': 'username',
-            'real_name': 'realName',
-            'email': 'email'
+            'real_name': 'real_name',
+            'email': 'email',
+            'phone_number': 'phone_number'
         }
 
         self._username = username
         self._real_name = real_name
         self._email = email
+        self._phone_number = phone_number
 
     @classmethod
     def from_dict(cls, dikt) -> 'User':
@@ -114,3 +119,24 @@ class User(Model):
         """
 
         self._email = email
+
+    @property
+    def phone_number(self) -> str:
+        """Gets the phone_number of this User.
+
+
+        :return: The phone_number of this User.
+        :rtype: str
+        """
+        return self._phone_number
+
+    @phone_number.setter
+    def phone_number(self, phone_number: str):
+        """Sets the phone_number of this User.
+
+
+        :param phone_number: The phone_number of this User.
+        :type phone_number: str
+        """
+
+        self._phone_number = phone_number

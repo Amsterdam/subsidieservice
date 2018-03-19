@@ -15,7 +15,7 @@ def citizens_get():  # noqa: E501
 
     :rtype: List[CitizenBase]
     """
-    return 'do some magic!'
+    return service.citizens.read()
 
 
 def citizens_id_delete(id):  # noqa: E501
@@ -24,11 +24,12 @@ def citizens_id_delete(id):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
 
     :rtype: None
     """
-    return 'do some magic!'
+    service.citizens.delete(id)
+    return None
 
 
 def citizens_id_get(id):  # noqa: E501
@@ -37,11 +38,11 @@ def citizens_id_get(id):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
 
     :rtype: Citizen
     """
-    return 'do some magic!'
+    return service.citizens.read(id)
 
 
 def citizens_id_patch(id, body):  # noqa: E501
@@ -50,7 +51,7 @@ def citizens_id_patch(id, body):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
     :param body: citizen properties to be updated
     :type body: dict | bytes
 
@@ -58,7 +59,10 @@ def citizens_id_patch(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = Citizen.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    obj = service.citizens.update(id, body.to_dict())
+
+    return obj
 
 
 def citizens_id_put(id, body):  # noqa: E501
@@ -67,7 +71,7 @@ def citizens_id_put(id, body):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
     :param body: citizen details
     :type body: dict | bytes
 
@@ -75,7 +79,10 @@ def citizens_id_put(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = Citizen.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    obj = service.citizens.replace(id, body.to_dict())
+
+    return obj
 
 
 def citizens_post(body):  # noqa: E501
@@ -91,6 +98,6 @@ def citizens_post(body):  # noqa: E501
     if connexion.request.is_json:
         body = Citizen.from_dict(connexion.request.get_json())  # noqa: E501
 
-    obj = service.citizens.add(body.to_dict())
+    obj = service.citizens.create(body.to_dict())
 
     return obj

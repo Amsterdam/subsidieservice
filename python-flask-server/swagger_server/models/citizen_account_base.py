@@ -34,7 +34,7 @@ class CitizenAccountBase(Model):
 
         self.attribute_map = {
             'name': 'name',
-            'account_type': 'accountType',
+            'account_type': 'account_type',
             'iban': 'iban'
         }
 

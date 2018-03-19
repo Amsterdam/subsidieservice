@@ -191,7 +191,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
         
     put:
@@ -210,7 +210,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
       - in: "body"
         name: "body"
@@ -235,7 +235,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
       - in: "body"
         name: "body"
@@ -254,7 +254,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
   
   /citizens:
@@ -308,7 +308,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
         
     put:
@@ -327,7 +327,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
       - in: "body"
         name: "body"
@@ -352,7 +352,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
       - in: "body"
         name: "body"
@@ -371,7 +371,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
 
   /subsidies:              
@@ -411,7 +411,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
         
     put:
@@ -430,7 +430,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
       - in: "body"
         name: "body"
@@ -455,7 +455,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
       - in: "body"
         name: "body"
@@ -474,7 +474,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
 
   /subsidies/{id}/actions/approve:
@@ -495,7 +495,7 @@ paths:
       parameters: 
       - in: "path"
         name: "id"
-        type: "integer"
+        type: "string"
         required: true
       - in: "body"
         name: "body"
@@ -512,11 +512,13 @@ definitions:
     properties:
       username:
         type: string
-      realName:
+      real_name:
         type: string
       email:
         type: string
         format: email
+      phone_number:
+        type: string
         
   account:
     description: "A bank account"
@@ -524,7 +526,7 @@ definitions:
     properties:
       name:
         type: string
-      accountType:
+      account_type:
         type: string
       iban:
         type: string
@@ -570,8 +572,12 @@ definitions:
     type: object
     properties:
       id:
-        type: number
-      realName:
+        type: string
+      real_name:
+        type: string
+      email:
+        type: string
+      phone_number:
         type: string
 
   citizen:
@@ -580,10 +586,6 @@ definitions:
     - $ref: "#/definitions/citizen-base"
     - type: object
       properties:
-        id:
-          type: number
-        realName:
-          type: string
         accounts:
           type: array
           items:
@@ -598,11 +600,11 @@ definitions:
     type: object
     properties:
       id:
-        type: integer
+        type: string
       name:
         type: string
       master:
-        $ref: "#/definitions/master-account"
+        $ref: "#/definitions/master-account-base"
       recipient:
         $ref: "#/definitions/citizen-base"
       creator:
@@ -611,10 +613,10 @@ definitions:
         $ref: "#/definitions/user"
       approver2:
         $ref: "#/definitions/user"
-      approveDate1:
+      approve_date1:
         type: string
         format: date-time
-      approveDate2:
+      approve_date2:
         type: string
         format: date-time
       frequency:
@@ -653,7 +655,7 @@ definitions:
       amount:
         type: number
         minimum: 0
-      dateTime:
+      datetime:
         type: string
         format: date-time
 

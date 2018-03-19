@@ -18,11 +18,11 @@ class SubsidyBase(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: int=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, creator: User=None, approver1: User=None, approver2: User=None, approve_date1: datetime=None, approve_date2: datetime=None, frequency: str=None, amount: float=None, expiry: datetime=None):  # noqa: E501
+    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, creator: User=None, approver1: User=None, approver2: User=None, approve_date1: datetime=None, approve_date2: datetime=None, frequency: str=None, amount: float=None, expiry: datetime=None):  # noqa: E501
         """SubsidyBase - a model defined in Swagger
 
         :param id: The id of this SubsidyBase.  # noqa: E501
-        :type id: int
+        :type id: str
         :param name: The name of this SubsidyBase.  # noqa: E501
         :type name: str
         :param master: The master of this SubsidyBase.  # noqa: E501
@@ -47,7 +47,7 @@ class SubsidyBase(Model):
         :type expiry: datetime
         """
         self.swagger_types = {
-            'id': int,
+            'id': str,
             'name': str,
             'master': MasterAccountBase,
             'recipient': CitizenBase,
@@ -69,8 +69,8 @@ class SubsidyBase(Model):
             'creator': 'creator',
             'approver1': 'approver1',
             'approver2': 'approver2',
-            'approve_date1': 'approveDate1',
-            'approve_date2': 'approveDate2',
+            'approve_date1': 'approve_date1',
+            'approve_date2': 'approve_date2',
             'frequency': 'frequency',
             'amount': 'amount',
             'expiry': 'expiry'
@@ -101,22 +101,22 @@ class SubsidyBase(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def id(self) -> int:
+    def id(self) -> str:
         """Gets the id of this SubsidyBase.
 
 
         :return: The id of this SubsidyBase.
-        :rtype: int
+        :rtype: str
         """
         return self._id
 
     @id.setter
-    def id(self, id: int):
+    def id(self, id: str):
         """Sets the id of this SubsidyBase.
 
 
         :param id: The id of this SubsidyBase.
-        :type id: int
+        :type id: str
         """
 
         self._id = id

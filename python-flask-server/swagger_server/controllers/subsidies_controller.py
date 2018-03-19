@@ -14,7 +14,7 @@ def subsidies_id_actions_approve_post(id, body):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
     :param body: user approving subsidy
     :type body: dict | bytes
 
@@ -31,7 +31,7 @@ def subsidies_id_delete(id):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
 
     :rtype: None
     """
@@ -44,7 +44,7 @@ def subsidies_id_get(id):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
 
     :rtype: Subsidy
     """
@@ -57,7 +57,7 @@ def subsidies_id_patch(id, body):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
     :param body: subsidy properties to be updated
     :type body: dict | bytes
 
@@ -74,7 +74,7 @@ def subsidies_id_put(id, body):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
     :param body: subsidy details
     :type body: dict | bytes
 

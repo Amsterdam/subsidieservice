@@ -22,7 +22,7 @@ def master_accounts_id_delete(id):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
 
     :rtype: None
     """
@@ -35,7 +35,7 @@ def master_accounts_id_get(id):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
 
     :rtype: MasterAccount
     """
@@ -48,7 +48,7 @@ def master_accounts_id_patch(id, body):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
     :param body: master-account properties to be updated
     :type body: dict | bytes
 
@@ -65,7 +65,7 @@ def master_accounts_id_put(id, body):  # noqa: E501
      # noqa: E501
 
     :param id: 
-    :type id: int
+    :type id: str
     :param body: master-account details
     :type body: dict | bytes
 

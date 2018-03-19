@@ -29,7 +29,7 @@ class TestMasterAccountsController(BaseTestCase):
         Remove a master-account
         """
         response = self.client.open(
-            '/v1/master-accounts/{id}'.format(id=56),
+            '/v1/master-accounts/{id}'.format(id='id_example'),
             method='DELETE')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -40,7 +40,7 @@ class TestMasterAccountsController(BaseTestCase):
         Returns a specific master-account
         """
         response = self.client.open(
-            '/v1/master-accounts/{id}'.format(id=56),
+            '/v1/master-accounts/{id}'.format(id='id_example'),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -52,7 +52,7 @@ class TestMasterAccountsController(BaseTestCase):
         """
         body = MasterAccount()
         response = self.client.open(
-            '/v1/master-accounts/{id}'.format(id=56),
+            '/v1/master-accounts/{id}'.format(id='id_example'),
             method='PATCH',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.master-account+json')
@@ -66,7 +66,7 @@ class TestMasterAccountsController(BaseTestCase):
         """
         body = MasterAccount()
         response = self.client.open(
-            '/v1/master-accounts/{id}'.format(id=56),
+            '/v1/master-accounts/{id}'.format(id='id_example'),
             method='PUT',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.master-account+json')

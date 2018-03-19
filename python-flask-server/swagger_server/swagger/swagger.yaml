@@ -10,7 +10,7 @@ tags:
 - name: "users"
   description: "Create, read, update, and delete users."
 - name: "master-accounts"
-  description: "Create, read, update, and delete master-accounts."
+  description: "Create, read, update, and delete master accounts."
 - name: "citizens"
   description: "Create, read, update, and delete citizens."
 - name: "subsidies"
@@ -195,7 +195,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       responses:
         200:
           description: "OK"
@@ -215,7 +215,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       - in: "body"
         name: "body"
         description: "master-account details"
@@ -237,7 +237,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       responses:
         200:
           description: "OK"
@@ -255,7 +255,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       - in: "body"
         name: "body"
         description: "master-account properties to be updated"
@@ -319,7 +319,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       responses:
         200:
           description: "OK"
@@ -339,7 +339,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       - in: "body"
         name: "body"
         description: "citizen details"
@@ -361,7 +361,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       responses:
         200:
           description: "OK"
@@ -379,7 +379,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       - in: "body"
         name: "body"
         description: "citizen properties to be updated"
@@ -427,7 +427,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       responses:
         200:
           description: "OK"
@@ -447,7 +447,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       - in: "body"
         name: "body"
         description: "subsidy details"
@@ -469,7 +469,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       responses:
         200:
           description: "OK"
@@ -487,7 +487,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       - in: "body"
         name: "body"
         description: "subsidy properties to be updated"
@@ -515,7 +515,7 @@ paths:
       - name: "id"
         in: "path"
         required: true
-        type: "integer"
+        type: "string"
       - in: "body"
         name: "body"
         description: "user approving subsidy"
@@ -534,14 +534,17 @@ definitions:
     properties:
       username:
         type: "string"
-      realName:
+      real_name:
         type: "string"
       email:
         type: "string"
         format: "email"
+      phone_number:
+        type: "string"
     description: "A user of the subsidy Allocation API"
     example:
-      realName: "realName"
+      real_name: "real_name"
+      phone_number: "phone_number"
       email: "email"
       username: "username"
   account:
@@ -549,7 +552,7 @@ definitions:
     properties:
       name:
         type: "string"
-      accountType:
+      account_type:
         type: "string"
       iban:
         type: "string"
@@ -586,28 +589,29 @@ definitions:
   citizen-account-base:
     allOf:
     - $ref: "#/definitions/account"
-    - {}
     description: "An account belonging to a citizen"
   citizen-base:
     type: "object"
     properties:
       id:
-        type: "number"
-      realName:
+        type: "string"
+      real_name:
+        type: "string"
+      email:
+        type: "string"
+      phone_number:
         type: "string"
     description: "A citizen of Amsterdam who may be recieving subsidies"
     example:
-      realName: "realName"
-      id: 0.80082819046101150206595775671303272247314453125
+      real_name: "real_name"
+      phone_number: "phone_number"
+      id: "id"
+      email: "email"
   citizen:
     allOf:
     - $ref: "#/definitions/citizen-base"
     - type: "object"
       properties:
-        id:
-          type: "number"
-        realName:
-          type: "string"
         accounts:
           type: "array"
           items:
@@ -621,7 +625,7 @@ definitions:
     type: "object"
     properties:
       id:
-        type: "integer"
+        type: "string"
       name:
         type: "string"
       master:
@@ -634,10 +638,10 @@ definitions:
         $ref: "#/definitions/user"
       approver2:
         $ref: "#/definitions/user"
-      approveDate1:
+      approve_date1:
         type: "string"
         format: "date-time"
-      approveDate2:
+      approve_date2:
         type: "string"
         format: "date-time"
       frequency:
@@ -675,6 +679,6 @@ definitions:
       amount:
         type: "number"
         minimum: 0
-      dateTime:
+      datetime:
         type: "string"
         format: "date-time"

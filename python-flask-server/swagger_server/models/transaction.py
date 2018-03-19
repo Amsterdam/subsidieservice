@@ -16,7 +16,7 @@ class Transaction(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, _from: Account=None, to: str=None, amount: float=None, date_time: datetime=None):  # noqa: E501
+    def __init__(self, _from: Account=None, to: str=None, amount: float=None, datetime: datetime=None):  # noqa: E501
         """Transaction - a model defined in Swagger
 
         :param _from: The _from of this Transaction.  # noqa: E501
@@ -25,27 +25,27 @@ class Transaction(Model):
         :type to: str
         :param amount: The amount of this Transaction.  # noqa: E501
         :type amount: float
-        :param date_time: The date_time of this Transaction.  # noqa: E501
-        :type date_time: datetime
+        :param datetime: The datetime of this Transaction.  # noqa: E501
+        :type datetime: datetime
         """
         self.swagger_types = {
             '_from': Account,
             'to': str,
             'amount': float,
-            'date_time': datetime
+            'datetime': datetime
         }
 
         self.attribute_map = {
             '_from': 'from',
             'to': 'to',
             'amount': 'amount',
-            'date_time': 'dateTime'
+            'datetime': 'datetime'
         }
 
         self.__from = _from
         self._to = to
         self._amount = amount
-        self._date_time = date_time
+        self._datetime = datetime
 
     @classmethod
     def from_dict(cls, dikt) -> 'Transaction':
@@ -124,22 +124,22 @@ class Transaction(Model):
         self._amount = amount
 
     @property
-    def date_time(self) -> datetime:
-        """Gets the date_time of this Transaction.
+    def datetime(self) -> datetime:
+        """Gets the datetime of this Transaction.
 
 
-        :return: The date_time of this Transaction.
+        :return: The datetime of this Transaction.
         :rtype: datetime
         """
-        return self._date_time
+        return self._datetime
 
-    @date_time.setter
-    def date_time(self, date_time: datetime):
-        """Sets the date_time of this Transaction.
+    @datetime.setter
+    def datetime(self, datetime: datetime):
+        """Sets the datetime of this Transaction.
 
 
-        :param date_time: The date_time of this Transaction.
-        :type date_time: datetime
+        :param datetime: The datetime of this Transaction.
+        :type datetime: datetime
         """
 
-        self._date_time = date_time
+        self._datetime = datetime

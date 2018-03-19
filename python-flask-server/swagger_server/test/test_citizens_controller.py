@@ -30,7 +30,7 @@ class TestCitizensController(BaseTestCase):
         Remove a citizen
         """
         response = self.client.open(
-            '/v1/citizens/{id}'.format(id=56),
+            '/v1/citizens/{id}'.format(id='id_example'),
             method='DELETE')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -41,7 +41,7 @@ class TestCitizensController(BaseTestCase):
         Returns a specific citizen
         """
         response = self.client.open(
-            '/v1/citizens/{id}'.format(id=56),
+            '/v1/citizens/{id}'.format(id='id_example'),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -53,7 +53,7 @@ class TestCitizensController(BaseTestCase):
         """
         body = Citizen()
         response = self.client.open(
-            '/v1/citizens/{id}'.format(id=56),
+            '/v1/citizens/{id}'.format(id='id_example'),
             method='PATCH',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.citizen+json')
@@ -67,7 +67,7 @@ class TestCitizensController(BaseTestCase):
         """
         body = Citizen()
         response = self.client.open(
-            '/v1/citizens/{id}'.format(id=56),
+            '/v1/citizens/{id}'.format(id='id_example'),
             method='PUT',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.citizen+json')

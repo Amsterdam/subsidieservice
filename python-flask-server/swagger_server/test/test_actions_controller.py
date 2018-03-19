@@ -20,7 +20,7 @@ class TestActionsController(BaseTestCase):
         """
         body = User()
         response = self.client.open(
-            '/v1/subsidies/{id}/actions/approve'.format(id=56),
+            '/v1/subsidies/{id}/actions/approve'.format(id='id_example'),
             method='POST',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.user+json')

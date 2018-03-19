@@ -15,26 +15,36 @@ class CitizenBase(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: float=None, real_name: str=None):  # noqa: E501
+    def __init__(self, id: str=None, real_name: str=None, email: str=None, phone_number: str=None):  # noqa: E501
         """CitizenBase - a model defined in Swagger
 
         :param id: The id of this CitizenBase.  # noqa: E501
-        :type id: float
+        :type id: str
         :param real_name: The real_name of this CitizenBase.  # noqa: E501
         :type real_name: str
+        :param email: The email of this CitizenBase.  # noqa: E501
+        :type email: str
+        :param phone_number: The phone_number of this CitizenBase.  # noqa: E501
+        :type phone_number: str
         """
         self.swagger_types = {
-            'id': float,
-            'real_name': str
+            'id': str,
+            'real_name': str,
+            'email': str,
+            'phone_number': str
         }
 
         self.attribute_map = {
             'id': 'id',
-            'real_name': 'realName'
+            'real_name': 'real_name',
+            'email': 'email',
+            'phone_number': 'phone_number'
         }
 
         self._id = id
         self._real_name = real_name
+        self._email = email
+        self._phone_number = phone_number
 
     @classmethod
     def from_dict(cls, dikt) -> 'CitizenBase':
@@ -48,22 +58,22 @@ class CitizenBase(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def id(self) -> float:
+    def id(self) -> str:
         """Gets the id of this CitizenBase.
 
 
         :return: The id of this CitizenBase.
-        :rtype: float
+        :rtype: str
         """
         return self._id
 
     @id.setter
-    def id(self, id: float):
+    def id(self, id: str):
         """Sets the id of this CitizenBase.
 
 
         :param id: The id of this CitizenBase.
-        :type id: float
+        :type id: str
         """
 
         self._id = id
@@ -88,3 +98,45 @@ class CitizenBase(Model):
         """
 
         self._real_name = real_name
+
+    @property
+    def email(self) -> str:
+        """Gets the email of this CitizenBase.
+
+
+        :return: The email of this CitizenBase.
+        :rtype: str
+        """
+        return self._email
+
+    @email.setter
+    def email(self, email: str):
+        """Sets the email of this CitizenBase.
+
+
+        :param email: The email of this CitizenBase.
+        :type email: str
+        """
+
+        self._email = email
+
+    @property
+    def phone_number(self) -> str:
+        """Gets the phone_number of this CitizenBase.
+
+
+        :return: The phone_number of this CitizenBase.
+        :rtype: str
+        """
+        return self._phone_number
+
+    @phone_number.setter
+    def phone_number(self, phone_number: str):
+        """Sets the phone_number of this CitizenBase.
+
+
+        :param phone_number: The phone_number of this CitizenBase.
+        :type phone_number: str
+        """
+
+        self._phone_number = phone_number
