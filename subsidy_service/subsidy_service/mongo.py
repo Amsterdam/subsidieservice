@@ -1,3 +1,8 @@
+"""
+MongoDB operations on the database indicated by the config object
+returned by subsidy_service.utils.get_config().
+"""
+
 import pymongo
 import os
 
@@ -5,12 +10,17 @@ import bson
 
 import subsidy_service as service
 
+# Globals
 CONF = service.utils.get_config()
 
-# Database interactions
 
-def id_query(id):
+# Database interactions
+def _id_query(id):
     return {'_id':bson.ObjectId(str(id))}
+
+
+def find(document, collection):
+    return collection.find_one(document)
 
 
 def get_client(conf=CONF):
@@ -39,7 +49,7 @@ def add_and_copy_id(document:dict, collection, id_field='id'):
 
 def get_by_id(id, collection):
     try:
-        doc = collection.find_one(id_query(id))
+        doc = collection.find_one(_id_query(id))
     except bson.errors.InvalidId:
         doc = None
 
@@ -50,15 +60,16 @@ def get_by_id(id, collection):
 
 
 def update_by_id(id, document, collection):
-    collection.update_one(id_query(id), {'$set': document})
+    collection.update_one(_id_query(id), {'$set': document})
     return get_by_id(id, collection)
 
 
 def replace_by_id(id, document, collection):
-    collection.replace_one(id_query(id), document)
+    document['id'] = str(id)
+    collection.replace_one(_id_query(id), document)
     return get_by_id(id, collection)
 
 
 def delete_by_id(id, collection):
-    collection.delete_one(id_query(id))
+    collection.delete_one(_id_query(id))
     return None

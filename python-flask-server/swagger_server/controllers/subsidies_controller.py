@@ -48,7 +48,8 @@ def subsidies_id_get(id):  # noqa: E501
 
     :rtype: Subsidy
     """
-    return 'do some magic!'
+    response = service.subsidies.read(id)
+    return Subsidy.from_dict(response)
 
 
 def subsidies_id_patch(id, body):  # noqa: E501
@@ -64,7 +65,7 @@ def subsidies_id_patch(id, body):  # noqa: E501
     :rtype: Subsidy
     """
     if connexion.request.is_json:
-        body = Subsidy.from_dict(connexion.request.get_json())  # noqa: E501
+        body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -81,8 +82,21 @@ def subsidies_id_put(id, body):  # noqa: E501
     :rtype: Subsidy
     """
     if connexion.request.is_json:
-        body = Subsidy.from_dict(connexion.request.get_json())  # noqa: E501
+        body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
+
+
+def subsidies_get():  # noqa: E501
+    """Returns a list of subsidies.
+
+     # noqa: E501
+
+
+    :rtype: List[SubsidyBase]
+    """
+    response = service.subsidies.read_all()
+    output = [SubsidyBase().from_dict(doc) for doc in response]
+    return output
 
 
 def subsidies_post(body):  # noqa: E501
@@ -97,4 +111,6 @@ def subsidies_post(body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    response = service.subsidies.create(body.to_dict())
+    return Subsidy.from_dict(response)

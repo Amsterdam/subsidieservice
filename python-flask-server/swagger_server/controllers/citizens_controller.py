@@ -15,7 +15,9 @@ def citizens_get():  # noqa: E501
 
     :rtype: List[CitizenBase]
     """
-    return service.citizens.read()
+    response = service.citizens.read_all()
+    output = [CitizenBase().from_dict(doc) for doc in response]
+    return output
 
 
 def citizens_id_delete(id):  # noqa: E501
@@ -42,7 +44,8 @@ def citizens_id_get(id):  # noqa: E501
 
     :rtype: Citizen
     """
-    return service.citizens.read(id)
+    response = service.citizens.read(id)
+    return Citizen.from_dict(response)
 
 
 def citizens_id_patch(id, body):  # noqa: E501
@@ -60,9 +63,8 @@ def citizens_id_patch(id, body):  # noqa: E501
     if connexion.request.is_json:
         body = Citizen.from_dict(connexion.request.get_json())  # noqa: E501
 
-    obj = service.citizens.update(id, body.to_dict())
-
-    return obj
+    response = service.citizens.update(id, body.to_dict())
+    return Citizen.from_dict(response)
 
 
 def citizens_id_put(id, body):  # noqa: E501
@@ -80,9 +82,8 @@ def citizens_id_put(id, body):  # noqa: E501
     if connexion.request.is_json:
         body = Citizen.from_dict(connexion.request.get_json())  # noqa: E501
 
-    obj = service.citizens.replace(id, body.to_dict())
-
-    return obj
+    response = service.citizens.replace(id, body.to_dict())
+    return Citizen.from_dict(response)
 
 
 def citizens_post(body):  # noqa: E501
@@ -98,6 +99,5 @@ def citizens_post(body):  # noqa: E501
     if connexion.request.is_json:
         body = Citizen.from_dict(connexion.request.get_json())  # noqa: E501
 
-    obj = service.citizens.create(body.to_dict())
-
-    return obj
+    response = service.citizens.create(body.to_dict())
+    return Citizen.from_dict(response)

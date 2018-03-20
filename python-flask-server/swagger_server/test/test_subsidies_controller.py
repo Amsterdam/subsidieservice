@@ -14,6 +14,17 @@ from swagger_server.test import BaseTestCase
 class TestSubsidiesController(BaseTestCase):
     """SubsidiesController integration test stubs"""
 
+    def test_subsidies_get(self):
+        """Test case for subsidies_get
+
+        Returns a list of subsidies.
+        """
+        response = self.client.open(
+            '/v1/subsidies',
+            method='GET')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+
     def test_subsidies_id_actions_approve_post(self):
         """Test case for subsidies_id_actions_approve_post
 
@@ -55,7 +66,7 @@ class TestSubsidiesController(BaseTestCase):
 
         Edit a subsidy's information
         """
-        body = Subsidy()
+        body = SubsidyBase()
         response = self.client.open(
             '/v1/subsidies/{id}'.format(id='id_example'),
             method='PATCH',
@@ -69,7 +80,7 @@ class TestSubsidiesController(BaseTestCase):
 
         Re-upload a subsidy's information
         """
-        body = Subsidy()
+        body = SubsidyBase()
         response = self.client.open(
             '/v1/subsidies/{id}'.format(id='id_example'),
             method='PUT',

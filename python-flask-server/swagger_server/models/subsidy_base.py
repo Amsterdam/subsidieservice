@@ -6,9 +6,9 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
+from swagger_server.models.account_base import AccountBase  # noqa: F401,E501
 from swagger_server.models.citizen_base import CitizenBase  # noqa: F401,E501
 from swagger_server.models.master_account_base import MasterAccountBase  # noqa: F401,E501
-from swagger_server.models.user import User  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -18,7 +18,7 @@ class SubsidyBase(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, creator: User=None, approver1: User=None, approver2: User=None, approve_date1: datetime=None, approve_date2: datetime=None, frequency: str=None, amount: float=None, expiry: datetime=None):  # noqa: E501
+    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, account: AccountBase=None, frequency: str=None, amount: float=None, expiry: datetime=None):  # noqa: E501
         """SubsidyBase - a model defined in Swagger
 
         :param id: The id of this SubsidyBase.  # noqa: E501
@@ -29,16 +29,8 @@ class SubsidyBase(Model):
         :type master: MasterAccountBase
         :param recipient: The recipient of this SubsidyBase.  # noqa: E501
         :type recipient: CitizenBase
-        :param creator: The creator of this SubsidyBase.  # noqa: E501
-        :type creator: User
-        :param approver1: The approver1 of this SubsidyBase.  # noqa: E501
-        :type approver1: User
-        :param approver2: The approver2 of this SubsidyBase.  # noqa: E501
-        :type approver2: User
-        :param approve_date1: The approve_date1 of this SubsidyBase.  # noqa: E501
-        :type approve_date1: datetime
-        :param approve_date2: The approve_date2 of this SubsidyBase.  # noqa: E501
-        :type approve_date2: datetime
+        :param account: The account of this SubsidyBase.  # noqa: E501
+        :type account: AccountBase
         :param frequency: The frequency of this SubsidyBase.  # noqa: E501
         :type frequency: str
         :param amount: The amount of this SubsidyBase.  # noqa: E501
@@ -51,11 +43,7 @@ class SubsidyBase(Model):
             'name': str,
             'master': MasterAccountBase,
             'recipient': CitizenBase,
-            'creator': User,
-            'approver1': User,
-            'approver2': User,
-            'approve_date1': datetime,
-            'approve_date2': datetime,
+            'account': AccountBase,
             'frequency': str,
             'amount': float,
             'expiry': datetime
@@ -66,11 +54,7 @@ class SubsidyBase(Model):
             'name': 'name',
             'master': 'master',
             'recipient': 'recipient',
-            'creator': 'creator',
-            'approver1': 'approver1',
-            'approver2': 'approver2',
-            'approve_date1': 'approve_date1',
-            'approve_date2': 'approve_date2',
+            'account': 'account',
             'frequency': 'frequency',
             'amount': 'amount',
             'expiry': 'expiry'
@@ -80,11 +64,7 @@ class SubsidyBase(Model):
         self._name = name
         self._master = master
         self._recipient = recipient
-        self._creator = creator
-        self._approver1 = approver1
-        self._approver2 = approver2
-        self._approve_date1 = approve_date1
-        self._approve_date2 = approve_date2
+        self._account = account
         self._frequency = frequency
         self._amount = amount
         self._expiry = expiry
@@ -185,109 +165,25 @@ class SubsidyBase(Model):
         self._recipient = recipient
 
     @property
-    def creator(self) -> User:
-        """Gets the creator of this SubsidyBase.
+    def account(self) -> AccountBase:
+        """Gets the account of this SubsidyBase.
 
 
-        :return: The creator of this SubsidyBase.
-        :rtype: User
+        :return: The account of this SubsidyBase.
+        :rtype: AccountBase
         """
-        return self._creator
+        return self._account
 
-    @creator.setter
-    def creator(self, creator: User):
-        """Sets the creator of this SubsidyBase.
-
-
-        :param creator: The creator of this SubsidyBase.
-        :type creator: User
-        """
-
-        self._creator = creator
-
-    @property
-    def approver1(self) -> User:
-        """Gets the approver1 of this SubsidyBase.
+    @account.setter
+    def account(self, account: AccountBase):
+        """Sets the account of this SubsidyBase.
 
 
-        :return: The approver1 of this SubsidyBase.
-        :rtype: User
-        """
-        return self._approver1
-
-    @approver1.setter
-    def approver1(self, approver1: User):
-        """Sets the approver1 of this SubsidyBase.
-
-
-        :param approver1: The approver1 of this SubsidyBase.
-        :type approver1: User
+        :param account: The account of this SubsidyBase.
+        :type account: AccountBase
         """
 
-        self._approver1 = approver1
-
-    @property
-    def approver2(self) -> User:
-        """Gets the approver2 of this SubsidyBase.
-
-
-        :return: The approver2 of this SubsidyBase.
-        :rtype: User
-        """
-        return self._approver2
-
-    @approver2.setter
-    def approver2(self, approver2: User):
-        """Sets the approver2 of this SubsidyBase.
-
-
-        :param approver2: The approver2 of this SubsidyBase.
-        :type approver2: User
-        """
-
-        self._approver2 = approver2
-
-    @property
-    def approve_date1(self) -> datetime:
-        """Gets the approve_date1 of this SubsidyBase.
-
-
-        :return: The approve_date1 of this SubsidyBase.
-        :rtype: datetime
-        """
-        return self._approve_date1
-
-    @approve_date1.setter
-    def approve_date1(self, approve_date1: datetime):
-        """Sets the approve_date1 of this SubsidyBase.
-
-
-        :param approve_date1: The approve_date1 of this SubsidyBase.
-        :type approve_date1: datetime
-        """
-
-        self._approve_date1 = approve_date1
-
-    @property
-    def approve_date2(self) -> datetime:
-        """Gets the approve_date2 of this SubsidyBase.
-
-
-        :return: The approve_date2 of this SubsidyBase.
-        :rtype: datetime
-        """
-        return self._approve_date2
-
-    @approve_date2.setter
-    def approve_date2(self, approve_date2: datetime):
-        """Sets the approve_date2 of this SubsidyBase.
-
-
-        :param approve_date2: The approve_date2 of this SubsidyBase.
-        :type approve_date2: datetime
-        """
-
-        self._approve_date2 = approve_date2
+        self._account = account
 
     @property
     def frequency(self) -> str:
@@ -307,7 +203,7 @@ class SubsidyBase(Model):
         :param frequency: The frequency of this SubsidyBase.
         :type frequency: str
         """
-        allowed_values = ["daily", "weekly", "bi-weekly", "monthly", "yearly"]  # noqa: E501
+        allowed_values = ["once", "daily", "weekly", "bi-weekly", "monthly", "yearly"]  # noqa: E501
         if frequency not in allowed_values:
             raise ValueError(
                 "Invalid value for `frequency` ({0}), must be one of {1}"

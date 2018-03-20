@@ -374,7 +374,21 @@ paths:
         type: "string"
         required: true
 
-  /subsidies:              
+  /subsidies:    
+    get:
+      tags: 
+      - "subsidies"
+      summary: "Returns a list of subsidies."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:                
+              $ref: "#/definitions/subsidy-base"
+        
     post:
       tags: 
       - "subsidies"
@@ -437,7 +451,7 @@ paths:
         description: "subsidy details"
         required: True
         schema:
-          $ref: "#/definitions/subsidy"
+          $ref: "#/definitions/subsidy-base"
           
     patch:
       tags: 
@@ -462,7 +476,7 @@ paths:
         description: "subsidy properties to be updated"
         required: True
         schema:
-          $ref: "#/definitions/subsidy"
+          $ref: "#/definitions/subsidy-base"
         
     delete:
       tags: 
@@ -520,7 +534,7 @@ definitions:
       phone_number:
         type: string
         
-  account:
+  account-base:
     description: "A bank account"
     type: object
     properties:
@@ -530,22 +544,31 @@ definitions:
         type: string
       iban:
         type: string
+      balance:
+        type: number
+        minimum: 0
+  
+  account:
+    description: "A bank account"
+    allOf: 
+    - $ref: "#/definitions/account-base"
+    - type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: "#/definitions/transaction"
 
   master-account-base:
     description: "A master-account-base serves as the source for a specific class of subsidy"
     allOf:
-    - $ref: "#/definitions/account"
-    - type: object
-      properties:
-        balance:
-          type: number
-          format: float
-          default: 0.00
+    - $ref: "#/definitions/account-base"
 
   master-account:
     description: "A master-account serves as the source for a specific class of subsidy"
     allOf:
     - $ref: "#/definitions/master-account-base"
+    - $ref: "#/definitions/account"
     - type: object
       properties:
         subsidies:
@@ -560,11 +583,7 @@ definitions:
           type: array
           items:
             $ref: "#/definitions/user"
-            
-  citizen-account-base:
-    description: "An account belonging to a citizen"
-    allOf:
-    - $ref: "#/definitions/account"
+    
     
   
   citizen-base:
@@ -579,6 +598,9 @@ definitions:
         type: string
       phone_number:
         type: string
+      mutation_pending:
+        type: boolean
+        default: True
 
   citizen:
     description: "A citizen of Amsterdam who may be recieving subsidies"
@@ -586,15 +608,11 @@ definitions:
     - $ref: "#/definitions/citizen-base"
     - type: object
       properties:
-        accounts:
-          type: array
-          items:
-            $ref: "#/definitions/citizen-account-base"
         subsidies:
           type: array
           items: 
             $ref: "#/definitions/subsidy-base"
-    
+            
   subsidy-base:
     description: "A recurring allocation of funds made available from a master-account to a recipient citizen's account"
     type: object
@@ -607,21 +625,12 @@ definitions:
         $ref: "#/definitions/master-account-base"
       recipient:
         $ref: "#/definitions/citizen-base"
-      creator:
-        $ref: "#/definitions/user"
-      approver1:
-        $ref: "#/definitions/user"
-      approver2:
-        $ref: "#/definitions/user"
-      approve_date1:
-        type: string
-        format: date-time
-      approve_date2:
-        type: string
-        format: date-time
+      account:
+        $ref: "#/definitions/account-base"
       frequency:
         type: string
         enum:
+        - "once"
         - "daily"
         - "weekly"
         - "bi-weekly"
@@ -633,23 +642,23 @@ definitions:
       expiry:
         type: string
         format: date-time
-    
-  subsidy:
-    type: object
-    allOf:
-    - $ref: "#/definitions/subsidy-base"
-    - type: object
-      properties:
-        transactions:
-          type: array
-          items:
-            $ref: "#/definitions/transaction"
 
+  subsidy:
+    description: "A recurring allocation of funds made available from a master-account to a recipient citizen's account"
+    allOf:
+      - $ref: "#/definitions/subsidy-base"
+      - type: object
+        properties:
+          log:
+            type: array
+            items:
+              $ref: "#/definitions/subsidy-log-item"
+            
   transaction:
     type: object
     properties:
       from:
-        $ref: "#/definitions/account"
+        $ref: "#/definitions/account-base"
       to:
         type: string
       amount:
@@ -658,10 +667,29 @@ definitions:
       datetime:
         type: string
         format: date-time
-
       
-      
-      
-      
+  subsidy-log-item:
+    type: object
+    properties:
+      creator:
+        $ref: "#/definitions/user"
+      approver:
+        $ref: "#/definitions/user"
+      create_date:
+        type: string
+        format: date-time
+      approve_date:
+        type: string
+        format: date-time
+      description:
+        type: string
+      mutation:
+        type: object
+        properties:
+          from:
+            $ref: "#/definitions/subsidy-base"
+          to:
+            $ref: "#/definitions/subsidy-base"
+  
       
     

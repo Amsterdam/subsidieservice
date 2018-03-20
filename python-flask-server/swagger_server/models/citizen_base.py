@@ -15,7 +15,7 @@ class CitizenBase(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: str=None, real_name: str=None, email: str=None, phone_number: str=None):  # noqa: E501
+    def __init__(self, id: str=None, real_name: str=None, email: str=None, phone_number: str=None, mutation_pending: bool=True):  # noqa: E501
         """CitizenBase - a model defined in Swagger
 
         :param id: The id of this CitizenBase.  # noqa: E501
@@ -26,25 +26,30 @@ class CitizenBase(Model):
         :type email: str
         :param phone_number: The phone_number of this CitizenBase.  # noqa: E501
         :type phone_number: str
+        :param mutation_pending: The mutation_pending of this CitizenBase.  # noqa: E501
+        :type mutation_pending: bool
         """
         self.swagger_types = {
             'id': str,
             'real_name': str,
             'email': str,
-            'phone_number': str
+            'phone_number': str,
+            'mutation_pending': bool
         }
 
         self.attribute_map = {
             'id': 'id',
             'real_name': 'real_name',
             'email': 'email',
-            'phone_number': 'phone_number'
+            'phone_number': 'phone_number',
+            'mutation_pending': 'mutation_pending'
         }
 
         self._id = id
         self._real_name = real_name
         self._email = email
         self._phone_number = phone_number
+        self._mutation_pending = mutation_pending
 
     @classmethod
     def from_dict(cls, dikt) -> 'CitizenBase':
@@ -140,3 +145,24 @@ class CitizenBase(Model):
         """
 
         self._phone_number = phone_number
+
+    @property
+    def mutation_pending(self) -> bool:
+        """Gets the mutation_pending of this CitizenBase.
+
+
+        :return: The mutation_pending of this CitizenBase.
+        :rtype: bool
+        """
+        return self._mutation_pending
+
+    @mutation_pending.setter
+    def mutation_pending(self, mutation_pending: bool):
+        """Sets the mutation_pending of this CitizenBase.
+
+
+        :param mutation_pending: The mutation_pending of this CitizenBase.
+        :type mutation_pending: bool
+        """
+
+        self._mutation_pending = mutation_pending

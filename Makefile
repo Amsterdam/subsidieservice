@@ -18,7 +18,7 @@ docker-build: docker-stop .
 ## Run the Service API linked to a new or existing mongo docker
 docker-run:
 	-docker start subsidy_mongo_dev 
-	docker run --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service --link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
+	docker run --rm -p 8080:8080 -v $(shell pwd)/config:/etc/config/subsidy_service --link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
 	docker ps
 
 ## Open an interactive shell in the service docker. Current directory is mounted to /opt/
@@ -34,6 +34,7 @@ docker-stop:
 ## Update the existing models and code, BUT NOT CONTROLLERS, to new swagger spec.
 ## Shows the diff between the old and new controllers. Any inserts are interesting!
 swagger-update: swagger.yaml
+	swagger-codegen validate -i swagger.yaml
 	-rm -r temp-swagger-server-dir
 	mkdir temp-swagger-server-dir
 	swagger-codegen generate -i swagger.yaml -l python-flask -o temp-swagger-server-dir

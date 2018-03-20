@@ -6,6 +6,8 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
+from swagger_server.models.account_base import AccountBase  # noqa: F401,E501
+from swagger_server.models.transaction import Transaction  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -15,7 +17,7 @@ class Account(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, account_type: str=None, iban: str=None):  # noqa: E501
+    def __init__(self, name: str=None, account_type: str=None, iban: str=None, balance: float=None, transactions: List[Transaction]=None):  # noqa: E501
         """Account - a model defined in Swagger
 
         :param name: The name of this Account.  # noqa: E501
@@ -24,22 +26,32 @@ class Account(Model):
         :type account_type: str
         :param iban: The iban of this Account.  # noqa: E501
         :type iban: str
+        :param balance: The balance of this Account.  # noqa: E501
+        :type balance: float
+        :param transactions: The transactions of this Account.  # noqa: E501
+        :type transactions: List[Transaction]
         """
         self.swagger_types = {
             'name': str,
             'account_type': str,
-            'iban': str
+            'iban': str,
+            'balance': float,
+            'transactions': List[Transaction]
         }
 
         self.attribute_map = {
             'name': 'name',
             'account_type': 'account_type',
-            'iban': 'iban'
+            'iban': 'iban',
+            'balance': 'balance',
+            'transactions': 'transactions'
         }
 
         self._name = name
         self._account_type = account_type
         self._iban = iban
+        self._balance = balance
+        self._transactions = transactions
 
     @classmethod
     def from_dict(cls, dikt) -> 'Account':
@@ -114,3 +126,47 @@ class Account(Model):
         """
 
         self._iban = iban
+
+    @property
+    def balance(self) -> float:
+        """Gets the balance of this Account.
+
+
+        :return: The balance of this Account.
+        :rtype: float
+        """
+        return self._balance
+
+    @balance.setter
+    def balance(self, balance: float):
+        """Sets the balance of this Account.
+
+
+        :param balance: The balance of this Account.
+        :type balance: float
+        """
+        if balance is not None and balance < 0:  # noqa: E501
+            raise ValueError("Invalid value for `balance`, must be a value greater than or equal to `0`")  # noqa: E501
+
+        self._balance = balance
+
+    @property
+    def transactions(self) -> List[Transaction]:
+        """Gets the transactions of this Account.
+
+
+        :return: The transactions of this Account.
+        :rtype: List[Transaction]
+        """
+        return self._transactions
+
+    @transactions.setter
+    def transactions(self, transactions: List[Transaction]):
+        """Sets the transactions of this Account.
+
+
+        :param transactions: The transactions of this Account.
+        :type transactions: List[Transaction]
+        """
+
+        self._transactions = transactions

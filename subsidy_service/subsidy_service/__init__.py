@@ -7,4 +7,5 @@ import subsidy_service.mongo
 #
 # # Contoller interfaces
 import subsidy_service.citizens
+import subsidy_service.subsidies
 

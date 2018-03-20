@@ -6,7 +6,7 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
-from swagger_server.models.account import Account  # noqa: F401,E501
+from swagger_server.models.account_base import AccountBase  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -16,11 +16,11 @@ class Transaction(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, _from: Account=None, to: str=None, amount: float=None, datetime: datetime=None):  # noqa: E501
+    def __init__(self, _from: AccountBase=None, to: str=None, amount: float=None, datetime: datetime=None):  # noqa: E501
         """Transaction - a model defined in Swagger
 
         :param _from: The _from of this Transaction.  # noqa: E501
-        :type _from: Account
+        :type _from: AccountBase
         :param to: The to of this Transaction.  # noqa: E501
         :type to: str
         :param amount: The amount of this Transaction.  # noqa: E501
@@ -29,7 +29,7 @@ class Transaction(Model):
         :type datetime: datetime
         """
         self.swagger_types = {
-            '_from': Account,
+            '_from': AccountBase,
             'to': str,
             'amount': float,
             'datetime': datetime
@@ -59,22 +59,22 @@ class Transaction(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def _from(self) -> Account:
+    def _from(self) -> AccountBase:
         """Gets the _from of this Transaction.
 
 
         :return: The _from of this Transaction.
-        :rtype: Account
+        :rtype: AccountBase
         """
         return self.__from
 
     @_from.setter
-    def _from(self, _from: Account):
+    def _from(self, _from: AccountBase):
         """Sets the _from of this Transaction.
 
 
         :param _from: The _from of this Transaction.
-        :type _from: Account
+        :type _from: AccountBase
         """
 
         self.__from = _from

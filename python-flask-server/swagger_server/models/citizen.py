@@ -6,7 +6,6 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
-from swagger_server.models.citizen_account_base import CitizenAccountBase  # noqa: F401,E501
 from swagger_server.models.citizen_base import CitizenBase  # noqa: F401,E501
 from swagger_server.models.subsidy_base import SubsidyBase  # noqa: F401,E501
 from swagger_server import util
@@ -18,7 +17,7 @@ class Citizen(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: str=None, real_name: str=None, email: str=None, phone_number: str=None, accounts: List[CitizenAccountBase]=None, subsidies: List[SubsidyBase]=None):  # noqa: E501
+    def __init__(self, id: str=None, real_name: str=None, email: str=None, phone_number: str=None, mutation_pending: bool=True, subsidies: List[SubsidyBase]=None):  # noqa: E501
         """Citizen - a model defined in Swagger
 
         :param id: The id of this Citizen.  # noqa: E501
@@ -29,8 +28,8 @@ class Citizen(Model):
         :type email: str
         :param phone_number: The phone_number of this Citizen.  # noqa: E501
         :type phone_number: str
-        :param accounts: The accounts of this Citizen.  # noqa: E501
-        :type accounts: List[CitizenAccountBase]
+        :param mutation_pending: The mutation_pending of this Citizen.  # noqa: E501
+        :type mutation_pending: bool
         :param subsidies: The subsidies of this Citizen.  # noqa: E501
         :type subsidies: List[SubsidyBase]
         """
@@ -39,7 +38,7 @@ class Citizen(Model):
             'real_name': str,
             'email': str,
             'phone_number': str,
-            'accounts': List[CitizenAccountBase],
+            'mutation_pending': bool,
             'subsidies': List[SubsidyBase]
         }
 
@@ -48,7 +47,7 @@ class Citizen(Model):
             'real_name': 'real_name',
             'email': 'email',
             'phone_number': 'phone_number',
-            'accounts': 'accounts',
+            'mutation_pending': 'mutation_pending',
             'subsidies': 'subsidies'
         }
 
@@ -56,7 +55,7 @@ class Citizen(Model):
         self._real_name = real_name
         self._email = email
         self._phone_number = phone_number
-        self._accounts = accounts
+        self._mutation_pending = mutation_pending
         self._subsidies = subsidies
 
     @classmethod
@@ -155,25 +154,25 @@ class Citizen(Model):
         self._phone_number = phone_number
 
     @property
-    def accounts(self) -> List[CitizenAccountBase]:
-        """Gets the accounts of this Citizen.
+    def mutation_pending(self) -> bool:
+        """Gets the mutation_pending of this Citizen.
 
 
-        :return: The accounts of this Citizen.
-        :rtype: List[CitizenAccountBase]
+        :return: The mutation_pending of this Citizen.
+        :rtype: bool
         """
-        return self._accounts
+        return self._mutation_pending
 
-    @accounts.setter
-    def accounts(self, accounts: List[CitizenAccountBase]):
-        """Sets the accounts of this Citizen.
+    @mutation_pending.setter
+    def mutation_pending(self, mutation_pending: bool):
+        """Sets the mutation_pending of this Citizen.
 
 
-        :param accounts: The accounts of this Citizen.
-        :type accounts: List[CitizenAccountBase]
+        :param mutation_pending: The mutation_pending of this Citizen.
+        :type mutation_pending: bool
         """
 
-        self._accounts = accounts
+        self._mutation_pending = mutation_pending
 
     @property
     def subsidies(self) -> List[SubsidyBase]:

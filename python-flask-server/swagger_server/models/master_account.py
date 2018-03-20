@@ -6,8 +6,10 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
+from swagger_server.models.account import Account  # noqa: F401,E501
 from swagger_server.models.master_account_base import MasterAccountBase  # noqa: F401,E501
 from swagger_server.models.subsidy_base import SubsidyBase  # noqa: F401,E501
+from swagger_server.models.transaction import Transaction  # noqa: F401,E501
 from swagger_server.models.user import User  # noqa: F401,E501
 from swagger_server import util
 
@@ -18,7 +20,7 @@ class MasterAccount(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, account_type: str=None, iban: str=None, balance: float=0.0, subsidies: List[SubsidyBase]=None, viewers: List[User]=None, admins: List[User]=None):  # noqa: E501
+    def __init__(self, name: str=None, account_type: str=None, iban: str=None, balance: float=None, transactions: List[Transaction]=None, subsidies: List[SubsidyBase]=None, viewers: List[User]=None, admins: List[User]=None):  # noqa: E501
         """MasterAccount - a model defined in Swagger
 
         :param name: The name of this MasterAccount.  # noqa: E501
@@ -29,6 +31,8 @@ class MasterAccount(Model):
         :type iban: str
         :param balance: The balance of this MasterAccount.  # noqa: E501
         :type balance: float
+        :param transactions: The transactions of this MasterAccount.  # noqa: E501
+        :type transactions: List[Transaction]
         :param subsidies: The subsidies of this MasterAccount.  # noqa: E501
         :type subsidies: List[SubsidyBase]
         :param viewers: The viewers of this MasterAccount.  # noqa: E501
@@ -41,6 +45,7 @@ class MasterAccount(Model):
             'account_type': str,
             'iban': str,
             'balance': float,
+            'transactions': List[Transaction],
             'subsidies': List[SubsidyBase],
             'viewers': List[User],
             'admins': List[User]
@@ -51,6 +56,7 @@ class MasterAccount(Model):
             'account_type': 'account_type',
             'iban': 'iban',
             'balance': 'balance',
+            'transactions': 'transactions',
             'subsidies': 'subsidies',
             'viewers': 'viewers',
             'admins': 'admins'
@@ -60,6 +66,7 @@ class MasterAccount(Model):
         self._account_type = account_type
         self._iban = iban
         self._balance = balance
+        self._transactions = transactions
         self._subsidies = subsidies
         self._viewers = viewers
         self._admins = admins
@@ -156,8 +163,31 @@ class MasterAccount(Model):
         :param balance: The balance of this MasterAccount.
         :type balance: float
         """
+        if balance is not None and balance < 0:  # noqa: E501
+            raise ValueError("Invalid value for `balance`, must be a value greater than or equal to `0`")  # noqa: E501
 
         self._balance = balance
+
+    @property
+    def transactions(self) -> List[Transaction]:
+        """Gets the transactions of this MasterAccount.
+
+
+        :return: The transactions of this MasterAccount.
+        :rtype: List[Transaction]
+        """
+        return self._transactions
+
+    @transactions.setter
+    def transactions(self, transactions: List[Transaction]):
+        """Sets the transactions of this MasterAccount.
+
+
+        :param transactions: The transactions of this MasterAccount.
+        :type transactions: List[Transaction]
+        """
+
+        self._transactions = transactions
 
     @property
     def subsidies(self) -> List[SubsidyBase]:

@@ -393,6 +393,22 @@ paths:
             $ref: "#/definitions/citizen"
       x-swagger-router-controller: "swagger_server.controllers.citizens_controller"
   /subsidies:
+    get:
+      tags:
+      - "subsidies"
+      summary: "Returns a list of subsidies."
+      operationId: "subsidies_get"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/subsidy-base"
+      x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
     post:
       tags:
       - "subsidies"
@@ -453,7 +469,7 @@ paths:
         description: "subsidy details"
         required: true
         schema:
-          $ref: "#/definitions/subsidy"
+          $ref: "#/definitions/subsidy-base"
       responses:
         200:
           description: "OK"
@@ -493,7 +509,7 @@ paths:
         description: "subsidy properties to be updated"
         required: true
         schema:
-          $ref: "#/definitions/subsidy"
+          $ref: "#/definitions/subsidy-base"
       responses:
         200:
           description: "OK"
@@ -547,7 +563,7 @@ definitions:
       phone_number: "phone_number"
       email: "email"
       username: "username"
-  account:
+  account-base:
     type: "object"
     properties:
       name:
@@ -556,21 +572,34 @@ definitions:
         type: "string"
       iban:
         type: "string"
+      balance:
+        type: "number"
+        minimum: 0
+    description: "A bank account"
+    example:
+      account_type: "account_type"
+      balance: 0.080082819046101150206595775671303272247314453125
+      iban: "iban"
+      name: "name"
+  account:
+    allOf:
+    - $ref: "#/definitions/account-base"
+    - type: "object"
+      properties:
+        transactions:
+          type: "array"
+          items:
+            $ref: "#/definitions/transaction"
     description: "A bank account"
   master-account-base:
     allOf:
-    - $ref: "#/definitions/account"
-    - type: "object"
-      properties:
-        balance:
-          type: "number"
-          format: "float"
-          default: 0.0
+    - $ref: "#/definitions/account-base"
     description: "A master-account-base serves as the source for a specific class\
       \ of subsidy"
   master-account:
     allOf:
     - $ref: "#/definitions/master-account-base"
+    - $ref: "#/definitions/account"
     - type: "object"
       properties:
         subsidies:
@@ -586,10 +615,6 @@ definitions:
           items:
             $ref: "#/definitions/user"
     description: "A master-account serves as the source for a specific class of subsidy"
-  citizen-account-base:
-    allOf:
-    - $ref: "#/definitions/account"
-    description: "An account belonging to a citizen"
   citizen-base:
     type: "object"
     properties:
@@ -601,8 +626,12 @@ definitions:
         type: "string"
       phone_number:
         type: "string"
+      mutation_pending:
+        type: "boolean"
+        default: true
     description: "A citizen of Amsterdam who may be recieving subsidies"
     example:
+      mutation_pending: true
       real_name: "real_name"
       phone_number: "phone_number"
       id: "id"
@@ -612,10 +641,6 @@ definitions:
     - $ref: "#/definitions/citizen-base"
     - type: "object"
       properties:
-        accounts:
-          type: "array"
-          items:
-            $ref: "#/definitions/citizen-account-base"
         subsidies:
           type: "array"
           items:
@@ -632,21 +657,12 @@ definitions:
         $ref: "#/definitions/master-account-base"
       recipient:
         $ref: "#/definitions/citizen-base"
-      creator:
-        $ref: "#/definitions/user"
-      approver1:
-        $ref: "#/definitions/user"
-      approver2:
-        $ref: "#/definitions/user"
-      approve_date1:
-        type: "string"
-        format: "date-time"
-      approve_date2:
-        type: "string"
-        format: "date-time"
+      account:
+        $ref: "#/definitions/account-base"
       frequency:
         type: "string"
         enum:
+        - "once"
         - "daily"
         - "weekly"
         - "bi-weekly"
@@ -660,20 +676,40 @@ definitions:
         format: "date-time"
     description: "A recurring allocation of funds made available from a master-account\
       \ to a recipient citizen's account"
+    example:
+      amount: 0.602745618307040320615897144307382404804229736328125
+      name: "name"
+      recipient:
+        mutation_pending: true
+        real_name: "real_name"
+        phone_number: "phone_number"
+        id: "id"
+        email: "email"
+      id: "id"
+      expiry: "2000-01-23T04:56:07.000+00:00"
+      account:
+        account_type: "account_type"
+        balance: 0.080082819046101150206595775671303272247314453125
+        iban: "iban"
+        name: "name"
+      master: ""
+      frequency: "once"
   subsidy:
     allOf:
     - $ref: "#/definitions/subsidy-base"
     - type: "object"
       properties:
-        transactions:
+        log:
           type: "array"
           items:
-            $ref: "#/definitions/transaction"
+            $ref: "#/definitions/subsidy-log-item"
+    description: "A recurring allocation of funds made available from a master-account\
+      \ to a recipient citizen's account"
   transaction:
     type: "object"
     properties:
       from:
-        $ref: "#/definitions/account"
+        $ref: "#/definitions/account-base"
       to:
         type: "string"
       amount:
@@ -682,3 +718,26 @@ definitions:
       datetime:
         type: "string"
         format: "date-time"
+  subsidy-log-item:
+    type: "object"
+    properties:
+      creator:
+        $ref: "#/definitions/user"
+      approver:
+        $ref: "#/definitions/user"
+      create_date:
+        type: "string"
+        format: "date-time"
+      approve_date:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      mutation:
+        $ref: "#/definitions/subsidylogitem_mutation"
+  subsidylogitem_mutation:
+    properties:
+      from:
+        $ref: "#/definitions/subsidy-base"
+      to:
+        $ref: "#/definitions/subsidy-base"

@@ -1,6 +1,7 @@
 import os
 import configparser
 import subsidy_service as service
+import datetime
 
 def get_config(filename='subsidy_service.ini', configdir=None):
     """
@@ -52,3 +53,10 @@ def drop_nones(d:dict):
     :return: the dict with no None values
     """
     return {k: v for k, v in d.items() if v is not None}
+
+def now():
+    """
+    Get the current datetime (YYYY-MM-DD HH:MM:SS)
+    :return: str
+    """
+    return datetime.datetime.now().strftime('%Y-%M-%d %H:%m:%S')
