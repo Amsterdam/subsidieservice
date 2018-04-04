@@ -489,19 +489,15 @@ definitions:
     properties:
       id:
         type: "string"
-      real_name:
+      name:
         type: "string"
       email:
         type: "string"
       phone_number:
         type: "string"
-      mutation_pending:
-        type: "boolean"
-        default: true
     description: "A citizen of Amsterdam who may be recieving subsidies"
     example:
-      mutation_pending: true
-      real_name: "real_name"
+      name: "name"
       phone_number: "phone_number"
       id: "id"
       email: "email"
@@ -549,8 +545,7 @@ definitions:
       amount: 0.602745618307040320615897144307382404804229736328125
       name: "name"
       recipient:
-        mutation_pending: true
-        real_name: "real_name"
+        name: "name"
         phone_number: "phone_number"
         id: "id"
         email: "email"

@@ -15,41 +15,36 @@ class CitizenBase(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: str=None, real_name: str=None, email: str=None, phone_number: str=None, mutation_pending: bool=True):  # noqa: E501
+    def __init__(self, id: str=None, name: str=None, email: str=None, phone_number: str=None):  # noqa: E501
         """CitizenBase - a model defined in Swagger
 
         :param id: The id of this CitizenBase.  # noqa: E501
         :type id: str
-        :param real_name: The real_name of this CitizenBase.  # noqa: E501
-        :type real_name: str
+        :param name: The name of this CitizenBase.  # noqa: E501
+        :type name: str
         :param email: The email of this CitizenBase.  # noqa: E501
         :type email: str
         :param phone_number: The phone_number of this CitizenBase.  # noqa: E501
         :type phone_number: str
-        :param mutation_pending: The mutation_pending of this CitizenBase.  # noqa: E501
-        :type mutation_pending: bool
         """
         self.swagger_types = {
             'id': str,
-            'real_name': str,
+            'name': str,
             'email': str,
-            'phone_number': str,
-            'mutation_pending': bool
+            'phone_number': str
         }
 
         self.attribute_map = {
             'id': 'id',
-            'real_name': 'real_name',
+            'name': 'name',
             'email': 'email',
-            'phone_number': 'phone_number',
-            'mutation_pending': 'mutation_pending'
+            'phone_number': 'phone_number'
         }
 
         self._id = id
-        self._real_name = real_name
+        self._name = name
         self._email = email
         self._phone_number = phone_number
-        self._mutation_pending = mutation_pending
 
     @classmethod
     def from_dict(cls, dikt) -> 'CitizenBase':
@@ -84,25 +79,25 @@ class CitizenBase(Model):
         self._id = id
 
     @property
-    def real_name(self) -> str:
-        """Gets the real_name of this CitizenBase.
+    def name(self) -> str:
+        """Gets the name of this CitizenBase.
 
 
-        :return: The real_name of this CitizenBase.
+        :return: The name of this CitizenBase.
         :rtype: str
         """
-        return self._real_name
+        return self._name
 
-    @real_name.setter
-    def real_name(self, real_name: str):
-        """Sets the real_name of this CitizenBase.
+    @name.setter
+    def name(self, name: str):
+        """Sets the name of this CitizenBase.
 
 
-        :param real_name: The real_name of this CitizenBase.
-        :type real_name: str
+        :param name: The name of this CitizenBase.
+        :type name: str
         """
 
-        self._real_name = real_name
+        self._name = name
 
     @property
     def email(self) -> str:
@@ -145,24 +140,3 @@ class CitizenBase(Model):
         """
 
         self._phone_number = phone_number
-
-    @property
-    def mutation_pending(self) -> bool:
-        """Gets the mutation_pending of this CitizenBase.
-
-
-        :return: The mutation_pending of this CitizenBase.
-        :rtype: bool
-        """
-        return self._mutation_pending
-
-    @mutation_pending.setter
-    def mutation_pending(self, mutation_pending: bool):
-        """Sets the mutation_pending of this CitizenBase.
-
-
-        :param mutation_pending: The mutation_pending of this CitizenBase.
-        :type mutation_pending: bool
-        """
-
-        self._mutation_pending = mutation_pending

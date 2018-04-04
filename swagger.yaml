@@ -592,15 +592,13 @@ definitions:
     properties:
       id:
         type: string
-      real_name:
+      name:
         type: string
       email:
         type: string
       phone_number:
         type: string
-      mutation_pending:
-        type: boolean
-        default: True
+
 
   citizen:
     description: "A citizen of Amsterdam who may be recieving subsidies"

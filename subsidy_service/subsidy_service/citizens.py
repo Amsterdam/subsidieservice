@@ -29,34 +29,6 @@ def create(citizen: dict):
 
     obj = service.mongo.add_and_copy_id(citizen, DB.citizens)
 
-    # # --- Martijn's Demo
-    # _USER_ITEM_ID = 5897
-    # _MONETARY_ACCOUNT_ITEM_ID = 6146 #data['accountid']
-    #
-    # api_context = service.bunq.get_context('/usr/src/config/bunq.conf')
-    #
-    # monetary_account = endpoint.MonetaryAccountBank.get(
-    #     api_context,
-    #     _USER_ITEM_ID,
-    #     _MONETARY_ACCOUNT_ITEM_ID
-    # ).value
-    #
-    # iban_number = 'N/A'
-    #
-    # account_details = json.loads(monetary_account.to_json())
-    #
-    # print("Received account details: {}".format(account_details))
-    #
-    # for account in account_details['alias']:
-    #     if (str(account['type']).lower() == 'iban'):
-    #         iban_number = account['value']
-    #
-    # print("Extracted IBAN number: {}".format(iban_number))
-    #
-    # new_record['iban'] = iban_number
-
-    # ---
-
     return obj
 
 
