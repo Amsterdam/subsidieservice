@@ -12,8 +12,8 @@ schemes:
 - "http"
 
 tags:
-- name: "users"
-  description: "Create, read, update, and delete users."
+# - name: "users"
+#   description: "Create, read, update, and delete users."
 - name: "master-accounts"
   description:  "Create, read, update, and delete master accounts."
 - name: "citizens"
@@ -24,121 +24,121 @@ tags:
   description: "Perform actions with side effects"
 
 paths:
-  /users:
-    get:
-      tags: 
-      - "users"
-      summary: "Returns a list of users."
-      produces:
-      - "application/json"
-      responses:
-        200:
-          description: OK
-          schema:
-            type: array
-            items:                
-              $ref: "#/definitions/user"
-    post:
-      tags: 
-      - "users"
-      summary: "Create a new user"
-      consumes:
-      - "application/nl.kpmg.v1.user+json"
-      produces: 
-      - "application/nl.kpmg.v1.user+json"
-      responses:
-        201:
-          description: Created
-          schema:
-            $ref: "#/definitions/user"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "user to add"
-          required: True
-          schema:
-            $ref: "#/definitions/user"
+  # /users:
+  #   get:
+  #     tags: 
+  #     - "users"
+  #     summary: "Returns a list of users."
+  #     produces:
+  #     - "application/json"
+  #     responses:
+  #       200:
+  #         description: OK
+  #         schema:
+  #           type: array
+  #           items:                
+  #             $ref: "#/definitions/user"
+  #   post:
+  #     tags: 
+  #     - "users"
+  #     summary: "Create a new user"
+  #     consumes:
+  #     - "application/nl.kpmg.v1.user+json"
+  #     produces: 
+  #     - "application/nl.kpmg.v1.user+json"
+  #     responses:
+  #       201:
+  #         description: Created
+  #         schema:
+  #           $ref: "#/definitions/user"
+  #     parameters:
+  #       - in: "body"
+  #         name: "body"
+  #         description: "user to add"
+  #         required: True
+  #         schema:
+  #           $ref: "#/definitions/user"
                   
-  /users/{username}:
-    get:
-      tags: 
-      - "users"
-      summary: "Returns a specific user"
-      produces:
-      - "application/nl.kpmg.v1.user+json"
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/user"
-      parameters: 
-      - in: "path"
-        name: "username"
-        type: "string"
-        required: true
+  # /users/{username}:
+  #   get:
+  #     tags: 
+  #     - "users"
+  #     summary: "Returns a specific user"
+  #     produces:
+  #     - "application/nl.kpmg.v1.user+json"
+  #     responses:
+  #       200:
+  #         description: OK
+  #         schema:
+  #           $ref: "#/definitions/user"
+  #     parameters: 
+  #     - in: "path"
+  #       name: "username"
+  #       type: "string"
+  #       required: true
         
-    put:
-      tags: 
-      - "users"
-      summary: "Re-upload user's information"
-      consumes:
-      - "application/nl.kpmg.v1.user+json"
-      produces:
-      - "application/nl.kpmg.v1.user+json"
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/user"
-      parameters: 
-      - in: "path"
-        name: "username"
-        type: "string"
-        required: true
-      - in: "body"
-        name: "body"
-        description: "user details"
-        required: True
-        schema:
-          $ref: "#/definitions/user"
+  #   put:
+  #     tags: 
+  #     - "users"
+  #     summary: "Re-upload user's information"
+  #     consumes:
+  #     - "application/nl.kpmg.v1.user+json"
+  #     produces:
+  #     - "application/nl.kpmg.v1.user+json"
+  #     responses:
+  #       200:
+  #         description: OK
+  #         schema:
+  #           $ref: "#/definitions/user"
+  #     parameters: 
+  #     - in: "path"
+  #       name: "username"
+  #       type: "string"
+  #       required: true
+  #     - in: "body"
+  #       name: "body"
+  #       description: "user details"
+  #       required: True
+  #       schema:
+  #         $ref: "#/definitions/user"
 
-    patch:
-      tags: 
-      - "users"
-      summary: "Edit a user's information"
-      consumes:
-      - "application/nl.kpmg.v1.user+json"
-      produces:
-      - "application/nl.kpmg.v1.user+json"
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/user"
-      parameters: 
-      - in: "path"
-        name: "username"
-        type: "string"
-        required: true
-      - in: "body"
-        name: "body"
-        description: "user properties to be updated"
-        required: True
-        schema:
-          $ref: "#/definitions/user"
+  #   patch:
+  #     tags: 
+  #     - "users"
+  #     summary: "Edit a user's information"
+  #     consumes:
+  #     - "application/nl.kpmg.v1.user+json"
+  #     produces:
+  #     - "application/nl.kpmg.v1.user+json"
+  #     responses:
+  #       200:
+  #         description: OK
+  #         schema:
+  #           $ref: "#/definitions/user"
+  #     parameters: 
+  #     - in: "path"
+  #       name: "username"
+  #       type: "string"
+  #       required: true
+  #     - in: "body"
+  #       name: "body"
+  #       description: "user properties to be updated"
+  #       required: True
+  #       schema:
+  #         $ref: "#/definitions/user"
         
-    delete:
-      tags: 
-      - "users"
-      summary: "Remove a user"
-      responses:
-        200:
-          description: OK
-      parameters: 
-      - in: "path"
-        name: "username"
-        type: "string"
-        required: true
+  #   delete:
+  #     tags: 
+  #     - "users"
+  #     summary: "Remove a user"
+  #     responses:
+  #       200:
+  #         description: OK
+  #     parameters: 
+  #     - in: "path"
+  #       name: "username"
+  #       type: "string"
+  #       required: true
 
   /master-accounts:
     get:
