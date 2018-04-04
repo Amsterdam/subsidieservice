@@ -8,6 +8,20 @@ from swagger_server import util
 
 import subsidy_service as service
 
+
+def subsidies_get():  # noqa: E501
+    """Returns a list of subsidies.
+
+     # noqa: E501
+
+
+    :rtype: List[SubsidyBase]
+    """
+    response = service.subsidies.read_all()
+    output = [SubsidyBase().from_dict(doc) for doc in response]
+    return output
+
+
 def subsidies_id_actions_approve_post(id, body):  # noqa: E501
     """Approve a subsidy
 
@@ -84,19 +98,6 @@ def subsidies_id_put(id, body):  # noqa: E501
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
-
-
-def subsidies_get():  # noqa: E501
-    """Returns a list of subsidies.
-
-     # noqa: E501
-
-
-    :rtype: List[SubsidyBase]
-    """
-    response = service.subsidies.read_all()
-    output = [SubsidyBase().from_dict(doc) for doc in response]
-    return output
 
 
 def subsidies_post(body):  # noqa: E501

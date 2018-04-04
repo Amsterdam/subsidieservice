@@ -4,7 +4,7 @@ info:
   description: "Manage and allocate subsidies"
   version: "1.0"
   title: "subsidy Allocation API"
-host: "localhost"
+host: "localhost:8080"
 basePath: "/v1"
 tags:
 - name: "users"

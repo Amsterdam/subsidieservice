@@ -5,7 +5,7 @@ info:
   description: "Manage and allocate subsidies"
   version: "1.0"
 
-host: "localhost"
+host: "localhost:8080"
 basePath: "/v1"
 
 schemes:

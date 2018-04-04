@@ -14,11 +14,12 @@ requirements:
 docker-build: docker-stop .
 	-docker run -d -p 27017:27017 --name "subsidy_mongo_dev" mongo 
 	docker build -f docker/Dockerfile -t subsidies/server .
- 
+
 ## Run the Service API linked to a new or existing mongo docker
-docker-run:
+docker-run: docker-build
 	-docker start subsidy_mongo_dev 
-	docker run --rm -p 8080:8080 -v $(shell pwd)/config:/etc/config/subsidy_service --link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
+	docker run --rm -p 8080:8080 -v $(shell pwd)/config:/etc/config/subsidy_service \
+		--link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
 	docker ps
 
 ## Open an interactive shell in the service docker. Current directory is mounted to /opt/
@@ -38,8 +39,10 @@ swagger-update: swagger.yaml
 	-rm -r temp-swagger-server-dir
 	mkdir temp-swagger-server-dir
 	swagger-codegen generate -i swagger.yaml -l python-flask -o temp-swagger-server-dir
-	rsync -Iavh temp-swagger-server-dir/ python-flask-server/ --exclude="controller*" --exclude="*__pycache__*" --exclude=".DS_Store"
-	git diff --no-index python-flask-server/swagger_server/controllers temp-swagger-server-dir/swagger_server/controllers
+	rsync -Iavh temp-swagger-server-dir/ python-flask-server/ --exclude="controller*" \
+		--exclude="*__pycache__*" --exclude=".DS_Store"
+	git diff --no-index python-flask-server/swagger_server/controllers \
+		temp-swagger-server-dir/swagger_server/controllers
 
 ## Delete all compiled Python files
 clean:
@@ -48,6 +51,7 @@ clean:
 	-rm -r temp-swagger-server-dir
 	-docker kill subsidy_mongo_dev
 	-docker rm subsidy_service_dev
+
 
 #################################################################################
 # Self Documenting Commands                                                     #

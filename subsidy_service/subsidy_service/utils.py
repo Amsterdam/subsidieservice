@@ -54,9 +54,18 @@ def drop_nones(d:dict):
     """
     return {k: v for k, v in d.items() if v is not None}
 
+
 def now():
     """
     Get the current datetime (YYYY-MM-DD HH:MM:SS)
     :return: str
     """
     return datetime.datetime.now().strftime('%Y-%M-%d %H:%m:%S')
+
+
+def today():
+    """
+    Get the current date (YYYY-MM-DD)
+    :return: str
+    """
+    return datetime.datetime.today().strftime('%Y-%M-%d')
