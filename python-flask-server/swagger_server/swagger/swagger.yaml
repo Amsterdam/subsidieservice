@@ -7,8 +7,6 @@ info:
 host: "localhost:8080"
 basePath: "/v1"
 tags:
-- name: "users"
-  description: "Create, read, update, and delete users."
 - name: "master-accounts"
   description: "Create, read, update, and delete master accounts."
 - name: "citizens"
@@ -20,130 +18,6 @@ tags:
 schemes:
 - "http"
 paths:
-  /users:
-    get:
-      tags:
-      - "users"
-      summary: "Returns a list of users."
-      operationId: "users_get"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "OK"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/user"
-      x-swagger-router-controller: "swagger_server.controllers.users_controller"
-    post:
-      tags:
-      - "users"
-      summary: "Create a new user"
-      operationId: "users_post"
-      consumes:
-      - "application/nl.kpmg.v1.user+json"
-      produces:
-      - "application/nl.kpmg.v1.user+json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "user to add"
-        required: true
-        schema:
-          $ref: "#/definitions/user"
-      responses:
-        201:
-          description: "Created"
-          schema:
-            $ref: "#/definitions/user"
-      x-swagger-router-controller: "swagger_server.controllers.users_controller"
-  /users/{username}:
-    get:
-      tags:
-      - "users"
-      summary: "Returns a specific user"
-      operationId: "users_username_get"
-      produces:
-      - "application/nl.kpmg.v1.user+json"
-      parameters:
-      - name: "username"
-        in: "path"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/user"
-      x-swagger-router-controller: "swagger_server.controllers.users_controller"
-    put:
-      tags:
-      - "users"
-      summary: "Re-upload user's information"
-      operationId: "users_username_put"
-      consumes:
-      - "application/nl.kpmg.v1.user+json"
-      produces:
-      - "application/nl.kpmg.v1.user+json"
-      parameters:
-      - name: "username"
-        in: "path"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "user details"
-        required: true
-        schema:
-          $ref: "#/definitions/user"
-      responses:
-        200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/user"
-      x-swagger-router-controller: "swagger_server.controllers.users_controller"
-    delete:
-      tags:
-      - "users"
-      summary: "Remove a user"
-      operationId: "users_username_delete"
-      parameters:
-      - name: "username"
-        in: "path"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "OK"
-      x-swagger-router-controller: "swagger_server.controllers.users_controller"
-    patch:
-      tags:
-      - "users"
-      summary: "Edit a user's information"
-      operationId: "users_username_patch"
-      consumes:
-      - "application/nl.kpmg.v1.user+json"
-      produces:
-      - "application/nl.kpmg.v1.user+json"
-      parameters:
-      - name: "username"
-        in: "path"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "user properties to be updated"
-        required: true
-        schema:
-          $ref: "#/definitions/user"
-      responses:
-        200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/user"
-      x-swagger-router-controller: "swagger_server.controllers.users_controller"
   /master-accounts:
     get:
       tags:
@@ -558,11 +432,6 @@ definitions:
       phone_number:
         type: "string"
     description: "A user of the subsidy Allocation API"
-    example:
-      real_name: "real_name"
-      phone_number: "phone_number"
-      email: "email"
-      username: "username"
   account-base:
     type: "object"
     properties:
