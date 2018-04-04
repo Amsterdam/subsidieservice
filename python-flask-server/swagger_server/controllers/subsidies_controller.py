@@ -49,7 +49,8 @@ def subsidies_id_delete(id):  # noqa: E501
 
     :rtype: None
     """
-    return 'do some magic!'
+    service.subsidies.delete(id)
+    return None
 
 
 def subsidies_id_get(id):  # noqa: E501
@@ -80,7 +81,9 @@ def subsidies_id_patch(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    response = service.subsidies.update(id, body)
+    return Subsidy.from_dict(response)
 
 
 def subsidies_id_put(id, body):  # noqa: E501
@@ -97,7 +100,9 @@ def subsidies_id_put(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    response = service.subsidies.replace(id, body)
+    return Subsidy.from_dict(response)
 
 
 def subsidies_post(body):  # noqa: E501

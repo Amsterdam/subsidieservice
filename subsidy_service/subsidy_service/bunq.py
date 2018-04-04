@@ -35,7 +35,6 @@ CURRENCY = 'EUR'
 
 # Actions
 def create_account(description: str='Subsidie Gemeente Amsterdam'):
-
     request_map = {
         endpoint.MonetaryAccountBank.FIELD_DESCRIPTION: description,
         endpoint.MonetaryAccountBank.FIELD_CURRENCY: CURRENCY,
@@ -45,7 +44,6 @@ def create_account(description: str='Subsidie Gemeente Amsterdam'):
                                                    description=description)
 
     acct_id = response.value
-
     return read_account(acct_id)
 
 
@@ -60,7 +58,8 @@ def list_accounts():
 
     accts = response.value
 
-    output = [account_summary(acct) for acct in accts]
+    output = [account_summary(acct) for acct in accts
+              if acct.status != 'CANCELLED']
 
     return output
 
@@ -89,7 +88,6 @@ def create_share(acct_id: int, recip_phnum: str):
         )
 
     except exception.BadRequestException as e:
-        e.message
         # TODO: Handle this better
         existing_alias = _get_alias_from_error_message(e.message)
         current_shares = list_shares(acct_id)
@@ -129,6 +127,58 @@ def revoke_share(acct_id: int, share_id: int):
     share = response.value
 
     return share_summary(share)
+
+
+def make_payment_to_iban(acct_id, to_iban, to_name, amount,
+                 description='Subsidy Service payment'):
+    counterparty = object_.Pointer(type_='IBAN', value=to_iban, name=to_name)
+    amt = object_.Amount(value=str(amount), currency=CURRENCY)
+
+    response = endpoint.Payment.create(
+        amt,
+        counterparty,
+        description,
+        monetary_account_id=acct_id,
+    )
+
+    pmt = endpoint.Payment.get(response.value, acct_id).value
+
+    return payment_summary(pmt)
+
+
+def make_payment_to_acct_id(from_acct_id, to_acct_id, amount,
+                            description='Subsidy service internal payment'):
+
+    to_acct = read_account(to_acct_id)
+
+    return make_payment_to_iban(
+        from_acct_id,
+        to_acct['iban'],
+        to_acct['name'],
+        amount,
+        description,
+    )
+
+
+def close_account(id):
+    acct = read_account(id)
+
+    response = endpoint.MonetaryAccountBank.update(
+        id,
+        status='CANCELLED',
+        sub_status='REDEMPTION_VOLUNTARY',
+        reason='OTHER',
+        reason_description='Closed via Subsidy Service'
+    )
+
+    return acct
+
+
+
+def revoke_all_shares(acct_id: int):
+    share_ids = [s['id'] for s in list_shares(acct_id)]
+
+    return [revoke_share(acct_id, share_id) for share_id in share_ids]
 
 
 def list_shares(acct_id: int):
@@ -181,8 +231,20 @@ def share_summary(share: endpoint.ShareInviteBankInquiry):
 
     return share_dict
 
-# Util functions
 
+def payment_summary(payment: endpoint.Payment):
+    pmt_dict = {
+        'id': payment.id_,
+        'amount': payment.amount.value,
+        'description': payment.description,
+        'counterparty_name': payment.counterparty_alias.pointer.name,
+        'counterparty_iban': payment.counterparty_alias.pointer.value,
+        'date': payment.created
+    }
+
+    return pmt_dict
+
+# Util functions
 def _get_alias_from_error_message(msg):
     template = r'has a Connect with user with alias "(.+)"\.'
     alias = re.search(template, msg)
@@ -193,7 +255,11 @@ def _get_alias_from_error_message(msg):
         return None
 
 
-
+# new_acct = create_account('SS Test')
+# pmt = make_payment_to_acct_id(6146, new_acct['id'], 100.00)
+# pmt = make_payment_to_acct_id(new_acct['id'], 6146, 100.00)
+# new_acct = close_account(new_acct['id'])
+#
 # print(list_accounts())
 # print(list_shares(6146))
 # print(create_share(6146, '+31648136656'))

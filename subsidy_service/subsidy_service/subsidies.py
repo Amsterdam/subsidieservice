@@ -90,11 +90,15 @@ def replace(id, subsidy: dict):
 
 def delete(id):
     """
-    Delete a subsidy from the database.
+    Remove a subsidy, revoking any related shares and closing related account.
 
     :param id: the id of the subsidy to delete.
     :return: None
     """
+    subsidy = service.mongo.get_by_id(id, DB.subsidies)
+
+    service.bunq.revoke_all_shares(subsidy['account']['id'])
+
     service.mongo.delete_by_id(id, DB.subsidies)
     return None
 
@@ -120,7 +124,7 @@ def log_item(frm={}, to={}):
         t.pop('log')
 
     out = {
-        'mutation':{
+        'mutation': {
             'from': f,
             'to': t,
         },
