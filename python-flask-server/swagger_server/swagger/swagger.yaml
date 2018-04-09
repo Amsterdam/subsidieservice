@@ -4,7 +4,7 @@ info:
   description: "Manage and allocate subsidies"
   version: "1.0"
   title: "subsidy Allocation API"
-host: "localhost:8080"
+host: "188.166.29.174:8080"
 basePath: "/v1"
 tags:
 - name: "master-accounts"
@@ -17,6 +17,8 @@ tags:
   description: "Perform actions with side effects"
 schemes:
 - "http"
+security:
+- basic_auth: []
 paths:
   /master-accounts:
     get:
@@ -158,6 +160,8 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/citizen-base"
+        401:
+          description: "Unauthorized"
       x-swagger-router-controller: "swagger_server.controllers.citizens_controller"
     post:
       tags:
@@ -418,6 +422,9 @@ paths:
           schema:
             $ref: "#/definitions/subsidy"
       x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+securityDefinitions:
+  basic_auth:
+    type: "basic"
 definitions:
   user:
     type: "object"
@@ -526,13 +533,6 @@ definitions:
         $ref: "#/definitions/account-base"
       frequency:
         type: "string"
-        enum:
-        - "once"
-        - "daily"
-        - "weekly"
-        - "bi-weekly"
-        - "monthly"
-        - "yearly"
       amount:
         type: "number"
         minimum: 0
@@ -557,16 +557,10 @@ definitions:
         iban: "iban"
         name: "name"
       master: ""
-      frequency: "once"
+      frequency: "frequency"
   subsidy:
     allOf:
     - $ref: "#/definitions/subsidy-base"
-    - type: "object"
-      properties:
-        log:
-          type: "array"
-          items:
-            $ref: "#/definitions/subsidy-log-item"
     description: "A recurring allocation of funds made available from a master-account\
       \ to a recipient citizen's account"
   transaction:
@@ -574,7 +568,9 @@ definitions:
     properties:
       from:
         $ref: "#/definitions/account-base"
-      to:
+      to_iban:
+        type: "string"
+      to_name:
         type: "string"
       amount:
         type: "number"
@@ -582,26 +578,3 @@ definitions:
       datetime:
         type: "string"
         format: "date-time"
-  subsidy-log-item:
-    type: "object"
-    properties:
-      creator:
-        $ref: "#/definitions/user"
-      approver:
-        $ref: "#/definitions/user"
-      create_date:
-        type: "string"
-        format: "date-time"
-      approve_date:
-        type: "string"
-        format: "date-time"
-      description:
-        type: "string"
-      mutation:
-        $ref: "#/definitions/subsidylogitem_mutation"
-  subsidylogitem_mutation:
-    properties:
-      from:
-        $ref: "#/definitions/subsidy-base"
-      to:
-        $ref: "#/definitions/subsidy-base"

@@ -10,36 +10,56 @@ DB = CLIENT.subsidy
 def create(subsidy: dict):
     """
     Create a new subsidy for a citizen. If the citizen is not yet in the
-    database, they are added.
+    database, they are added. A new bank account is created, the amount of the
+    subsidy is transferred from the master to the subsidy account, and a
+    connect invite is sent to the recipient.
 
     :param subsidy: Subsidy to create
     :return: The created subsidy
     """
-    # new_doc = service.mongo.add_and_copy_id({}, DB.subsidies)
-
     recip = service.utils.drop_nones(subsidy['recipient'])
 
-    recip_full = service.mongo.find(recip, DB.citizens)
+    recip_full = service.mongo.find(recip, DB.citizens)  # TODO: Remove
 
     if recip_full:
-        subsidy['recipient'] = recip_full
+        recip = recip_full.copy()
+        recip.pop('subsidies')
+        subsidy['recipient'] = recip
     else:
         #TODO: Determine if this is desirable
         service.citizens.create(subsidy['recipient'])
 
+    # TODO: Move to actions/approve
     new_acct = service.bunq.create_account()
+    new_acct['bunq_id'] = new_acct.pop('id')
 
-    new_share = service.bunq.create_share(new_acct['id'], recip['phone_number'])
+    update_accounts()  # TODO: Get rid of this once we have master accounts
+    master = service.mongo.find(service.utils.drop_nones(subsidy['master']),
+                                DB.accounts)
+
+    pmt = service.bunq.make_payment_to_acct_id(master['bunq_id'],
+                                               new_acct['bunq_id'],
+                                               subsidy['amount'])
+
+    new_acct['balance'] = -float(pmt['amount'])
+
+    new_share = service.bunq.create_share(new_acct['bunq_id'],
+                                          recip['phone_number'])
 
     subsidy['account'] = new_acct
+    subsidy['master'] = master
 
-    # item = log_item(frm=new_doc, to=subsidy)
 
-    # new_doc['log'] = []
-    # new_doc['log'].append(item)
-    # new_doc['mutation_pending'] = True
+    if not recip_full['subsidies']:
+        recip_full['subsidies'] = [subsidy]
+    else:
+        recip_full['subsidies'].append(subsidy)
 
-    return service.mongo.add_and_copy_id(subsidy, DB.subsidies)
+    service.mongo.update_by_id(recip_full['id'], recip_full, DB.citizens)
+
+    output = service.mongo.add_and_copy_id(subsidy, DB.subsidies)
+
+    return service.utils.drop_nones(output)
 
 
 def read(id):
@@ -97,44 +117,31 @@ def delete(id):
     """
     subsidy = service.mongo.get_by_id(id, DB.subsidies)
 
-    service.bunq.revoke_all_shares(subsidy['account']['id'])
+    acct = service.bunq.read_account(subsidy['account']['bunq_id'])
+    balance = acct['balance']
 
+    if float(balance) > 0:
+        pmt = service.bunq.make_payment_to_acct_id(
+            subsidy['account']['bunq_id'],
+            subsidy['master']['bunq_id'],
+            balance
+        )
+
+    service.bunq.close_account(subsidy['account']['bunq_id'])
     service.mongo.delete_by_id(id, DB.subsidies)
+
     return None
 
 
-###############################
-# TODO: Mutation log processing
-def base_mutation(subsidy: dict):
-    props = ['approver1', 'approver2', 'approve_date1', 'approve_date2',
-             'description']
-    log_entry = {p: None for p in props}
-    s = subsidy
-    s.pop('')
-    mut = {'from': subsidy}
+# utilities
+def update_accounts():
+    accts = service.bunq.list_accounts(include_closed=True)
+    for acct in accts:
+        acct_db = acct.copy()
+        acct_db['bunq_id'] = acct_db.pop('id')
+        service.mongo.upsert(acct_db, DB.accounts, ['iban'])
 
+    accts_db = service.mongo.get_collection(DB.accounts)
 
-def log_item(frm={}, to={}):
-    f = frm.copy()
-    t = to.copy()
+    return accts_db
 
-    if 'log' in f:
-        f.pop('log')
-    if 'log' in t:
-        t.pop('log')
-
-    out = {
-        'mutation': {
-            'from': f,
-            'to': t,
-        },
-        'create_date': service.utils.now()
-    }
-
-    return out
-
-def approve_mutation():
-    pass
-
-def add_mutation(id: str, mut: dict):
-    subsidy = service.mongo.get_by_id(id, DB.subsidies)

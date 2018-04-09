@@ -20,7 +20,10 @@ def _id_query(id):
 
 
 def find(document, collection):
-    return collection.find_one(document)
+    doc = collection.find_one(document)
+    if doc is not None:
+        doc.pop('_id')
+    return doc
 
 
 def get_client(conf=CONF):
@@ -73,3 +76,24 @@ def replace_by_id(id, document, collection):
 def delete_by_id(id, collection):
     collection.delete_one(_id_query(id))
     return None
+
+
+def upsert(document, collection, const_fields):
+    """
+    Update the document with fields matching document[constant_fields].
+    Add and copy id if it is not yet in the collection.
+
+    :param document:
+    :param collection:
+    :param const_fields: iterable. the fields of document that should not have
+        changed
+    :return: dict. The updated document
+    """
+    query = {f: document[f] for f in const_fields}
+    result = find(document, collection)
+    if result is None:
+        output = add_and_copy_id(document, collection)
+    else:
+        output = update_by_id(result['id'], document, collection)
+
+    return output

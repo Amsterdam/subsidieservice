@@ -10,7 +10,6 @@ from swagger_server.models.account_base import AccountBase  # noqa: F401,E501
 from swagger_server.models.citizen_base import CitizenBase  # noqa: F401,E501
 from swagger_server.models.master_account_base import MasterAccountBase  # noqa: F401,E501
 from swagger_server.models.subsidy_base import SubsidyBase  # noqa: F401,E501
-from swagger_server.models.subsidy_log_item import SubsidyLogItem  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -20,7 +19,7 @@ class Subsidy(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, account: AccountBase=None, frequency: str=None, amount: float=None, expiry: datetime=None, log: List[SubsidyLogItem]=None):  # noqa: E501
+    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, account: AccountBase=None, frequency: str=None, amount: float=None, expiry: datetime=None):  # noqa: E501
         """Subsidy - a model defined in Swagger
 
         :param id: The id of this Subsidy.  # noqa: E501
@@ -39,8 +38,6 @@ class Subsidy(Model):
         :type amount: float
         :param expiry: The expiry of this Subsidy.  # noqa: E501
         :type expiry: datetime
-        :param log: The log of this Subsidy.  # noqa: E501
-        :type log: List[SubsidyLogItem]
         """
         self.swagger_types = {
             'id': str,
@@ -50,8 +47,7 @@ class Subsidy(Model):
             'account': AccountBase,
             'frequency': str,
             'amount': float,
-            'expiry': datetime,
-            'log': List[SubsidyLogItem]
+            'expiry': datetime
         }
 
         self.attribute_map = {
@@ -62,8 +58,7 @@ class Subsidy(Model):
             'account': 'account',
             'frequency': 'frequency',
             'amount': 'amount',
-            'expiry': 'expiry',
-            'log': 'log'
+            'expiry': 'expiry'
         }
 
         self._id = id
@@ -74,7 +69,6 @@ class Subsidy(Model):
         self._frequency = frequency
         self._amount = amount
         self._expiry = expiry
-        self._log = log
 
     @classmethod
     def from_dict(cls, dikt) -> 'Subsidy':
@@ -210,12 +204,6 @@ class Subsidy(Model):
         :param frequency: The frequency of this Subsidy.
         :type frequency: str
         """
-        allowed_values = ["once", "daily", "weekly", "bi-weekly", "monthly", "yearly"]  # noqa: E501
-        if frequency not in allowed_values:
-            raise ValueError(
-                "Invalid value for `frequency` ({0}), must be one of {1}"
-                .format(frequency, allowed_values)
-            )
 
         self._frequency = frequency
 
@@ -262,24 +250,3 @@ class Subsidy(Model):
         """
 
         self._expiry = expiry
-
-    @property
-    def log(self) -> List[SubsidyLogItem]:
-        """Gets the log of this Subsidy.
-
-
-        :return: The log of this Subsidy.
-        :rtype: List[SubsidyLogItem]
-        """
-        return self._log
-
-    @log.setter
-    def log(self, log: List[SubsidyLogItem]):
-        """Sets the log of this Subsidy.
-
-
-        :param log: The log of this Subsidy.
-        :type log: List[SubsidyLogItem]
-        """
-
-        self._log = log

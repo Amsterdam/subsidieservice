@@ -30,8 +30,8 @@ else:
 
 USER_ID = int(user_obj.id_)
 USER_NAME = user_obj.name
-
 CURRENCY = 'EUR'
+
 
 # Actions
 def create_account(description: str='Subsidie Gemeente Amsterdam'):
@@ -53,13 +53,13 @@ def read_account(id: int):
     return account_summary(acct)
 
 
-def list_accounts():
+def list_accounts(include_closed=False):
     response = endpoint.MonetaryAccountBank.list()
 
     accts = response.value
 
     output = [account_summary(acct) for acct in accts
-              if acct.status != 'CANCELLED']
+              if (acct.status != 'CANCELLED') or include_closed]
 
     return output
 
@@ -88,7 +88,7 @@ def create_share(acct_id: int, recip_phnum: str):
         )
 
     except exception.BadRequestException as e:
-        # TODO: Handle this better
+        # Share already exists, return it
         existing_alias = _get_alias_from_error_message(e.message)
         current_shares = list_shares(acct_id)
         matching_share = [s for s in current_shares
@@ -108,15 +108,13 @@ def revoke_share(acct_id: int, share_id: int):
     share_dict = read_share(acct_id, share_id)
     status = share_dict['status']
 
+    new_status = status
     if status in ['CANCELLED', 'REVOKED']:
         return share_dict
-
     elif status == 'PENDING':
         new_status = 'REVOKED'
     elif status == 'ACCEPTED':
         new_status = 'CANCELLED'
-
-    request_map = {'status': new_status}
 
     response = endpoint.ShareInviteBankInquiry.update(
         share_id,
@@ -124,7 +122,7 @@ def revoke_share(acct_id: int, share_id: int):
         status=new_status
     )
 
-    share = response.value
+    share = endpoint.ShareInviteBankInquiry.get(response.value, acct_id).value
 
     return share_summary(share)
 
@@ -151,7 +149,7 @@ def make_payment_to_acct_id(from_acct_id, to_acct_id, amount,
 
     to_acct = read_account(to_acct_id)
 
-    return make_payment_to_iban(
+    pmt = make_payment_to_iban(
         from_acct_id,
         to_acct['iban'],
         to_acct['name'],
@@ -159,9 +157,13 @@ def make_payment_to_acct_id(from_acct_id, to_acct_id, amount,
         description,
     )
 
+    return pmt
+
 
 def close_account(id):
     acct = read_account(id)
+
+    revoke_all_shares(id)
 
     response = endpoint.MonetaryAccountBank.update(
         id,
@@ -172,7 +174,6 @@ def close_account(id):
     )
 
     return acct
-
 
 
 def revoke_all_shares(acct_id: int):
@@ -244,9 +245,10 @@ def payment_summary(payment: endpoint.Payment):
 
     return pmt_dict
 
+
 # Util functions
 def _get_alias_from_error_message(msg):
-    template = r'has a Connect with user with alias "(.+)"\.'
+    template = r'already has a Connect with user with alias "(.+)"'
     alias = re.search(template, msg)
 
     try:

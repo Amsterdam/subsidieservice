@@ -16,13 +16,15 @@ class Transaction(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, _from: AccountBase=None, to: str=None, amount: float=None, datetime: datetime=None):  # noqa: E501
+    def __init__(self, _from: AccountBase=None, to_iban: str=None, to_name: str=None, amount: float=None, datetime: datetime=None):  # noqa: E501
         """Transaction - a model defined in Swagger
 
         :param _from: The _from of this Transaction.  # noqa: E501
         :type _from: AccountBase
-        :param to: The to of this Transaction.  # noqa: E501
-        :type to: str
+        :param to_iban: The to_iban of this Transaction.  # noqa: E501
+        :type to_iban: str
+        :param to_name: The to_name of this Transaction.  # noqa: E501
+        :type to_name: str
         :param amount: The amount of this Transaction.  # noqa: E501
         :type amount: float
         :param datetime: The datetime of this Transaction.  # noqa: E501
@@ -30,20 +32,23 @@ class Transaction(Model):
         """
         self.swagger_types = {
             '_from': AccountBase,
-            'to': str,
+            'to_iban': str,
+            'to_name': str,
             'amount': float,
             'datetime': datetime
         }
 
         self.attribute_map = {
             '_from': 'from',
-            'to': 'to',
+            'to_iban': 'to_iban',
+            'to_name': 'to_name',
             'amount': 'amount',
             'datetime': 'datetime'
         }
 
         self.__from = _from
-        self._to = to
+        self._to_iban = to_iban
+        self._to_name = to_name
         self._amount = amount
         self._datetime = datetime
 
@@ -80,25 +85,46 @@ class Transaction(Model):
         self.__from = _from
 
     @property
-    def to(self) -> str:
-        """Gets the to of this Transaction.
+    def to_iban(self) -> str:
+        """Gets the to_iban of this Transaction.
 
 
-        :return: The to of this Transaction.
+        :return: The to_iban of this Transaction.
         :rtype: str
         """
-        return self._to
+        return self._to_iban
 
-    @to.setter
-    def to(self, to: str):
-        """Sets the to of this Transaction.
+    @to_iban.setter
+    def to_iban(self, to_iban: str):
+        """Sets the to_iban of this Transaction.
 
 
-        :param to: The to of this Transaction.
-        :type to: str
+        :param to_iban: The to_iban of this Transaction.
+        :type to_iban: str
         """
 
-        self._to = to
+        self._to_iban = to_iban
+
+    @property
+    def to_name(self) -> str:
+        """Gets the to_name of this Transaction.
+
+
+        :return: The to_name of this Transaction.
+        :rtype: str
+        """
+        return self._to_name
+
+    @to_name.setter
+    def to_name(self, to_name: str):
+        """Sets the to_name of this Transaction.
+
+
+        :param to_name: The to_name of this Transaction.
+        :type to_name: str
+        """
+
+        self._to_name = to_name
 
     @property
     def amount(self) -> float:

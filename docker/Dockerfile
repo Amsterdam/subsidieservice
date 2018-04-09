@@ -15,9 +15,9 @@ RUN mkdir -p /usr/src/app
 
 COPY python-flask-server /usr/src/app
 
-RUN pip3 install --no-cache-dir -r /usr/src/app/requirements.txt
+# RUN pip3 install --no-cache-dir -r /usr/src/app/requirements.txt
 
-# RUN pip3 install -e /usr/src/app
+RUN pip3 install -e /usr/src/app
 
 WORKDIR /usr/src/app
 

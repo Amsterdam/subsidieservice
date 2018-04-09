@@ -72,3 +72,5 @@ bunq.conf
 # Misc
 temp-swagger-server-dir
 *.zip
+*.key
+*.cert

@@ -3,6 +3,7 @@ import configparser
 import subsidy_service as service
 import datetime
 
+
 def get_config(filename='subsidy_service.ini', configdir=None):
     """
     Looks for a config file in several directories and loads it.
@@ -45,14 +46,14 @@ def get_config(filename='subsidy_service.ini', configdir=None):
     return config
 
 
-def drop_nones(d:dict):
+def drop_nones(dct:dict):
     """
     Drop all key-value pairs from a dict where the value is None.
 
     :param d: dict
     :return: the dict with no None values
     """
-    return {k: v for k, v in d.items() if v is not None}
+    return {k: v for k, v in dct.items() if v is not None}
 
 
 def now():

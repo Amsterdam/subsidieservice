@@ -203,12 +203,6 @@ class SubsidyBase(Model):
         :param frequency: The frequency of this SubsidyBase.
         :type frequency: str
         """
-        allowed_values = ["once", "daily", "weekly", "bi-weekly", "monthly", "yearly"]  # noqa: E501
-        if frequency not in allowed_values:
-            raise ValueError(
-                "Invalid value for `frequency` ({0}), must be one of {1}"
-                .format(frequency, allowed_values)
-            )
 
         self._frequency = frequency
 

@@ -11,6 +11,13 @@ basePath: "/v1"
 schemes:
 - "http"
 
+security:
+- basic_auth: []
+
+securityDefinitions:
+  basic_auth:
+    type: basic
+  
 tags:
 # - name: "users"
 #   description: "Create, read, update, and delete users."
@@ -271,6 +278,8 @@ paths:
             type: array
             items:                
               $ref: "#/definitions/citizen-base"
+        401:
+          description: Unauthorized
               
     post:
       tags: 
@@ -627,13 +636,13 @@ definitions:
         $ref: "#/definitions/account-base"
       frequency:
         type: string
-        enum:
-        - "once"
-        - "daily"
-        - "weekly"
-        - "bi-weekly"
-        - "monthly"
-        - "yearly"
+        # enum:
+        # - "once"
+        # - "daily"
+        # - "weekly"
+        # - "bi-weekly"
+        # - "monthly"
+        # - "yearly"
       amount:
         type: number
         minimum: 0
@@ -645,19 +654,15 @@ definitions:
     description: "A recurring allocation of funds made available from a master-account to a recipient citizen's account"
     allOf:
       - $ref: "#/definitions/subsidy-base"
-      - type: object
-        properties:
-          log:
-            type: array
-            items:
-              $ref: "#/definitions/subsidy-log-item"
             
   transaction:
     type: object
     properties:
       from:
         $ref: "#/definitions/account-base"
-      to:
+      to_iban:
+        type: string
+      to_name:
         type: string
       amount:
         type: number
@@ -666,28 +671,3 @@ definitions:
         type: string
         format: date-time
       
-  subsidy-log-item:
-    type: object
-    properties:
-      creator:
-        $ref: "#/definitions/user"
-      approver:
-        $ref: "#/definitions/user"
-      create_date:
-        type: string
-        format: date-time
-      approve_date:
-        type: string
-        format: date-time
-      description:
-        type: string
-      mutation:
-        type: object
-        properties:
-          from:
-            $ref: "#/definitions/subsidy-base"
-          to:
-            $ref: "#/definitions/subsidy-base"
-  
-      
-    
