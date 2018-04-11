@@ -70,3 +70,25 @@ def today():
     :return: str
     """
     return datetime.datetime.today().strftime('%Y-%M-%d')
+
+
+def format_phone_number(phone_number):
+    """
+    Format phone numbers to the format +31123456789.
+
+    Replaces leading 0 with +31. Prepends + if it is not present. Eliminates
+    any whitespace.
+
+    :param phone_number: the phone number to format.
+    :return: str
+    """
+    phnum = str(phone_number)
+    phnum = ''.join(phnum.split())  # Drop whitespace
+
+    if phnum[0] == '0':
+        phnum = '+31' + phnum[1:]
+
+    if phnum[0] != '+':
+        phnum = '+' + phnum
+
+    return phnum

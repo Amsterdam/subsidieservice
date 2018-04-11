@@ -1,11 +1,14 @@
-import hashlib
 import connexion
 import subsidy_service as service
 import functools
+import passlib.context
 
+# Globals
 CONF = service.utils.get_config()
 CLIENT = service.mongo.get_client(CONF)
 DB = CLIENT.subsidy
+
+CRYPT_CTX = passlib.context.CryptContext(schemes=['bcrypt_sha256'])
 
 
 def authenticate(func: callable):
@@ -16,9 +19,9 @@ def authenticate(func: callable):
     no header is available or the header doesn't contain basic authorization,
     the returned function will produce a 401 Unauthorized
     connexion.ProblemException. If basicauth headers are available but the user
-    is not in the database collection, the returned function produces a
-    403 Forbidden problem. If the user is authorized, then the input
-    controller function is returned.
+    is not in the database collection or the password is incorrect, the returned
+    function produces a 403 Forbidden problem. If the user is authorized, then
+    the input controller function is returned unchanged.
 
     :param func: The controller function to wrap
     :return: function
@@ -36,24 +39,20 @@ def authenticate(func: callable):
         'User is not authorized to call ' + func.__name__
     )
 
-    @functools.wraps(func)
+    @functools.wraps(func)  # propagate docstring etc
     def authenticated(*args, **kwargs):
         try:
             auth = connexion.request.authorization
-            if auth is None:
-                # no login headers available
-                return prob401
         except RuntimeError:
-            # No headers available at all
+            # No active request -> no headers at all
             return prob401
 
-        doc = {'username': auth.username,
-               'password': password_hash(auth.password)}
+        if auth is None:
+            # no login headers provided
+            return prob401
 
-        user = service.mongo.find(doc, DB.users)
-
-        if user is None:
-            # username/password combo not found in DB.users
+        if not user_verify(auth.username, auth.password):
+            # user not found/password incorrect
             return prob403
         else:
             # successfully authenticated
@@ -62,31 +61,43 @@ def authenticate(func: callable):
     return authenticated
 
 
-def add_user(username: str, password: str):
+def user_verify(username: str, password: str):
     """
-    Add a user to DB.users if the password passes validation by
-    password_validate.
+    Verify that a user exists in the database and that the password is correct.
 
     :param username:
     :param password:
-    :return: dict (user added)
+    :return: bool
     """
+    user = service.mongo.find({'username': username}, DB.users)
+    if user is None:
+        # username not found
+        return False
 
-    output = None
-    if password_validate(password):
-        user = {
-            'username': username,
-            'password': password_hash(password)
-        }
-
-        output = service.mongo.add_and_copy_id(user, DB.users)
-
-    return output
+    return password_verify(password, user['hash'])
 
 
 def password_validate(pwd: str):
+    # TODO: Determine if we want this
     return True
 
 
 def password_hash(pwd: str):
-    return hashlib.sha256(pwd.encode()).hexdigest()
+    """
+    Create passlib hash of password.
+
+    :param pwd:
+    :return: str: the hash of pwd (see passlib.hash)
+    """
+    return CRYPT_CTX.hash(pwd)
+
+
+def password_verify(pwd: str, hash: str):
+    """
+    Verify that a password matches the given hash.
+
+    :param pwd:
+    :param hash: passlib hash
+    :return: bool
+    """
+    return CRYPT_CTX.verify(pwd, hash)
