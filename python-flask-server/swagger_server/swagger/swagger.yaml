@@ -546,12 +546,6 @@ definitions:
         type: "string"
       status:
         type: "string"
-        enum:
-        - "PENDING_APPROVAL"
-        - "PENDING_CONNECTION"
-        - "OPEN"
-        - "CLOSED"
-        - "CONNECTION_FAILED"
     description: "A recurring allocation of funds made available from a master-account\
       \ to a recipient citizen's account"
     example:
@@ -573,7 +567,7 @@ definitions:
       master: ""
       frequency: "frequency"
       start_date: "2000-01-23"
-      status: "PENDING_APPROVAL"
+      status: "status"
   subsidy:
     allOf:
     - $ref: "#/definitions/subsidy-base"

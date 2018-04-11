@@ -326,11 +326,5 @@ class Subsidy(Model):
         :param status: The status of this Subsidy.
         :type status: str
         """
-        allowed_values = ["PENDING_APPROVAL", "PENDING_CONNECTION", "OPEN", "CLOSED", "CONNECTION_FAILED"]  # noqa: E501
-        if status not in allowed_values:
-            raise ValueError(
-                "Invalid value for `status` ({0}), must be one of {1}"
-                .format(status, allowed_values)
-            )
 
         self._status = status
