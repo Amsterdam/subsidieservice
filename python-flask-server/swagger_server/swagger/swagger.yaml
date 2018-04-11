@@ -17,8 +17,6 @@ tags:
   description: "Perform actions with side effects"
 schemes:
 - "http"
-security:
-- basic_auth: []
 paths:
   /master-accounts:
     get:
@@ -162,6 +160,8 @@ paths:
               $ref: "#/definitions/citizen-base"
         401:
           description: "Unauthorized"
+      security:
+      - basic_auth: []
       x-swagger-router-controller: "swagger_server.controllers.citizens_controller"
     post:
       tags:
@@ -536,21 +536,28 @@ definitions:
       amount:
         type: "number"
         minimum: 0
-      expiry:
+      startdate:
         type: "string"
-        format: "date-time"
+        format: "date"
+      enddate:
+        type: "string"
+        format: "date"
+      comment:
+        type: "string"
     description: "A recurring allocation of funds made available from a master-account\
       \ to a recipient citizen's account"
     example:
       amount: 0.602745618307040320615897144307382404804229736328125
+      enddate: "2000-01-23"
       name: "name"
       recipient:
         name: "name"
         phone_number: "phone_number"
         id: "id"
         email: "email"
+      comment: "comment"
       id: "id"
-      expiry: "2000-01-23T04:56:07.000+00:00"
+      startdate: "2000-01-23"
       account:
         account_type: "account_type"
         balance: 0.080082819046101150206595775671303272247314453125

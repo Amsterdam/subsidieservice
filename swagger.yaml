@@ -11,8 +11,8 @@ basePath: "/v1"
 schemes:
 - "http"
 
-security:
-- basic_auth: []
+# security:
+# - basic_auth: []
 
 securityDefinitions:
   basic_auth:
@@ -271,6 +271,9 @@ paths:
       summary: "Returns a list of citizens."
       produces:
       - "application/json"
+      security: 
+      - basic_auth: []
+      
       responses:
         200:
           description: OK
@@ -646,9 +649,14 @@ definitions:
       amount:
         type: number
         minimum: 0
-      expiry:
+      startdate:
         type: string
-        format: date-time
+        format: date
+      enddate:
+        type: string
+        format: date
+      comment:
+        type: string
 
   subsidy:
     description: "A recurring allocation of funds made available from a master-account to a recipient citizen's account"

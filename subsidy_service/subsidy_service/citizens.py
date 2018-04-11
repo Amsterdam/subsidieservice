@@ -1,14 +1,6 @@
 """
 Business logic for working with citizens.
 """
-
-
-from bunq.sdk.model.generated import endpoint
-
-import json
-
-import sys
-
 import subsidy_service as service
 
 # Globals

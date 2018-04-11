@@ -19,7 +19,7 @@ class Subsidy(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, account: AccountBase=None, frequency: str=None, amount: float=None, expiry: datetime=None):  # noqa: E501
+    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, account: AccountBase=None, frequency: str=None, amount: float=None, startdate: date=None, enddate: date=None, comment: str=None):  # noqa: E501
         """Subsidy - a model defined in Swagger
 
         :param id: The id of this Subsidy.  # noqa: E501
@@ -36,8 +36,12 @@ class Subsidy(Model):
         :type frequency: str
         :param amount: The amount of this Subsidy.  # noqa: E501
         :type amount: float
-        :param expiry: The expiry of this Subsidy.  # noqa: E501
-        :type expiry: datetime
+        :param startdate: The startdate of this Subsidy.  # noqa: E501
+        :type startdate: date
+        :param enddate: The enddate of this Subsidy.  # noqa: E501
+        :type enddate: date
+        :param comment: The comment of this Subsidy.  # noqa: E501
+        :type comment: str
         """
         self.swagger_types = {
             'id': str,
@@ -47,7 +51,9 @@ class Subsidy(Model):
             'account': AccountBase,
             'frequency': str,
             'amount': float,
-            'expiry': datetime
+            'startdate': date,
+            'enddate': date,
+            'comment': str
         }
 
         self.attribute_map = {
@@ -58,7 +64,9 @@ class Subsidy(Model):
             'account': 'account',
             'frequency': 'frequency',
             'amount': 'amount',
-            'expiry': 'expiry'
+            'startdate': 'startdate',
+            'enddate': 'enddate',
+            'comment': 'comment'
         }
 
         self._id = id
@@ -68,7 +76,9 @@ class Subsidy(Model):
         self._account = account
         self._frequency = frequency
         self._amount = amount
-        self._expiry = expiry
+        self._startdate = startdate
+        self._enddate = enddate
+        self._comment = comment
 
     @classmethod
     def from_dict(cls, dikt) -> 'Subsidy':
@@ -231,22 +241,64 @@ class Subsidy(Model):
         self._amount = amount
 
     @property
-    def expiry(self) -> datetime:
-        """Gets the expiry of this Subsidy.
+    def startdate(self) -> date:
+        """Gets the startdate of this Subsidy.
 
 
-        :return: The expiry of this Subsidy.
-        :rtype: datetime
+        :return: The startdate of this Subsidy.
+        :rtype: date
         """
-        return self._expiry
+        return self._startdate
 
-    @expiry.setter
-    def expiry(self, expiry: datetime):
-        """Sets the expiry of this Subsidy.
+    @startdate.setter
+    def startdate(self, startdate: date):
+        """Sets the startdate of this Subsidy.
 
 
-        :param expiry: The expiry of this Subsidy.
-        :type expiry: datetime
+        :param startdate: The startdate of this Subsidy.
+        :type startdate: date
         """
 
-        self._expiry = expiry
+        self._startdate = startdate
+
+    @property
+    def enddate(self) -> date:
+        """Gets the enddate of this Subsidy.
+
+
+        :return: The enddate of this Subsidy.
+        :rtype: date
+        """
+        return self._enddate
+
+    @enddate.setter
+    def enddate(self, enddate: date):
+        """Sets the enddate of this Subsidy.
+
+
+        :param enddate: The enddate of this Subsidy.
+        :type enddate: date
+        """
+
+        self._enddate = enddate
+
+    @property
+    def comment(self) -> str:
+        """Gets the comment of this Subsidy.
+
+
+        :return: The comment of this Subsidy.
+        :rtype: str
+        """
+        return self._comment
+
+    @comment.setter
+    def comment(self, comment: str):
+        """Sets the comment of this Subsidy.
+
+
+        :param comment: The comment of this Subsidy.
+        :type comment: str
+        """
+
+        self._comment = comment

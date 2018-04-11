@@ -51,6 +51,7 @@ def citizens_id_get(id):  # noqa: E501
     response = service.citizens.read(id)
     return Citizen.from_dict(response)
 
+
 @service.auth.authenticate
 def citizens_id_patch(id, body):  # noqa: E501
     """Edit a citizen&#39;s information
