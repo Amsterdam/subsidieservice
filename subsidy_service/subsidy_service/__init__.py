@@ -9,7 +9,9 @@ import subsidy_service.mongo
 import subsidy_service.auth
 import subsidy_service.logging
 
-# 4. Controller interfaces
+# 4. User management
+import subsidy_service.users
+
+# 5. Controller interfaces
 import subsidy_service.citizens
 import subsidy_service.subsidies
-

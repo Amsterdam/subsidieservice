@@ -42,7 +42,7 @@ def get(username: str):
     :param username:
     :return: dict with id, username, and password
     """
-    return service.mongo.find({'username': username})
+    return service.mongo.find({'username': username}, DB.users)
 
 
 def update_password(username: str, old_password: str, new_password: str):

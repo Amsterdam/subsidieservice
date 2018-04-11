@@ -74,7 +74,7 @@ def user_verify(username: str, password: str):
         # username not found
         return False
 
-    return password_verify(password, user['hash'])
+    return password_verify(password, user['password'])
 
 
 def password_validate(pwd: str):
