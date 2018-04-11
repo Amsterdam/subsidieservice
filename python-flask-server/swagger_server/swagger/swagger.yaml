@@ -16,7 +16,7 @@ tags:
 - name: "actions"
   description: "Perform actions with side effects"
 schemes:
-- "http"
+- "https"
 paths:
   /master-accounts:
     get:
@@ -536,19 +536,27 @@ definitions:
       amount:
         type: "number"
         minimum: 0
-      startdate:
+      start_date:
         type: "string"
         format: "date"
-      enddate:
+      end_date:
         type: "string"
         format: "date"
       comment:
         type: "string"
+      status:
+        type: "string"
+        enum:
+        - "PENDING_APPROVAL"
+        - "PENDING_CONNECTION"
+        - "OPEN"
+        - "CLOSED"
+        - "CONNECTION_FAILED"
     description: "A recurring allocation of funds made available from a master-account\
       \ to a recipient citizen's account"
     example:
+      end_date: "2000-01-23"
       amount: 0.602745618307040320615897144307382404804229736328125
-      enddate: "2000-01-23"
       name: "name"
       recipient:
         name: "name"
@@ -557,7 +565,6 @@ definitions:
         email: "email"
       comment: "comment"
       id: "id"
-      startdate: "2000-01-23"
       account:
         account_type: "account_type"
         balance: 0.080082819046101150206595775671303272247314453125
@@ -565,6 +572,8 @@ definitions:
         name: "name"
       master: ""
       frequency: "frequency"
+      start_date: "2000-01-23"
+      status: "PENDING_APPROVAL"
   subsidy:
     allOf:
     - $ref: "#/definitions/subsidy-base"

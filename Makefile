@@ -40,7 +40,7 @@ swagger-update: swagger.yaml
 	mkdir temp-swagger-server-dir
 	swagger-codegen generate -i swagger.yaml -l python-flask -o temp-swagger-server-dir
 	rsync -Iavh temp-swagger-server-dir/ python-flask-server/ --exclude="controller*" \
-		--exclude="*__pycache__*" --exclude=".DS_Store"
+		--exclude="*__pycache__*" --exclude=".DS_Store" --exclude="*__main__.py"
 	source $(activate); pip install -e python-flask-server
 	git diff --no-index python-flask-server/swagger_server/controllers \
 		temp-swagger-server-dir/swagger_server/controllers

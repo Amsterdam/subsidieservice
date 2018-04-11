@@ -18,7 +18,7 @@ class SubsidyBase(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, account: AccountBase=None, frequency: str=None, amount: float=None, startdate: date=None, enddate: date=None, comment: str=None):  # noqa: E501
+    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, account: AccountBase=None, frequency: str=None, amount: float=None, start_date: date=None, end_date: date=None, comment: str=None, status: str=None):  # noqa: E501
         """SubsidyBase - a model defined in Swagger
 
         :param id: The id of this SubsidyBase.  # noqa: E501
@@ -35,12 +35,14 @@ class SubsidyBase(Model):
         :type frequency: str
         :param amount: The amount of this SubsidyBase.  # noqa: E501
         :type amount: float
-        :param startdate: The startdate of this SubsidyBase.  # noqa: E501
-        :type startdate: date
-        :param enddate: The enddate of this SubsidyBase.  # noqa: E501
-        :type enddate: date
+        :param start_date: The start_date of this SubsidyBase.  # noqa: E501
+        :type start_date: date
+        :param end_date: The end_date of this SubsidyBase.  # noqa: E501
+        :type end_date: date
         :param comment: The comment of this SubsidyBase.  # noqa: E501
         :type comment: str
+        :param status: The status of this SubsidyBase.  # noqa: E501
+        :type status: str
         """
         self.swagger_types = {
             'id': str,
@@ -50,9 +52,10 @@ class SubsidyBase(Model):
             'account': AccountBase,
             'frequency': str,
             'amount': float,
-            'startdate': date,
-            'enddate': date,
-            'comment': str
+            'start_date': date,
+            'end_date': date,
+            'comment': str,
+            'status': str
         }
 
         self.attribute_map = {
@@ -63,9 +66,10 @@ class SubsidyBase(Model):
             'account': 'account',
             'frequency': 'frequency',
             'amount': 'amount',
-            'startdate': 'startdate',
-            'enddate': 'enddate',
-            'comment': 'comment'
+            'start_date': 'start_date',
+            'end_date': 'end_date',
+            'comment': 'comment',
+            'status': 'status'
         }
 
         self._id = id
@@ -75,9 +79,10 @@ class SubsidyBase(Model):
         self._account = account
         self._frequency = frequency
         self._amount = amount
-        self._startdate = startdate
-        self._enddate = enddate
+        self._start_date = start_date
+        self._end_date = end_date
         self._comment = comment
+        self._status = status
 
     @classmethod
     def from_dict(cls, dikt) -> 'SubsidyBase':
@@ -240,46 +245,46 @@ class SubsidyBase(Model):
         self._amount = amount
 
     @property
-    def startdate(self) -> date:
-        """Gets the startdate of this SubsidyBase.
+    def start_date(self) -> date:
+        """Gets the start_date of this SubsidyBase.
 
 
-        :return: The startdate of this SubsidyBase.
+        :return: The start_date of this SubsidyBase.
         :rtype: date
         """
-        return self._startdate
+        return self._start_date
 
-    @startdate.setter
-    def startdate(self, startdate: date):
-        """Sets the startdate of this SubsidyBase.
+    @start_date.setter
+    def start_date(self, start_date: date):
+        """Sets the start_date of this SubsidyBase.
 
 
-        :param startdate: The startdate of this SubsidyBase.
-        :type startdate: date
+        :param start_date: The start_date of this SubsidyBase.
+        :type start_date: date
         """
 
-        self._startdate = startdate
+        self._start_date = start_date
 
     @property
-    def enddate(self) -> date:
-        """Gets the enddate of this SubsidyBase.
+    def end_date(self) -> date:
+        """Gets the end_date of this SubsidyBase.
 
 
-        :return: The enddate of this SubsidyBase.
+        :return: The end_date of this SubsidyBase.
         :rtype: date
         """
-        return self._enddate
+        return self._end_date
 
-    @enddate.setter
-    def enddate(self, enddate: date):
-        """Sets the enddate of this SubsidyBase.
+    @end_date.setter
+    def end_date(self, end_date: date):
+        """Sets the end_date of this SubsidyBase.
 
 
-        :param enddate: The enddate of this SubsidyBase.
-        :type enddate: date
+        :param end_date: The end_date of this SubsidyBase.
+        :type end_date: date
         """
 
-        self._enddate = enddate
+        self._end_date = end_date
 
     @property
     def comment(self) -> str:
@@ -301,3 +306,30 @@ class SubsidyBase(Model):
         """
 
         self._comment = comment
+
+    @property
+    def status(self) -> str:
+        """Gets the status of this SubsidyBase.
+
+
+        :return: The status of this SubsidyBase.
+        :rtype: str
+        """
+        return self._status
+
+    @status.setter
+    def status(self, status: str):
+        """Sets the status of this SubsidyBase.
+
+
+        :param status: The status of this SubsidyBase.
+        :type status: str
+        """
+        allowed_values = ["PENDING_APPROVAL", "PENDING_CONNECTION", "OPEN", "CLOSED", "CONNECTION_FAILED"]  # noqa: E501
+        if status not in allowed_values:
+            raise ValueError(
+                "Invalid value for `status` ({0}), must be one of {1}"
+                .format(status, allowed_values)
+            )
+
+        self._status = status
