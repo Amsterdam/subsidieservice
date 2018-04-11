@@ -74,3 +74,5 @@ temp-swagger-server-dir
 *.zip
 *.key
 *.cert
+*~*.docx
+*~*.pptx
