@@ -160,7 +160,7 @@ paths:
           schema:
             type: array
             items:                
-              $ref: "#/definitions/master-account"
+              $ref: "#/definitions/master-account-base"
               
     post:
       tags: 
@@ -181,7 +181,7 @@ paths:
           description: "master-account to add"
           required: True
           schema:
-            $ref: "#/definitions/master-account"
+            $ref: "#/definitions/master-account-base"
                   
   /master-accounts/{id}:
     get:
@@ -552,7 +552,9 @@ definitions:
     properties:
       name:
         type: string
-      account_type:
+      # account_type:
+      #   type: string
+      description:
         type: string
       iban:
         type: string
@@ -575,26 +577,30 @@ definitions:
     description: "A master-account-base serves as the source for a specific class of subsidy"
     allOf:
     - $ref: "#/definitions/account-base"
+    - type: object
+      properties:
+        id: 
+          type: string
 
   master-account:
     description: "A master-account serves as the source for a specific class of subsidy"
     allOf:
     - $ref: "#/definitions/master-account-base"
     - $ref: "#/definitions/account"
-    - type: object
-      properties:
-        subsidies:
-          type: array
-          items:
-            $ref: "#/definitions/subsidy-base"
-        viewers:
-          type: array
-          items:
-            $ref: "#/definitions/user"
-        admins:
-          type: array
-          items:
-            $ref: "#/definitions/user"
+    # - type: object
+    #   properties:
+    #     subsidies:
+    #       type: array
+    #       items:
+    #         $ref: "#/definitions/subsidy-base"
+    #     viewers:
+    #       type: array
+    #       items:
+    #         $ref: "#/definitions/user"
+    #     admins:
+    #       type: array
+    #       items:
+    #         $ref: "#/definitions/user"
     
     
   
@@ -677,10 +683,8 @@ definitions:
     properties:
       from:
         $ref: "#/definitions/account-base"
-      to_iban:
-        type: string
-      to_name:
-        type: string
+      to:
+        $ref: "#/definitions/account-base"
       amount:
         type: number
         minimum: 0

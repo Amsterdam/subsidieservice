@@ -7,7 +7,7 @@ import click
 @click.argument('api_key')#, help='The API key of the account in use')
 @click.option('--output_path', '-o', default='./bunq.conf',
               help="Filename of output bunq conf file",
-              type=click.Path(exists=False))
+              type=click.Path(writable=True, resolve_path=True))
 def generate_bunq_conf(api_key, output_path):
     """
     Generate a bunq conf file from an API key and save it.
