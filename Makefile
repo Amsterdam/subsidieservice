@@ -1,10 +1,15 @@
 .PHONY: clean venv docker-stop docker-run
 
-activate="venv/subsidy/bin/activate"
+activate=venv/subsidy/bin/activate
 
 ## Make virtual environment
 venv: 
+	-rm -rf venv
+	-unlink activate
+	mkdir venv
 	virtualenv venv/subsidy -p python3.6
+	ln -s venv/subsidy/bin/activate activate
+	source $(activate); pip install -r requirements.txt
 
 ## Update requirements in requirements.txt
 requirements: 
