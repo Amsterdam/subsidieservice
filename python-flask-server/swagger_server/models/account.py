@@ -17,13 +17,13 @@ class Account(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, account_type: str=None, iban: str=None, balance: float=None, transactions: List[Transaction]=None):  # noqa: E501
+    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, transactions: List[Transaction]=None):  # noqa: E501
         """Account - a model defined in Swagger
 
         :param name: The name of this Account.  # noqa: E501
         :type name: str
-        :param account_type: The account_type of this Account.  # noqa: E501
-        :type account_type: str
+        :param description: The description of this Account.  # noqa: E501
+        :type description: str
         :param iban: The iban of this Account.  # noqa: E501
         :type iban: str
         :param balance: The balance of this Account.  # noqa: E501
@@ -33,7 +33,7 @@ class Account(Model):
         """
         self.swagger_types = {
             'name': str,
-            'account_type': str,
+            'description': str,
             'iban': str,
             'balance': float,
             'transactions': List[Transaction]
@@ -41,14 +41,14 @@ class Account(Model):
 
         self.attribute_map = {
             'name': 'name',
-            'account_type': 'account_type',
+            'description': 'description',
             'iban': 'iban',
             'balance': 'balance',
             'transactions': 'transactions'
         }
 
         self._name = name
-        self._account_type = account_type
+        self._description = description
         self._iban = iban
         self._balance = balance
         self._transactions = transactions
@@ -86,25 +86,25 @@ class Account(Model):
         self._name = name
 
     @property
-    def account_type(self) -> str:
-        """Gets the account_type of this Account.
+    def description(self) -> str:
+        """Gets the description of this Account.
 
 
-        :return: The account_type of this Account.
+        :return: The description of this Account.
         :rtype: str
         """
-        return self._account_type
+        return self._description
 
-    @account_type.setter
-    def account_type(self, account_type: str):
-        """Sets the account_type of this Account.
+    @description.setter
+    def description(self, description: str):
+        """Sets the description of this Account.
 
 
-        :param account_type: The account_type of this Account.
-        :type account_type: str
+        :param description: The description of this Account.
+        :type description: str
         """
 
-        self._account_type = account_type
+        self._description = description
 
     @property
     def iban(self) -> str:

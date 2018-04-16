@@ -8,9 +8,7 @@ from typing import List, Dict  # noqa: F401
 from swagger_server.models.base_model_ import Model
 from swagger_server.models.account import Account  # noqa: F401,E501
 from swagger_server.models.master_account_base import MasterAccountBase  # noqa: F401,E501
-from swagger_server.models.subsidy_base import SubsidyBase  # noqa: F401,E501
 from swagger_server.models.transaction import Transaction  # noqa: F401,E501
-from swagger_server.models.user import User  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -20,56 +18,46 @@ class MasterAccount(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, account_type: str=None, iban: str=None, balance: float=None, transactions: List[Transaction]=None, subsidies: List[SubsidyBase]=None, viewers: List[User]=None, admins: List[User]=None):  # noqa: E501
+    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, id: str=None, transactions: List[Transaction]=None):  # noqa: E501
         """MasterAccount - a model defined in Swagger
 
         :param name: The name of this MasterAccount.  # noqa: E501
         :type name: str
-        :param account_type: The account_type of this MasterAccount.  # noqa: E501
-        :type account_type: str
+        :param description: The description of this MasterAccount.  # noqa: E501
+        :type description: str
         :param iban: The iban of this MasterAccount.  # noqa: E501
         :type iban: str
         :param balance: The balance of this MasterAccount.  # noqa: E501
         :type balance: float
+        :param id: The id of this MasterAccount.  # noqa: E501
+        :type id: str
         :param transactions: The transactions of this MasterAccount.  # noqa: E501
         :type transactions: List[Transaction]
-        :param subsidies: The subsidies of this MasterAccount.  # noqa: E501
-        :type subsidies: List[SubsidyBase]
-        :param viewers: The viewers of this MasterAccount.  # noqa: E501
-        :type viewers: List[User]
-        :param admins: The admins of this MasterAccount.  # noqa: E501
-        :type admins: List[User]
         """
         self.swagger_types = {
             'name': str,
-            'account_type': str,
+            'description': str,
             'iban': str,
             'balance': float,
-            'transactions': List[Transaction],
-            'subsidies': List[SubsidyBase],
-            'viewers': List[User],
-            'admins': List[User]
+            'id': str,
+            'transactions': List[Transaction]
         }
 
         self.attribute_map = {
             'name': 'name',
-            'account_type': 'account_type',
+            'description': 'description',
             'iban': 'iban',
             'balance': 'balance',
-            'transactions': 'transactions',
-            'subsidies': 'subsidies',
-            'viewers': 'viewers',
-            'admins': 'admins'
+            'id': 'id',
+            'transactions': 'transactions'
         }
 
         self._name = name
-        self._account_type = account_type
+        self._description = description
         self._iban = iban
         self._balance = balance
+        self._id = id
         self._transactions = transactions
-        self._subsidies = subsidies
-        self._viewers = viewers
-        self._admins = admins
 
     @classmethod
     def from_dict(cls, dikt) -> 'MasterAccount':
@@ -104,25 +92,25 @@ class MasterAccount(Model):
         self._name = name
 
     @property
-    def account_type(self) -> str:
-        """Gets the account_type of this MasterAccount.
+    def description(self) -> str:
+        """Gets the description of this MasterAccount.
 
 
-        :return: The account_type of this MasterAccount.
+        :return: The description of this MasterAccount.
         :rtype: str
         """
-        return self._account_type
+        return self._description
 
-    @account_type.setter
-    def account_type(self, account_type: str):
-        """Sets the account_type of this MasterAccount.
+    @description.setter
+    def description(self, description: str):
+        """Sets the description of this MasterAccount.
 
 
-        :param account_type: The account_type of this MasterAccount.
-        :type account_type: str
+        :param description: The description of this MasterAccount.
+        :type description: str
         """
 
-        self._account_type = account_type
+        self._description = description
 
     @property
     def iban(self) -> str:
@@ -169,6 +157,27 @@ class MasterAccount(Model):
         self._balance = balance
 
     @property
+    def id(self) -> str:
+        """Gets the id of this MasterAccount.
+
+
+        :return: The id of this MasterAccount.
+        :rtype: str
+        """
+        return self._id
+
+    @id.setter
+    def id(self, id: str):
+        """Sets the id of this MasterAccount.
+
+
+        :param id: The id of this MasterAccount.
+        :type id: str
+        """
+
+        self._id = id
+
+    @property
     def transactions(self) -> List[Transaction]:
         """Gets the transactions of this MasterAccount.
 
@@ -188,66 +197,3 @@ class MasterAccount(Model):
         """
 
         self._transactions = transactions
-
-    @property
-    def subsidies(self) -> List[SubsidyBase]:
-        """Gets the subsidies of this MasterAccount.
-
-
-        :return: The subsidies of this MasterAccount.
-        :rtype: List[SubsidyBase]
-        """
-        return self._subsidies
-
-    @subsidies.setter
-    def subsidies(self, subsidies: List[SubsidyBase]):
-        """Sets the subsidies of this MasterAccount.
-
-
-        :param subsidies: The subsidies of this MasterAccount.
-        :type subsidies: List[SubsidyBase]
-        """
-
-        self._subsidies = subsidies
-
-    @property
-    def viewers(self) -> List[User]:
-        """Gets the viewers of this MasterAccount.
-
-
-        :return: The viewers of this MasterAccount.
-        :rtype: List[User]
-        """
-        return self._viewers
-
-    @viewers.setter
-    def viewers(self, viewers: List[User]):
-        """Sets the viewers of this MasterAccount.
-
-
-        :param viewers: The viewers of this MasterAccount.
-        :type viewers: List[User]
-        """
-
-        self._viewers = viewers
-
-    @property
-    def admins(self) -> List[User]:
-        """Gets the admins of this MasterAccount.
-
-
-        :return: The admins of this MasterAccount.
-        :rtype: List[User]
-        """
-        return self._admins
-
-    @admins.setter
-    def admins(self, admins: List[User]):
-        """Sets the admins of this MasterAccount.
-
-
-        :param admins: The admins of this MasterAccount.
-        :type admins: List[User]
-        """
-
-        self._admins = admins

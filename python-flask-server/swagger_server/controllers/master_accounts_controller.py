@@ -2,6 +2,7 @@ import connexion
 import six
 
 from swagger_server.models.master_account import MasterAccount  # noqa: E501
+from swagger_server.models.master_account_base import MasterAccountBase  # noqa: E501
 from swagger_server import util
 
 import subsidy_service as service
@@ -13,9 +14,11 @@ def master_accounts_get():  # noqa: E501
      # noqa: E501
 
 
-    :rtype: List[MasterAccount]
+    :rtype: List[MasterAccountBase]
     """
-    return 'do some magic!'
+    response = service.masters.read_all()
+    output = [MasterAccountBase().from_dict(doc) for doc in response]
+    return output
 
 
 @service.auth.authenticate
@@ -29,7 +32,8 @@ def master_accounts_id_delete(id):  # noqa: E501
 
     :rtype: None
     """
-    return 'do some magic!'
+    service.masters.delete(id)
+    return None
 
 
 @service.auth.authenticate
@@ -43,7 +47,8 @@ def master_accounts_id_get(id):  # noqa: E501
 
     :rtype: MasterAccount
     """
-    return 'do some magic!'
+    response = service.masters.read(id)
+    return MasterAccount.from_dict(response)
 
 
 @service.auth.authenticate
@@ -61,7 +66,9 @@ def master_accounts_id_patch(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = MasterAccount.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    response = service.masters.update(id, body.to_dict())
+    return MasterAccount.from_dict(response)
 
 
 @service.auth.authenticate
@@ -79,7 +86,9 @@ def master_accounts_id_put(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = MasterAccount.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    response = service.masters.replace(id, body.to_dict())
+    return MasterAccount.from_dict(response)
 
 
 @service.auth.authenticate
@@ -94,5 +103,7 @@ def master_accounts_post(body):  # noqa: E501
     :rtype: MasterAccount
     """
     if connexion.request.is_json:
-        body = MasterAccount.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+        body = MasterAccountBase.from_dict(connexion.request.get_json())  # noqa: E501
+
+    response = service.masters.create(body.to_dict())
+    return MasterAccount.from_dict(response)

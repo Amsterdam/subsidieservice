@@ -16,36 +16,41 @@ class MasterAccountBase(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, account_type: str=None, iban: str=None, balance: float=None):  # noqa: E501
+    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, id: str=None):  # noqa: E501
         """MasterAccountBase - a model defined in Swagger
 
         :param name: The name of this MasterAccountBase.  # noqa: E501
         :type name: str
-        :param account_type: The account_type of this MasterAccountBase.  # noqa: E501
-        :type account_type: str
+        :param description: The description of this MasterAccountBase.  # noqa: E501
+        :type description: str
         :param iban: The iban of this MasterAccountBase.  # noqa: E501
         :type iban: str
         :param balance: The balance of this MasterAccountBase.  # noqa: E501
         :type balance: float
+        :param id: The id of this MasterAccountBase.  # noqa: E501
+        :type id: str
         """
         self.swagger_types = {
             'name': str,
-            'account_type': str,
+            'description': str,
             'iban': str,
-            'balance': float
+            'balance': float,
+            'id': str
         }
 
         self.attribute_map = {
             'name': 'name',
-            'account_type': 'account_type',
+            'description': 'description',
             'iban': 'iban',
-            'balance': 'balance'
+            'balance': 'balance',
+            'id': 'id'
         }
 
         self._name = name
-        self._account_type = account_type
+        self._description = description
         self._iban = iban
         self._balance = balance
+        self._id = id
 
     @classmethod
     def from_dict(cls, dikt) -> 'MasterAccountBase':
@@ -80,25 +85,25 @@ class MasterAccountBase(Model):
         self._name = name
 
     @property
-    def account_type(self) -> str:
-        """Gets the account_type of this MasterAccountBase.
+    def description(self) -> str:
+        """Gets the description of this MasterAccountBase.
 
 
-        :return: The account_type of this MasterAccountBase.
+        :return: The description of this MasterAccountBase.
         :rtype: str
         """
-        return self._account_type
+        return self._description
 
-    @account_type.setter
-    def account_type(self, account_type: str):
-        """Sets the account_type of this MasterAccountBase.
+    @description.setter
+    def description(self, description: str):
+        """Sets the description of this MasterAccountBase.
 
 
-        :param account_type: The account_type of this MasterAccountBase.
-        :type account_type: str
+        :param description: The description of this MasterAccountBase.
+        :type description: str
         """
 
-        self._account_type = account_type
+        self._description = description
 
     @property
     def iban(self) -> str:
@@ -143,3 +148,24 @@ class MasterAccountBase(Model):
             raise ValueError("Invalid value for `balance`, must be a value greater than or equal to `0`")  # noqa: E501
 
         self._balance = balance
+
+    @property
+    def id(self) -> str:
+        """Gets the id of this MasterAccountBase.
+
+
+        :return: The id of this MasterAccountBase.
+        :rtype: str
+        """
+        return self._id
+
+    @id.setter
+    def id(self, id: str):
+        """Sets the id of this MasterAccountBase.
+
+
+        :param id: The id of this MasterAccountBase.
+        :type id: str
+        """
+
+        self._id = id

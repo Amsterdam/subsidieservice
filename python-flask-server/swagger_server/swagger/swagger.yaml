@@ -33,7 +33,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/master-account"
+              $ref: "#/definitions/master-account-base"
       x-swagger-router-controller: "swagger_server.controllers.master_accounts_controller"
     post:
       tags:
@@ -50,7 +50,7 @@ paths:
         description: "master-account to add"
         required: true
         schema:
-          $ref: "#/definitions/master-account"
+          $ref: "#/definitions/master-account-base"
       responses:
         201:
           description: "Created"
@@ -444,7 +444,7 @@ definitions:
     properties:
       name:
         type: "string"
-      account_type:
+      description:
         type: "string"
       iban:
         type: "string"
@@ -453,10 +453,10 @@ definitions:
         minimum: 0
     description: "A bank account"
     example:
-      account_type: "account_type"
       balance: 0.080082819046101150206595775671303272247314453125
       iban: "iban"
       name: "name"
+      description: "description"
   account:
     allOf:
     - $ref: "#/definitions/account-base"
@@ -470,26 +470,16 @@ definitions:
   master-account-base:
     allOf:
     - $ref: "#/definitions/account-base"
+    - type: "object"
+      properties:
+        id:
+          type: "string"
     description: "A master-account-base serves as the source for a specific class\
       \ of subsidy"
   master-account:
     allOf:
     - $ref: "#/definitions/master-account-base"
     - $ref: "#/definitions/account"
-    - type: "object"
-      properties:
-        subsidies:
-          type: "array"
-          items:
-            $ref: "#/definitions/subsidy-base"
-        viewers:
-          type: "array"
-          items:
-            $ref: "#/definitions/user"
-        admins:
-          type: "array"
-          items:
-            $ref: "#/definitions/user"
     description: "A master-account serves as the source for a specific class of subsidy"
   citizen-base:
     type: "object"
@@ -560,10 +550,10 @@ definitions:
       comment: "comment"
       id: "id"
       account:
-        account_type: "account_type"
         balance: 0.080082819046101150206595775671303272247314453125
         iban: "iban"
         name: "name"
+        description: "description"
       master: ""
       frequency: "frequency"
       start_date: "2000-01-23"
@@ -578,10 +568,8 @@ definitions:
     properties:
       from:
         $ref: "#/definitions/account-base"
-      to_iban:
-        type: "string"
-      to_name:
-        type: "string"
+      to:
+        $ref: "#/definitions/account-base"
       amount:
         type: "number"
         minimum: 0

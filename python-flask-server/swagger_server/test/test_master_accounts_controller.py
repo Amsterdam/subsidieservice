@@ -6,6 +6,7 @@ from flask import json
 from six import BytesIO
 
 from swagger_server.models.master_account import MasterAccount  # noqa: E501
+from swagger_server.models.master_account_base import MasterAccountBase  # noqa: E501
 from swagger_server.test import BaseTestCase
 
 
@@ -78,7 +79,7 @@ class TestMasterAccountsController(BaseTestCase):
 
         Create a new master-account
         """
-        body = MasterAccount()
+        body = MasterAccountBase()
         response = self.client.open(
             '/v1/master-accounts',
             method='POST',
