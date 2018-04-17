@@ -76,3 +76,4 @@ temp-swagger-server-dir
 *.cert
 *~*.docx
 *~*.pptx
+*.log
