@@ -33,7 +33,7 @@ def create(subsidy: dict):
     new_acct = service.bunq.create_account()
     new_acct['bunq_id'] = new_acct.pop('id')
 
-    master = service.masters.read(subsidy['master']['id'])
+    master = service.mongo.find(subsidy['master'], DB.masters)
 
     pmt = service.bunq.make_payment_to_acct_id(master['bunq_id'],
                                                new_acct['bunq_id'],
