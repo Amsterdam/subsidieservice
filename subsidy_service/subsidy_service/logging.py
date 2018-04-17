@@ -27,6 +27,10 @@ def _setup_logger():
     # setup logger
     audit_log_path = os.path.realpath(CONF['logging']['audit_path'])
 
+    # touch log file if doesn't exist
+    if not os.path.isfile(audit_log_path):
+        open(audit_log_path, 'w').close()
+
     # message format
     # TODO: Make this pure json?
     fmt = '%(asctime)s - Audit Log - %(levelname)s\n%(message)s'

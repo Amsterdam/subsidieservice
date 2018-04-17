@@ -30,7 +30,7 @@ RUN pip3 install /usr/src/service
 
 
 # --- mount points for configuration files and logs
-VOLUME /etc/subsidy_service
+VOLUME /etc/subsidy_service/config
 
 VOLUME /etc/subsidy_service/logs
 

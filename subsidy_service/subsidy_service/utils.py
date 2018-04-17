@@ -12,8 +12,7 @@ def get_config(filename='subsidy_service.ini', configdir=None):
     locations.
 
     The paths searched are, in order:
-    - /etc/subsidy_service
-    - /etc/config/subsidy_service
+    - /etc/subsidy_service/config
     - subsidy_service/ (the directory where this file is)
 
     The default config file is located at
@@ -29,8 +28,7 @@ def get_config(filename='subsidy_service.ini', configdir=None):
         paths =[]
 
     paths += [
-        '/etc/config/subsidy_service',
-        '/etc/subsidy_service',
+        '/etc/subsidy_service/config',
     ]
 
     # default file in this directory
