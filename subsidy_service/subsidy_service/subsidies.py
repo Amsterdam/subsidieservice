@@ -19,21 +19,26 @@ def create(subsidy: dict):
     """
     recip = service.utils.drop_nones(subsidy['recipient'])
 
-    recip_full = service.mongo.find(recip, DB.citizens)  # TODO: Remove
+    # check required DB objects
+    master = service.utils.drop_nones(subsidy['master'])
+    master = service.mongo.find(master, DB.masters)
+
+    recip_full = service.mongo.find(recip, DB.citizens)
+
+    # try:
+    #     bunq.sdk.exception.NotFoundException
 
     if recip_full:
         recip = recip_full.copy()
         recip.pop('subsidies')
         subsidy['recipient'] = recip
     else:
-        #TODO: Determine if this is desirable
+        # TODO: Determine if this is desirable
         service.citizens.create(subsidy['recipient'])
 
     # TODO: Move to actions/approve
     new_acct = service.bunq.create_account()
     new_acct['bunq_id'] = new_acct.pop('id')
-
-    master = service.mongo.find(subsidy['master'], DB.masters)
 
     pmt = service.bunq.make_payment_to_acct_id(master['bunq_id'],
                                                new_acct['bunq_id'],
@@ -45,11 +50,10 @@ def create(subsidy: dict):
     try:
         new_share = service.bunq.create_share(new_acct['bunq_id'],
                                               recip['phone_number'])
-        new_share['status'] = 'PENDING_ACCEPT'
+        subsidy['status'] = 'PENDING_ACCEPT'
     except:
         # TODO: Reflect this in the share status for later filtering
-        new_share = {}
-        new_share['status'] = 'PENDING_ACCOUNT'
+        subsidy['status'] = 'PENDING_ACCOUNT'
 
     new_acct['transactions'] = service.bunq.get_payments(new_acct['bunq_id'])
 

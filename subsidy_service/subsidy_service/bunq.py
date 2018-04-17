@@ -24,12 +24,12 @@ USER_CTX = BunqContext._user_context
 
 if USER_CTX.is_both_user_type_set() or USER_CTX.is_only_user_company_set():
     user_obj = USER_CTX.user_company
+    USER_NAME = user_obj.name
 else:
     user_obj = USER_CTX.user_person
-
+    USER_NAME =  user_obj.legal_name
 
 USER_ID = int(user_obj.id_)
-USER_NAME = user_obj.name
 CURRENCY = 'EUR'
 
 
@@ -48,9 +48,12 @@ def create_account(description: str='Subsidie Gemeente Amsterdam'):
 
 
 def read_account(id: int):
+    # try:
     response = endpoint.MonetaryAccountBank.get(int(id))
     acct = response.value
     return account_summary(acct)
+    # except exception.NotFoundException:
+    #     return None
 
 
 def read_account_by_iban(iban: str, include_closed=False):
@@ -62,8 +65,8 @@ def read_account_by_iban(iban: str, include_closed=False):
     return output
 
 
-def get_payments(id: int):
-    payments = _list_all_pages(endpoint.Payment, {}, id)
+def get_payments(acct_id: int):
+    payments = _list_all_pages(endpoint.Payment, {}, acct_id)
     return [payment_summary(pmt) for pmt in payments]
 
 
@@ -226,8 +229,6 @@ def account_summary(acct: endpoint.MonetaryAccountBank, full: bool=False):
         'balance': acct.balance.value,
         'iban': iban,
         'name': name,
-        # 'user_id': USER_ID,
-        # 'user_name': USER_NAME
     }
 
     if full:
@@ -322,12 +323,13 @@ def _list_all_pages(endpoint_obj, list_params, *args, **kwargs):
 
     return output
 
+
 # new_acct = create_account('SS Test')
 # pmt = make_payment_to_acct_id(6146, new_acct['id'], 100.00)
 # pmt = make_payment_to_acct_id(new_acct['id'], 6146, 100.00)
 # new_acct = close_account(new_acct['id'])
 #
-# print(list_accounts())
+print(list_accounts())
 # print(list_shares(6146))
 # print(create_share(6146, '+31648136656'))
 

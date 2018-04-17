@@ -29,11 +29,11 @@ def _setup_logger():
 
     # touch log file if doesn't exist
     if not os.path.isfile(audit_log_path):
-        open(audit_log_path, 'w').close()
+        open(audit_log_path, 'a').close()
 
     # message format
     # TODO: Make this pure json?
-    fmt = '%(asctime)s - Audit Log - %(levelname)s\n%(message)s'
+    fmt = '%(asctime)s - Audit Log \n%(message)s'
     fmtr = logging.Formatter(fmt=fmt)
 
     # write to file
