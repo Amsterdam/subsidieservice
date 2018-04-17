@@ -67,7 +67,7 @@ target/
 .idea
 
 # Bunq conf
-bunq.conf
+bunq*.conf
 
 # Misc
 temp-swagger-server-dir
