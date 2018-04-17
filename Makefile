@@ -23,7 +23,8 @@ docker-build: docker-stop .
 ## Run the Service API linked to a new or existing mongo docker
 docker-run: docker-build
 	-docker start subsidy_mongo_dev 
-	docker run --rm -p 8080:8080 -v $(shell pwd)/config:/etc/config/subsidy_service \
+	docker run --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service \
+		-v $(shell pwd)/logs:/etc/subsidy_service/logs \
 		--link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
 	docker ps
 

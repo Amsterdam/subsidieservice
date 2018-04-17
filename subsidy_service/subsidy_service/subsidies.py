@@ -33,18 +33,25 @@ def create(subsidy: dict):
     new_acct = service.bunq.create_account()
     new_acct['bunq_id'] = new_acct.pop('id')
 
-    update_accounts()  # TODO: Get rid of this once we have master accounts
-    master = service.mongo.find(service.utils.drop_nones(subsidy['master']),
-                                DB.accounts)
+    master = service.masters.read(subsidy['master']['id'])
 
     pmt = service.bunq.make_payment_to_acct_id(master['bunq_id'],
                                                new_acct['bunq_id'],
                                                subsidy['amount'])
 
     new_acct['balance'] = -float(pmt['amount'])  # payment amount is negative
+    master['balance'] -= float(pmt['amount'])
 
-    new_share = service.bunq.create_share(new_acct['bunq_id'],
-                                          recip['phone_number'])
+    try:
+        new_share = service.bunq.create_share(new_acct['bunq_id'],
+                                              recip['phone_number'])
+        new_share['status'] = 'PENDING_ACCEPT'
+    except:
+        # TODO: Reflect this in the share status for later filtering
+        new_share = {}
+        new_share['status'] = 'PENDING_ACCOUNT'
+
+    new_acct['transactions'] = service.bunq.get_payments(new_acct['bunq_id'])
 
     subsidy['account'] = new_acct
     subsidy['master'] = master
@@ -68,16 +75,22 @@ def read(id):
     :param id: the subsidy's ID
     :return: dict
     """
-    return service.mongo.get_by_id(id, DB.subsidies)
+    subsidy = get_and_update_balance(id)
+    subsidy['account']['transactions'] = \
+        service.bunq.get_payments(subsidy['account']['bunq_id'])
+    return subsidy
 
 
 def read_all():
     """
     Get all available subsidies
 
-    :return: dict
+    :return: list[dict]
     """
-    return service.mongo.get_collection(DB.subsidies)
+
+    subsidies = service.mongo.get_collection(DB.subsidies)
+    output = [get_and_update_balance(sub['id']) for sub in subsidies]
+    return output
 
 
 def update(id, subsidy: dict):
@@ -132,15 +145,33 @@ def delete(id):
     return None
 
 
-# utilities
-def update_accounts():
-    accts = service.bunq.list_accounts(include_closed=True)
-    for acct in accts:
-        acct_db = acct.copy()
-        acct_db['bunq_id'] = acct_db.pop('id')
-        service.mongo.upsert(acct_db, DB.accounts, ['iban'])
+# # utilities
+# def update_accounts():
+#     accts = service.bunq.list_accounts(include_closed=True)
+#     for acct in accts:
+#         acct_db = acct.copy()
+#         acct_db['bunq_id'] = acct_db.pop('id')
+#         service.mongo.upsert(acct_db, DB.accounts, ['iban'])
+#
+#     accts_db = service.mongo.get_collection(DB.accounts)
+#
+#     return accts_db
 
-    accts_db = service.mongo.get_collection(DB.accounts)
 
-    return accts_db
+# utils
+def get_and_update_balance(id):
+    """
+    Get the subsidy from the DB, update the balance from bunq, push the update
+    to the DB, and return the subsidy.
 
+    :param id:
+    :return:
+    """
+    # TODO: Do we even want to store balances?
+    sub = service.mongo.get_by_id(id, DB.subsidies)
+    sub['account']['balance'] = \
+        service.bunq.get_balance(sub['account']['bunq_id'])
+    sub['master']['balance'] = \
+        service.bunq.get_balance(sub['master']['bunq_id'])
+    sub = service.mongo.update_by_id(sub['id'], sub, DB.subsidies)
+    return sub

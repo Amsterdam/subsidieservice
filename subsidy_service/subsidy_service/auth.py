@@ -51,17 +51,19 @@ def authenticate(func: callable):
             # no login headers provided
             return prob401
 
-        if not user_verify(auth.username, auth.password):
+        if not verify_user(auth.username, auth.password):
             # user not found/password incorrect
             return prob403
         else:
             # successfully authenticated
-            return func(*args, **kwargs)
+            output = func(*args, **kwargs)
+            service.logging.audit(auth.username, func.__name__, output)
+            return output
 
     return authenticated
 
 
-def user_verify(username: str, password: str):
+def verify_user(username: str, password: str):
     """
     Verify that a user exists in the database and that the password is correct.
 
@@ -74,15 +76,15 @@ def user_verify(username: str, password: str):
         # username not found
         return False
 
-    return password_verify(password, user['password'])
+    return verify_password(password, user['password'])
 
 
-def password_validate(pwd: str):
+def validate_password(pwd: str):
     # TODO: Determine if we want this
     return True
 
 
-def password_hash(pwd: str):
+def hash_password(pwd: str):
     """
     Create passlib hash of password.
 
@@ -92,7 +94,7 @@ def password_hash(pwd: str):
     return CRYPT_CTX.hash(pwd)
 
 
-def password_verify(pwd: str, hash: str):
+def verify_password(pwd: str, hash: str):
     """
     Verify that a password matches the given hash.
 

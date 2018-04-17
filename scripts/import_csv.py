@@ -8,7 +8,7 @@ warnings.filterwarnings('ignore', message='\[bunq SDK')
 import subsidy_service as service
 
 
-def process_row(row: pd.Series):
+def process_row(row: pd.Series, master_id: str):
     phnum = service.utils.format_phone_number(row['Mobiel nummer'])
 
     citizen = {
@@ -25,7 +25,8 @@ def process_row(row: pd.Series):
         'comment': row['Referentie veld'],
         'start_date': row['Begindatum'],
         'end_date': row['Einddatum'],
-        'amount': float(row['Bedrag'])
+        'amount': float(row['Bedrag']),
+        'master': {'id': master_id},
     }
 
     # subsidy = service.subsidies.create(subsidy)
@@ -37,11 +38,13 @@ def process_row(row: pd.Series):
 
 @click.command()
 @click.argument('filename')
+@click.argument('master_id')
 def process_csv(filename):
     """
     Process subsidy recipients csv. Citizens and corresponding subsidies are
     added to the database, and subsidies are granted immediately upon
-    processing.
+    processing. The created subsidies will have the master account indicated
+    by master id (which must already exist in the database).
 
     See docs/InputREMCSVformat.docx for input csv specification.
     """

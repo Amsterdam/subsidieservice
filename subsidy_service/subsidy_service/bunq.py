@@ -53,10 +53,22 @@ def read_account(id: int):
     return account_summary(acct)
 
 
-def list_accounts(include_closed=False):
-    response = endpoint.MonetaryAccountBank.list()
+def read_account_by_iban(iban: str, include_closed=False):
+    accts = list_accounts(include_closed)
+    output = None
+    for acct in accts:
+        if acct['iban'] == iban:
+            output = acct
+    return output
 
-    accts = response.value
+
+def get_payments(id: int):
+    payments = _list_all_pages(endpoint.Payment, {}, id)
+    return [payment_summary(pmt) for pmt in payments]
+
+
+def list_accounts(include_closed=False):
+    accts = _list_all_pages(endpoint.MonetaryAccountBank, {})
 
     output = [account_summary(acct) for acct in accts
               if (acct.status != 'CANCELLED') or include_closed]
@@ -178,7 +190,6 @@ def close_account(id):
 
 def revoke_all_shares(acct_id: int):
     share_ids = [s['id'] for s in list_shares(acct_id)]
-
     return [revoke_share(acct_id, share_id) for share_id in share_ids]
 
 
@@ -192,6 +203,11 @@ def list_shares(acct_id: int):
 def read_share(acct_id: int, share_id: int):
     response = endpoint.ShareInviteBankInquiry.get(share_id, acct_id)
     return share_summary(response.value)
+
+
+def get_balance(acct_id: int):
+    acct = read_account(acct_id)
+    return float(acct['balance'])
 
 
 # Object abstractions
@@ -236,11 +252,11 @@ def share_summary(share: endpoint.ShareInviteBankInquiry):
 def payment_summary(payment: endpoint.Payment):
     pmt_dict = {
         'id': payment.id_,
-        'amount': payment.amount.value,
+        'amount': float(payment.amount.value),
         'description': payment.description,
         'counterparty_name': payment.counterparty_alias.pointer.name,
         'counterparty_iban': payment.counterparty_alias.pointer.value,
-        'date': payment.created
+        'timestamp': payment.created
     }
 
     return pmt_dict
@@ -256,6 +272,55 @@ def _get_alias_from_error_message(msg):
     except AttributeError:
         return None
 
+
+def _list_all_pages(endpoint_obj, list_params, *args, **kwargs):
+    """
+    The list method on endpoint objects may return paginated results. This
+    function iterates through the pages and returns all results appended into
+    one list. The params dict that can optionally be provided to the .list
+    method must be provided explicitly (it may be empty, however). Other
+    arguments to .list are provided through *args and **kwargs.
+
+    The list method of the endpoint object is called like
+        endpoint_obj.list(
+            *args,
+            params=list_params,
+            **kwargs
+        )
+
+    The number of items per page can be set by settings list_params['count'].
+    It may be maximally 200, which is also the default value inserted if
+    the key 'count' is not present in de list_params dict.
+
+    :param endpoint_obj: an endpoint object supporting the .list method
+    :param list_params: the params dict to pass to .list
+    :param args: any other args for .list
+    :param kwargs: any other kwargs for .list
+    :return: list
+    """
+
+    params = list_params.copy()
+
+    # set default pagination count if not provided
+    if 'count' not in params:
+        params['count'] = '200'
+    else:
+        params['count'] = str(params['count'])
+
+    # get first response
+    response = endpoint_obj.list(*args, params=params, **kwargs)
+    output = list(response.value)
+
+    # keep getting pages while they are available
+    while response.pagination.has_previous_page():
+        response = endpoint_obj.list(
+            *args,
+            params=response.pagination.url_params_previous_page,
+            **kwargs)
+
+        output += list(response.value)
+
+    return output
 
 # new_acct = create_account('SS Test')
 # pmt = make_payment_to_acct_id(6146, new_acct['id'], 100.00)

@@ -71,6 +71,7 @@ def master_accounts_id_patch(id, body):  # noqa: E501
     return MasterAccount.from_dict(response)
 
 
+
 @service.auth.authenticate
 def master_accounts_id_put(id, body):  # noqa: E501
     """Re-upload a master-account&#39;s information

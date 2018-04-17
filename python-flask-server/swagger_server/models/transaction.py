@@ -6,7 +6,6 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
-from swagger_server.models.account_base import AccountBase  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -16,36 +15,41 @@ class Transaction(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, _from: AccountBase=None, to: AccountBase=None, amount: float=None, datetime: datetime=None):  # noqa: E501
+    def __init__(self, counterparty_name: str=None, counterparty_iban: str=None, description: str=None, amount: float=None, timestamp: datetime=None):  # noqa: E501
         """Transaction - a model defined in Swagger
 
-        :param _from: The _from of this Transaction.  # noqa: E501
-        :type _from: AccountBase
-        :param to: The to of this Transaction.  # noqa: E501
-        :type to: AccountBase
+        :param counterparty_name: The counterparty_name of this Transaction.  # noqa: E501
+        :type counterparty_name: str
+        :param counterparty_iban: The counterparty_iban of this Transaction.  # noqa: E501
+        :type counterparty_iban: str
+        :param description: The description of this Transaction.  # noqa: E501
+        :type description: str
         :param amount: The amount of this Transaction.  # noqa: E501
         :type amount: float
-        :param datetime: The datetime of this Transaction.  # noqa: E501
-        :type datetime: datetime
+        :param timestamp: The timestamp of this Transaction.  # noqa: E501
+        :type timestamp: datetime
         """
         self.swagger_types = {
-            '_from': AccountBase,
-            'to': AccountBase,
+            'counterparty_name': str,
+            'counterparty_iban': str,
+            'description': str,
             'amount': float,
-            'datetime': datetime
+            'timestamp': datetime
         }
 
         self.attribute_map = {
-            '_from': 'from',
-            'to': 'to',
+            'counterparty_name': 'counterparty_name',
+            'counterparty_iban': 'counterparty_iban',
+            'description': 'description',
             'amount': 'amount',
-            'datetime': 'datetime'
+            'timestamp': 'timestamp'
         }
 
-        self.__from = _from
-        self._to = to
+        self._counterparty_name = counterparty_name
+        self._counterparty_iban = counterparty_iban
+        self._description = description
         self._amount = amount
-        self._datetime = datetime
+        self._timestamp = timestamp
 
     @classmethod
     def from_dict(cls, dikt) -> 'Transaction':
@@ -59,46 +63,67 @@ class Transaction(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def _from(self) -> AccountBase:
-        """Gets the _from of this Transaction.
+    def counterparty_name(self) -> str:
+        """Gets the counterparty_name of this Transaction.
 
 
-        :return: The _from of this Transaction.
-        :rtype: AccountBase
+        :return: The counterparty_name of this Transaction.
+        :rtype: str
         """
-        return self.__from
+        return self._counterparty_name
 
-    @_from.setter
-    def _from(self, _from: AccountBase):
-        """Sets the _from of this Transaction.
+    @counterparty_name.setter
+    def counterparty_name(self, counterparty_name: str):
+        """Sets the counterparty_name of this Transaction.
 
 
-        :param _from: The _from of this Transaction.
-        :type _from: AccountBase
+        :param counterparty_name: The counterparty_name of this Transaction.
+        :type counterparty_name: str
         """
 
-        self.__from = _from
+        self._counterparty_name = counterparty_name
 
     @property
-    def to(self) -> AccountBase:
-        """Gets the to of this Transaction.
+    def counterparty_iban(self) -> str:
+        """Gets the counterparty_iban of this Transaction.
 
 
-        :return: The to of this Transaction.
-        :rtype: AccountBase
+        :return: The counterparty_iban of this Transaction.
+        :rtype: str
         """
-        return self._to
+        return self._counterparty_iban
 
-    @to.setter
-    def to(self, to: AccountBase):
-        """Sets the to of this Transaction.
+    @counterparty_iban.setter
+    def counterparty_iban(self, counterparty_iban: str):
+        """Sets the counterparty_iban of this Transaction.
 
 
-        :param to: The to of this Transaction.
-        :type to: AccountBase
+        :param counterparty_iban: The counterparty_iban of this Transaction.
+        :type counterparty_iban: str
         """
 
-        self._to = to
+        self._counterparty_iban = counterparty_iban
+
+    @property
+    def description(self) -> str:
+        """Gets the description of this Transaction.
+
+
+        :return: The description of this Transaction.
+        :rtype: str
+        """
+        return self._description
+
+    @description.setter
+    def description(self, description: str):
+        """Sets the description of this Transaction.
+
+
+        :param description: The description of this Transaction.
+        :type description: str
+        """
+
+        self._description = description
 
     @property
     def amount(self) -> float:
@@ -118,28 +143,26 @@ class Transaction(Model):
         :param amount: The amount of this Transaction.
         :type amount: float
         """
-        if amount is not None and amount < 0:  # noqa: E501
-            raise ValueError("Invalid value for `amount`, must be a value greater than or equal to `0`")  # noqa: E501
 
         self._amount = amount
 
     @property
-    def datetime(self) -> datetime:
-        """Gets the datetime of this Transaction.
+    def timestamp(self) -> datetime:
+        """Gets the timestamp of this Transaction.
 
 
-        :return: The datetime of this Transaction.
+        :return: The timestamp of this Transaction.
         :rtype: datetime
         """
-        return self._datetime
+        return self._timestamp
 
-    @datetime.setter
-    def datetime(self, datetime: datetime):
-        """Sets the datetime of this Transaction.
+    @timestamp.setter
+    def timestamp(self, timestamp: datetime):
+        """Sets the timestamp of this Transaction.
 
 
-        :param datetime: The datetime of this Transaction.
-        :type datetime: datetime
+        :param timestamp: The timestamp of this Transaction.
+        :type timestamp: datetime
         """
 
-        self._datetime = datetime
+        self._timestamp = timestamp

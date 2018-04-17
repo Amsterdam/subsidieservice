@@ -8,7 +8,6 @@ CONF = service.utils.get_config()
 CLIENT = service.mongo.get_client(CONF)
 DB = CLIENT.subsidy
 
-
 # CRUD functionality
 def create(citizen: dict):
     """
@@ -19,6 +18,9 @@ def create(citizen: dict):
     :return: True if the operation was successful, else False
     """
 
+    citizen['phone_number'] = service.utils.format_phone_number(
+        citizen['phone_number']
+    )
     obj = service.mongo.add_and_copy_id(citizen, DB.citizens)
 
     return obj

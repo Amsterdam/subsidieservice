@@ -30,8 +30,8 @@ PyYAML==3.12
 requests==2.18.1
 simplejson==3.11.1
 six==1.11.0
--e git+https://git.kpmg.nl/KPMG-NL-AABD/ClientProjects/GemeenteAmsterdam/SubsidyService.git@31794a7de893b73ab40d6f74010e69e0aa4db0e4#egg=subsidy_service&subdirectory=subsidy_service
--e git+https://git.kpmg.nl/KPMG-NL-AABD/ClientProjects/GemeenteAmsterdam/SubsidyService.git@31794a7de893b73ab40d6f74010e69e0aa4db0e4#egg=swagger_server&subdirectory=python-flask-server
+-e git+https://git.kpmg.nl/KPMG-NL-AABD/ClientProjects/GemeenteAmsterdam/SubsidyService.git@aa6b77d5b799094407ba78e32020bdb7f0d3b0ef#egg=subsidy_service&subdirectory=subsidy_service
+-e git+https://git.kpmg.nl/KPMG-NL-AABD/ClientProjects/GemeenteAmsterdam/SubsidyService.git@aa6b77d5b799094407ba78e32020bdb7f0d3b0ef#egg=swagger_server&subdirectory=python-flask-server
 swagger-spec-validator==2.1.0
 urllib3==1.21.1
 Werkzeug==0.14.1

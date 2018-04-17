@@ -23,12 +23,12 @@ def add(username: str, password: str):
 
     if existing is not None:
         return {'Error': f'User "{username}" already exists'}
-    elif not service.auth.password_validate(password):
+    elif not service.auth.validate_password(password):
         return {'Error': 'Password does not meet requirements'}
     else:
         user = {
             'username': username,
-            'password': service.auth.password_hash(password)
+            'password': service.auth.hash_password(password)
         }
         output = service.mongo.add_and_copy_id(user, DB.users)
         output.pop('password')
@@ -58,12 +58,12 @@ def update_password(username: str, old_password: str, new_password: str):
 
     if existing is None:
         return {'Error': f'User "{username}" does not exist'}
-    elif not service.auth.password_validate(new_password):
+    elif not service.auth.validate_password(new_password):
         return {'Error': 'Password does not meet requirements'}
     elif not authenticate(username, old_password):
         return {'Error': 'Unauthorized'}
     else:
-        hashed = service.auth.password_hash(new_password)
+        hashed = service.auth.hash_password(new_password)
         service.mongo.update_by_id(
             existing['id'],
             {'password': hashed},
@@ -80,7 +80,7 @@ def authenticate(username: str, password: str):
     :param password:
     :return: bool
     """
-    return service.auth.user_verify(username, password)
+    return service.auth.verify_user(username, password)
 
 
 def delete(username: str, password: str):

@@ -4,8 +4,6 @@ returned by subsidy_service.utils.get_config().
 """
 
 import pymongo
-import os
-
 import bson
 
 import subsidy_service as service
@@ -16,7 +14,7 @@ CONF = service.utils.get_config()
 
 # Database interactions
 def _id_query(id):
-    return {'_id':bson.ObjectId(str(id))}
+    return {'_id': bson.ObjectId(str(id))}
 
 
 def find(document, collection):

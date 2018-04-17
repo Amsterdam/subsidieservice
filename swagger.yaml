@@ -677,18 +677,23 @@ definitions:
     description: "A recurring allocation of funds made available from a master-account to a recipient citizen's account"
     allOf:
       - $ref: "#/definitions/subsidy-base"
+      - type: object
+        properties:
+          account:
+            $ref: "#/definitions/account"
             
   transaction:
     type: object
     properties:
-      from:
-        $ref: "#/definitions/account-base"
-      to:
-        $ref: "#/definitions/account-base"
+      counterparty_name:
+        type: string
+      counterparty_iban:
+        type: string
+      description:
+        type: string
       amount:
         type: number
-        minimum: 0
-      datetime:
+      timestamp:
         type: string
         format: date-time
       
