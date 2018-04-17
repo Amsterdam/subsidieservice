@@ -44,8 +44,8 @@ def create(subsidy: dict):
                                                new_acct['bunq_id'],
                                                subsidy['amount'])
 
-    new_acct['balance'] = -float(pmt['amount'])  # payment amount is negative
-    master['balance'] -= float(pmt['amount'])
+    new_acct['balance'] = float(new_acct['balance']) - float(pmt['amount'])  # payment amount is negative
+    master['balance'] = float(master['balance']) - float(pmt['amount'])
 
     try:
         new_share = service.bunq.create_share(new_acct['bunq_id'],
