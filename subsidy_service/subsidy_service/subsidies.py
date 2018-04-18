@@ -168,6 +168,9 @@ def get_and_update_balance(id):
     Get the subsidy from the DB, update the balance from bunq, push the update
     to the DB, and return the subsidy.
 
+    If the account is not accessible, a balance of None is reported and the DB
+    is not updated.
+
     :param id:
     :return:
     """

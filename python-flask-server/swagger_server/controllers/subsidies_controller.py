@@ -86,9 +86,9 @@ def subsidies_id_patch(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-
-    response = service.subsidies.update(id, body)
-    return Subsidy.from_dict(response)
+    return 'do some magic!'
+    # response = service.subsidies.update(id, body)
+    # return Subsidy.from_dict(response)
 
 
 @service.auth.authenticate
@@ -106,9 +106,9 @@ def subsidies_id_put(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-
-    response = service.subsidies.replace(id, body)
-    return Subsidy.from_dict(response)
+    return 'do some magic!'
+    # response = service.subsidies.replace(id, body)
+    # return Subsidy.from_dict(response)
 
 
 @service.auth.authenticate
