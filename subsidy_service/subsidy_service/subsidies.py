@@ -34,11 +34,12 @@ def create(subsidy: dict):
     # recip = recip_full.copy()
     # recip.pop('subsidies')
     subsidy['recipient'] = recip
-
+    if 'name' not in subsidy:
+        subsidy['name'] = 'Subsidie Gemeente Amsterdam'
 
     # TODO: Move to actions/approve
     try:
-        new_acct = service.bunq.create_account()
+        new_acct = service.bunq.create_account(description=subsidy['name'])
         new_acct['bunq_id'] = new_acct.pop('id')
     except:
         return None
@@ -142,8 +143,10 @@ def delete(id):
     """
     subsidy = service.mongo.get_by_id(id, DB.subsidies)
 
-    acct = service.bunq.read_account(subsidy['account']['bunq_id'])
-    balance = acct['balance']
+    if subsidy is None:
+        raise service.exceptions.NotFoundException('Subsidy not found')
+
+    balance = service.bunq.get_balance(subsidy['account']['bunq_id'])
 
     if float(balance) > 0:
         pmt = service.bunq.make_payment_to_acct_id(

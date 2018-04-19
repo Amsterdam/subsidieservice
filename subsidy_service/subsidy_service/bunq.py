@@ -226,6 +226,10 @@ def read_account_by_iban(iban: str, include_closed=False):
     for acct in accts:
         if acct['iban'] == iban:
             output = acct
+
+    if output is None:
+        raise service.exceptions.NotFoundException('Account not found')
+
     return output
 
 

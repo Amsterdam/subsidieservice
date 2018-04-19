@@ -13,14 +13,31 @@ def create(citizen: dict):
     """
     Create a new citizen.
 
+    Each citizen has a unique phone number, so only create the new citizen if
+    the phone number is not yet in the db.
+
     :param citizen: The citizen to be added
     :type citizen: dict
     :return: True if the operation was successful, else False
     """
 
+    if 'phone_number' not in citizen:
+        raise service.exceptions.BadRequestException('Phone number required')
+    if not citizen['phone_number']:
+        raise service.exceptions.BadRequestException('Phone number required')
+
     citizen['phone_number'] = service.utils.format_phone_number(
         citizen['phone_number']
     )
+
+    existing = service.mongo.find(
+        {'phone_number': citizen['phone_number']},
+        DB.citizens
+    )
+
+    if existing:
+        return existing
+
     obj = service.mongo.add_and_copy_id(citizen, DB.citizens)
 
     return obj

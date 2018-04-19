@@ -11,7 +11,9 @@ DB = CLIENT.subsidy
 # CRUD functionality
 def create(master: dict):
     """
-    Create a new master.
+    Create a new master. If an iban of an existing account is specified, this
+    account is used. Otherwise, a new account will be created and assigned to
+    this master.
 
     :param master: The master to be added
     :type master: dict
@@ -19,7 +21,15 @@ def create(master: dict):
     """
 
     if 'iban' in master:
-        mast = service.bunq.read_account_by_iban(master['iban'])
+        existing = service.mongo.find({'iban':master['iban']}, DB.masters)
+
+        if existing is not None:
+            existing['transactions'] = \
+                get_payments_if_available(existing['bunq_id'])
+            return existing
+        else:
+            mast = service.bunq.read_account_by_iban(master['iban'])
+
     elif 'description' in master:
         mast = service.bunq.create_account(description=master['description'])
     else:
