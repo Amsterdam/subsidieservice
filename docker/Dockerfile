@@ -1,32 +1,21 @@
 # --- python3.6 image with gcc (required for dependency installation)
 FROM python:3.6
 
-RUN pip install --upgrade pip
+RUN pip3 install --upgrade pip
 
-# --- install global requirements 
+
+# --- copy files
 COPY requirements.txt /usr/src/
-# filter out local packages
-RUN grep -v "-e " -i /usr/src/requirements.txt > /usr/src/requirements_clean.txt
 
-RUN pip3 install -r /usr/src/requirements_clean.txt
+COPY python-flask-server /usr/src/python-flask-server
 
+COPY subsidy_service /usr/src/subsidy_service
 
-# --- setup app directory and install swagger server
-RUN mkdir -p /usr/src/app
-
-COPY python-flask-server /usr/src/app
-
-RUN pip3 install /usr/src/app
-
-WORKDIR /usr/src/app
+WORKDIR /usr/src
 
 
-# --- make the service directory, copy code, and install as local package
-RUN mkdir /usr/src/service
-
-COPY subsidy_service /usr/src/service
-
-RUN pip3 install /usr/src/service
+# --- Install requirements (including local packages)
+RUN pip3 install -r /usr/src/requirements.txt
 
 
 # --- mount points for configuration files and logs
