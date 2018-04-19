@@ -41,10 +41,10 @@ def _setup_logger():
     fh.setFormatter(fmtr)
     LOGGER.addHandler(fh)
 
-    # write to stderr
-    sh = logging.StreamHandler()
-    sh.setFormatter(fmtr)
-    LOGGER.addHandler(sh)
+    # # write to stderr
+    # sh = logging.StreamHandler()
+    # sh.setFormatter(fmtr)
+    # LOGGER.addHandler(sh)
 
 
 _setup_logger()
