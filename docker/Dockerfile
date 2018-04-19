@@ -6,7 +6,7 @@ RUN pip install --upgrade pip
 # --- install global requirements 
 COPY requirements.txt /usr/src/
 # filter out local packages
-RUN grep -v "-e git" -i /usr/src/requirements.txt > /usr/src/requirements_clean.txt
+RUN grep -v "-e " -i /usr/src/requirements.txt > /usr/src/requirements_clean.txt
 
 RUN pip3 install -r /usr/src/requirements_clean.txt
 

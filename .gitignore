@@ -70,6 +70,7 @@ target/
 *.conf
 
 # Misc
+activate
 temp-swagger-server-dir
 *.zip
 *.key
