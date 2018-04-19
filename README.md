@@ -29,15 +29,15 @@ source activate
 If your API key is a sandbox key, you can generate your file using
 
 ```bash
-python scripts/generate_bunq_conf.py --sandbox --output_path config/bunq.conf [YOUR_API_KEY]
+python3 scripts/generate_bunq_conf.py --sandbox --output_path config/bunq.conf "YOUR_API_KEY"
 ```
 
 If your key is for the production environment, just remove the `--sandbox` flag. For multiple bunq confs, save them to different files. Don't forget to indicate which bunq conf you are using in the `[bunq]` section of `config/subsidy_service.ini`.
 
 
-### Dockers
+### 2. Dockers
 
-The subsidy service runs on a docker with pore 8080 exposed, and will attempt to communicate with a mongoDB at the host and port indicated in the `[mongo]` section of `config/subsidy_service.ini`. To build and run the subsidy service container, and link it to a vanilla mongoDB container, you can use the convenience command
+The subsidy service runs on a docker with port 8080 exposed, and will attempt to communicate with a mongoDB at the host and port indicated in the `[mongo]` section of `config/subsidy_service.ini`. To build and run the subsidy service container, and link it to a vanilla mongoDB container, you can use the convenience command
 
 ```bash
 make docker-run
@@ -45,7 +45,7 @@ make docker-run
 
 Now you will have the subsidy service API running on `localhost:8080`, and the mongoDB will be accessible at `localhost:27017`.
 
-### User
+### 3. User
 
 To actually make API calls, you need a user in the database. This can also be done on the command line in a python3 interpreter, this time from inside the docker. (If your mongodb is available at `localhost:27017`, this can also be done from your local machine with the virtualenv activated).
 
