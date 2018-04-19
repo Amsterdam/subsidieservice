@@ -13,7 +13,7 @@ venv:
 
 ## Update requirements in requirements.txt
 requirements: 
-	source $(activate); pip freeze > requirements.txt
+	source $(activate); pip freeze | sed 's/@[a-z0-9]*//' > requirements.txt
 
 ## Rebuild the docker including new requirements
 docker-build: docker-stop .
@@ -23,7 +23,7 @@ docker-build: docker-stop .
 ## Run the Service API linked to a new or existing mongo docker
 docker-run: docker-build
 	-docker start subsidy_mongo_dev 
-	docker run --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service/config \
+	docker run -d --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service/config \
 		-v $(shell pwd)/logs:/etc/subsidy_service/logs \
 		--link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
 	docker ps

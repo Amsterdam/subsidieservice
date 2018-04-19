@@ -1,18 +1,15 @@
 # 1. Base
-import subsidy_service.utils
-import subsidy_service.logging
+from subsidy_service import utils
+from subsidy_service import logging, exceptions
 
 # 2. Backend interfaces
-import subsidy_service.bunq
-import subsidy_service.mongo
+from subsidy_service import bunq, mongo
 
 # 3. Server functionality
-import subsidy_service.auth
+from subsidy_service import auth
 
 # 4. User management
-import subsidy_service.users
+from subsidy_service import users
 
 # 5. Controller interfaces
-import subsidy_service.citizens
-import subsidy_service.subsidies
-import subsidy_service.masters
+from subsidy_service import citizens, subsidies, masters

@@ -27,56 +27,64 @@ if USER_CTX.is_both_user_type_set() or USER_CTX.is_only_user_company_set():
     USER_NAME = user_obj.name
 else:
     user_obj = USER_CTX.user_person
-    USER_NAME =  user_obj.legal_name
+    USER_NAME = user_obj.legal_name
 
 USER_ID = int(user_obj.id_)
 CURRENCY = 'EUR'
 
 
+# Direct Interaction with Bunq
 # Actions
 def create_account(description: str='Subsidie Gemeente Amsterdam'):
-    request_map = {
-        endpoint.MonetaryAccountBank.FIELD_DESCRIPTION: description,
-        endpoint.MonetaryAccountBank.FIELD_CURRENCY: CURRENCY,
-    }
-
     response = endpoint.MonetaryAccountBank.create(currency=CURRENCY,
                                                    description=description)
-
     acct_id = response.value
     return read_account(acct_id)
 
 
 def read_account(id: int):
-    # try:
-    response = endpoint.MonetaryAccountBank.get(int(id))
-    acct = response.value
-    return account_summary(acct)
-    # except exception.NotFoundException:
-    #     return None
+    try:
+        response = endpoint.MonetaryAccountBank.get(int(id))
+        acct = response.value
+        return account_summary(acct)
+    except exception.NotFoundException as e:
+        raise _convert_exception(e)
 
 
-def read_account_by_iban(iban: str, include_closed=False):
-    accts = list_accounts(include_closed)
-    output = None
-    for acct in accts:
-        if acct['iban'] == iban:
-            output = acct
-    return output
+def close_account(id):
+    acct = read_account(id)
+
+    revoke_all_shares(id)
+
+    response = endpoint.MonetaryAccountBank.update(
+        id,
+        status='CANCELLED',
+        sub_status='REDEMPTION_VOLUNTARY',
+        reason='OTHER',
+        reason_description='Closed via Subsidy Service'
+    )
+
+    return acct
 
 
-def get_payments(acct_id: int):
-    payments = _list_all_pages(endpoint.Payment, {}, acct_id)
-    return [payment_summary(pmt) for pmt in payments]
+def read_share(acct_id: int, share_id: int):
+    try:
+        response = endpoint.ShareInviteBankInquiry.get(share_id, acct_id)
+        return share_summary(response.value)
+
+    except exception.ApiException as e:
+        raise _convert_exception(e)
 
 
-def list_accounts(include_closed=False):
-    accts = _list_all_pages(endpoint.MonetaryAccountBank, {})
+def list_shares(acct_id: int):
+    try:
+        response = \
+            endpoint.ShareInviteBankInquiry.list(monetary_account_id=acct_id)
+    except exception.NotFoundException:
+        raise service.exceptions.NotFoundException
 
-    output = [account_summary(acct) for acct in accts
-              if (acct.status != 'CANCELLED') or include_closed]
-
-    return output
+    shares = [share_summary(share) for share in list(response.value)]
+    return shares
 
 
 def create_share(acct_id: int, recip_phnum: str):
@@ -103,13 +111,21 @@ def create_share(acct_id: int, recip_phnum: str):
         )
 
     except exception.BadRequestException as e:
-        # Share already exists, return it
+        # Share with counterparty already may already exist -> return it
         existing_alias = _get_alias_from_error_message(e.message)
-        current_shares = list_shares(acct_id)
-        matching_share = [s for s in current_shares
-                          if s['counterparty'] == existing_alias][0]
+        matching_shares = []
+        if existing_alias:
+            current_shares = list_shares(acct_id)
+            matching_shares = [s for s in current_shares
+                               if s['counterparty'] == existing_alias]
 
-        return matching_share
+        if len(matching_shares) == 1:
+            return matching_shares[0]
+        else:
+            raise _convert_exception(e)
+
+    except exception.NotFoundException as e:
+        raise _convert_exception(e)
 
     share_id = response.value
 
@@ -121,6 +137,7 @@ def create_share(acct_id: int, recip_phnum: str):
 
 def revoke_share(acct_id: int, share_id: int):
     share_dict = read_share(acct_id, share_id)
+
     status = share_dict['status']
 
     new_status = status
@@ -143,7 +160,7 @@ def revoke_share(acct_id: int, share_id: int):
 
 
 def make_payment_to_iban(acct_id, to_iban, to_name, amount,
-                 description='Subsidy Service payment'):
+                         description='Subsidy Service payment'):
     counterparty = object_.Pointer(type_='IBAN', value=to_iban, name=to_name)
     amt = object_.Amount(value=str(amount), currency=CURRENCY)
 
@@ -159,9 +176,38 @@ def make_payment_to_iban(acct_id, to_iban, to_name, amount,
     return payment_summary(pmt)
 
 
+def get_payments(acct_id: int):
+    try:
+        payments = _list_all_pages(endpoint.Payment, {}, acct_id)
+    except exception.NotFoundException as e:
+        raise _convert_exception(e)
+    return [payment_summary(pmt) for pmt in payments]
+
+
+def list_accounts(include_closed=False):
+    accts = _list_all_pages(endpoint.MonetaryAccountBank, {})
+
+    output = [account_summary(acct) for acct in accts
+              if (acct.status != 'CANCELLED') or include_closed]
+
+    return output
+
+
+# helper functions (no direct calls to Bunq)
+def get_balance(acct_id: int):
+    acct = read_account(acct_id)
+    if acct is None:
+        return None
+    return float(acct['balance'])
+
+
+def revoke_all_shares(acct_id: int):
+    share_ids = [s['id'] for s in list_shares(acct_id)]
+    return [revoke_share(acct_id, share_id) for share_id in share_ids]
+
+
 def make_payment_to_acct_id(from_acct_id, to_acct_id, amount,
                             description='Subsidy service internal payment'):
-
     to_acct = read_account(to_acct_id)
 
     pmt = make_payment_to_iban(
@@ -171,50 +217,22 @@ def make_payment_to_acct_id(from_acct_id, to_acct_id, amount,
         amount,
         description,
     )
-
     return pmt
 
 
-def close_account(id):
-    acct = read_account(id)
-
-    revoke_all_shares(id)
-
-    response = endpoint.MonetaryAccountBank.update(
-        id,
-        status='CANCELLED',
-        sub_status='REDEMPTION_VOLUNTARY',
-        reason='OTHER',
-        reason_description='Closed via Subsidy Service'
-    )
-
-    return acct
-
-
-def revoke_all_shares(acct_id: int):
-    share_ids = [s['id'] for s in list_shares(acct_id)]
-    return [revoke_share(acct_id, share_id) for share_id in share_ids]
-
-
-def list_shares(acct_id: int):
-    response = endpoint.ShareInviteBankInquiry.list(monetary_account_id=acct_id)
-    shares = [share_summary(share) for share in response.value]
-
-    return shares
-
-
-def read_share(acct_id: int, share_id: int):
-    response = endpoint.ShareInviteBankInquiry.get(share_id, acct_id)
-    return share_summary(response.value)
-
-
-def get_balance(acct_id: int):
-    acct = read_account(acct_id)
-    return float(acct['balance'])
+def read_account_by_iban(iban: str, include_closed=False):
+    accts = list_accounts(include_closed)
+    output = None
+    for acct in accts:
+        if acct['iban'] == iban:
+            output = acct
+    return output
 
 
 # Object abstractions
 def account_summary(acct: endpoint.MonetaryAccountBank, full: bool=False):
+    if type(acct) is not endpoint.MonetaryAccountBank:
+        return None
     iban = ''
     name = ''
     for al in acct.alias:
@@ -238,6 +256,8 @@ def account_summary(acct: endpoint.MonetaryAccountBank, full: bool=False):
 
 
 def share_summary(share: endpoint.ShareInviteBankInquiry):
+    if type(share) is not endpoint.ShareInviteBankInquiry:
+        return None
     share_dict = {
         'type': 'bunq_connect',
         'id': share.id_,
@@ -251,6 +271,8 @@ def share_summary(share: endpoint.ShareInviteBankInquiry):
 
 
 def payment_summary(payment: endpoint.Payment):
+    if type(payment) is not endpoint.Payment:
+        return None
     pmt_dict = {
         'id': payment.id_,
         'amount': float(payment.amount.value),
@@ -272,6 +294,39 @@ def _get_alias_from_error_message(msg):
         return alias.group(1)
     except AttributeError:
         return None
+
+
+def _convert_exception(e: exception.ApiException):
+    """
+    Convert bunq exceptions to service.exceptions exceptions.
+    :param e:
+    :return:
+    """
+    if not isinstance(e, exception.ApiException):
+        return e
+
+    if isinstance(e, exception.NotFoundException):
+        if 'Connect with id' in e.message:
+            return service.exceptions.NotFoundException('Share not found')
+
+        elif 'account for id' in e.message:
+            return service.exceptions.NotFoundException('Account not found')
+
+        else:
+            return service.exceptions.NotFoundException('Not found')
+
+    elif isinstance(e, exception.BadRequestException):
+        if 'Iban pointer' in e.message:
+            return service.exceptions.BadRequestException('Iban invalid')
+
+        elif 'amount of a payment' in e.message:
+            msg = 'Payment amount invalid'
+            return service.exceptions.BadRequestException(msg)
+
+        else:
+            return service.exceptions.BadRequestException('Invalid request')
+    else:
+        return e
 
 
 def _list_all_pages(endpoint_obj, list_params, *args, **kwargs):
@@ -314,22 +369,56 @@ def _list_all_pages(endpoint_obj, list_params, *args, **kwargs):
 
     # keep getting pages while they are available
     while response.pagination.has_previous_page():
-        response = endpoint_obj.list(
-            *args,
-            params=response.pagination.url_params_previous_page,
-            **kwargs)
+        try:
+            response = endpoint_obj.list(
+                *args,
+                params=response.pagination.url_params_previous_page,
+                **kwargs)
 
-        output += list(response.value)
+            output += list(response.value)
+        except:
+            pass
 
     return output
 
+
+def _reload_context(conf=CONF):
+    """
+    Reload the Bunq Context from the given config object. Updates the global
+    context-derived variables (CTX, USER_CTX, USER_ID, USER_NAME).
+
+    :param conf:
+    :return:
+    """
+    global CTX, USER_CTX, USER_ID, USER_NAME
+    try:
+        CTX = ApiContext.restore(conf.get('bunq', 'conf_path'))
+        print('Bunq config loaded from', conf.get('bunq', 'conf_path'))
+    except FileNotFoundError:
+        basepath = os.getcwd()
+        path = os.path.join(basepath, conf.get('bunq', 'conf_path'))
+        CTX = ApiContext.restore(path)
+        print('Bunq config loaded from', path)
+
+    BunqContext.load_api_context(CTX)
+
+    USER_CTX = BunqContext._user_context
+
+    if USER_CTX.is_both_user_type_set() or USER_CTX.is_only_user_company_set():
+        user_obj = USER_CTX.user_company
+        USER_NAME = user_obj.name
+    else:
+        user_obj = USER_CTX.user_person
+        USER_NAME = user_obj.legal_name
+
+    USER_ID = int(user_obj.id_)
 
 # new_acct = create_account('SS Test')
 # pmt = make_payment_to_acct_id(6146, new_acct['id'], 100.00)
 # pmt = make_payment_to_acct_id(new_acct['id'], 6146, 100.00)
 # new_acct = close_account(new_acct['id'])
 #
-print(list_accounts())
+# print(list_accounts())
 # print(list_shares(6146))
 # print(create_share(6146, '+31648136656'))
 

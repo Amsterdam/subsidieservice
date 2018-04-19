@@ -450,10 +450,9 @@ definitions:
         type: "string"
       balance:
         type: "number"
-        minimum: 0
     description: "A bank account"
     example:
-      balance: 0.080082819046101150206595775671303272247314453125
+      balance: 0.80082819046101150206595775671303272247314453125
       iban: "iban"
       name: "name"
       description: "description"
@@ -501,12 +500,6 @@ definitions:
   citizen:
     allOf:
     - $ref: "#/definitions/citizen-base"
-    - type: "object"
-      properties:
-        subsidies:
-          type: "array"
-          items:
-            $ref: "#/definitions/subsidy-base"
     description: "A citizen of Amsterdam who may be recieving subsidies"
   subsidy-base:
     type: "object"
@@ -550,7 +543,7 @@ definitions:
       comment: "comment"
       id: "id"
       account:
-        balance: 0.080082819046101150206595775671303272247314453125
+        balance: 0.80082819046101150206595775671303272247314453125
         iban: "iban"
         name: "name"
         description: "description"

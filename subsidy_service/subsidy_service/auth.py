@@ -80,7 +80,7 @@ def verify_user(username: str, password: str):
 
 
 def validate_password(pwd: str):
-    # TODO: Determine if we want this (length, complexity, etc).
+    # TODO: Determine if we want this (length, complexity, lists, etc).
     return True
 
 

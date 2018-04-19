@@ -8,6 +8,7 @@ from swagger_server import util
 import subsidy_service as service
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def citizens_get():  # noqa: E501
     """Returns a list of citizens.
@@ -22,6 +23,7 @@ def citizens_get():  # noqa: E501
     return output
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def citizens_id_delete(id):  # noqa: E501
     """Remove a citizen
@@ -37,6 +39,7 @@ def citizens_id_delete(id):  # noqa: E501
     return None
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def citizens_id_get(id):  # noqa: E501
     """Returns a specific citizen
@@ -52,6 +55,7 @@ def citizens_id_get(id):  # noqa: E501
     return Citizen.from_dict(response)
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def citizens_id_patch(id, body):  # noqa: E501
     """Edit a citizen&#39;s information
@@ -72,6 +76,7 @@ def citizens_id_patch(id, body):  # noqa: E501
     return Citizen.from_dict(response)
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def citizens_id_put(id, body):  # noqa: E501
     """Re-upload a citizen&#39;s information
@@ -92,6 +97,7 @@ def citizens_id_put(id, body):  # noqa: E501
     return Citizen.from_dict(response)
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def citizens_post(body):  # noqa: E501
     """Create a new citizen

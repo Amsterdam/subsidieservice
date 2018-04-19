@@ -138,7 +138,5 @@ class AccountBase(Model):
         :param balance: The balance of this AccountBase.
         :type balance: float
         """
-        if balance is not None and balance < 0:  # noqa: E501
-            raise ValueError("Invalid value for `balance`, must be a value greater than or equal to `0`")  # noqa: E501
 
         self._balance = balance

@@ -23,28 +23,36 @@ def create(subsidy: dict):
     master = service.utils.drop_nones(subsidy['master'])
     master = service.mongo.find(master, DB.masters)
 
-    recip_full = service.mongo.find(recip, DB.citizens)
+    recip = service.mongo.find(recip, DB.citizens)
 
-    # try:
-    #     bunq.sdk.exception.NotFoundException
+    if recip is None:
+        raise service.exceptions.NotFoundException('Recipient citizen not found')
 
-    if recip_full:
-        recip = recip_full.copy()
-        recip.pop('subsidies')
-        subsidy['recipient'] = recip
-    else:
-        # TODO: Determine if this is desirable
-        service.citizens.create(subsidy['recipient'])
+    if master is None:
+        raise service.exceptions.NotFoundException('Master account not found')
+
+    # recip = recip_full.copy()
+    # recip.pop('subsidies')
+    subsidy['recipient'] = recip
+
 
     # TODO: Move to actions/approve
-    new_acct = service.bunq.create_account()
-    new_acct['bunq_id'] = new_acct.pop('id')
+    try:
+        new_acct = service.bunq.create_account()
+        new_acct['bunq_id'] = new_acct.pop('id')
+    except:
+        return None
 
     pmt = service.bunq.make_payment_to_acct_id(master['bunq_id'],
                                                new_acct['bunq_id'],
                                                subsidy['amount'])
 
-    new_acct['balance'] = float(new_acct['balance']) - float(pmt['amount'])  # payment amount is negative
+    if pmt is None:
+        # roll back account creation
+        service.bunq.close_account(new_acct['bunq_id'])
+        return None
+
+    new_acct['balance'] = - float(pmt['amount'])
     master['balance'] = float(master['balance']) - float(pmt['amount'])
 
     try:
@@ -60,12 +68,14 @@ def create(subsidy: dict):
     subsidy['account'] = new_acct
     subsidy['master'] = master
 
-    if not recip_full['subsidies']:
-        recip_full['subsidies'] = [subsidy]
-    else:
-        recip_full['subsidies'].append(subsidy)
-
-    service.mongo.update_by_id(recip_full['id'], recip_full, DB.citizens)
+    # REMOVED
+    # # add subsidy to recipient's subsidies
+    # if not recip_full['subsidies']:
+    #     recip_full['subsidies'] = [subsidy]
+    # else:
+    #     recip_full['subsidies'].append(subsidy)
+    #
+    # service.mongo.update_by_id(recip_full['id'], recip_full, DB.citizens)
 
     output = service.mongo.add_and_copy_id(subsidy, DB.subsidies)
 
@@ -108,7 +118,6 @@ def update(id, subsidy: dict):
     document = service.utils.drop_nones(subsidy)
     obj = service.mongo.update_by_id(id, document, DB.subsidies)
     return obj
-
 
 def replace(id, subsidy: dict):
     """

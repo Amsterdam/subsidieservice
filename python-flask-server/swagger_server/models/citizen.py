@@ -7,7 +7,6 @@ from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
 from swagger_server.models.citizen_base import CitizenBase  # noqa: F401,E501
-from swagger_server.models.subsidy_base import SubsidyBase  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -17,7 +16,7 @@ class Citizen(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: str=None, name: str=None, email: str=None, phone_number: str=None, subsidies: List[SubsidyBase]=None):  # noqa: E501
+    def __init__(self, id: str=None, name: str=None, email: str=None, phone_number: str=None):  # noqa: E501
         """Citizen - a model defined in Swagger
 
         :param id: The id of this Citizen.  # noqa: E501
@@ -28,30 +27,25 @@ class Citizen(Model):
         :type email: str
         :param phone_number: The phone_number of this Citizen.  # noqa: E501
         :type phone_number: str
-        :param subsidies: The subsidies of this Citizen.  # noqa: E501
-        :type subsidies: List[SubsidyBase]
         """
         self.swagger_types = {
             'id': str,
             'name': str,
             'email': str,
-            'phone_number': str,
-            'subsidies': List[SubsidyBase]
+            'phone_number': str
         }
 
         self.attribute_map = {
             'id': 'id',
             'name': 'name',
             'email': 'email',
-            'phone_number': 'phone_number',
-            'subsidies': 'subsidies'
+            'phone_number': 'phone_number'
         }
 
         self._id = id
         self._name = name
         self._email = email
         self._phone_number = phone_number
-        self._subsidies = subsidies
 
     @classmethod
     def from_dict(cls, dikt) -> 'Citizen':
@@ -147,24 +141,3 @@ class Citizen(Model):
         """
 
         self._phone_number = phone_number
-
-    @property
-    def subsidies(self) -> List[SubsidyBase]:
-        """Gets the subsidies of this Citizen.
-
-
-        :return: The subsidies of this Citizen.
-        :rtype: List[SubsidyBase]
-        """
-        return self._subsidies
-
-    @subsidies.setter
-    def subsidies(self, subsidies: List[SubsidyBase]):
-        """Sets the subsidies of this Citizen.
-
-
-        :param subsidies: The subsidies of this Citizen.
-        :type subsidies: List[SubsidyBase]
-        """
-
-        self._subsidies = subsidies

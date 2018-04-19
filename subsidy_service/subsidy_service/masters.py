@@ -23,11 +23,11 @@ def create(master: dict):
     elif 'description' in master:
         mast = service.bunq.create_account(description=master['description'])
     else:
-        mast = service.bunq.create_account(description=master['description'])
+        mast = service.bunq.create_account()
 
     mast['bunq_id'] = mast.pop('id')
     mast = service.mongo.add_and_copy_id(mast, DB.masters)
-    mast['transactions'] = service.bunq.get_payments(mast['bunq_id'])
+    mast['transactions'] = get_payments_if_available(mast['bunq_id'])
 
     return mast
 
@@ -40,7 +40,7 @@ def read(id):
     :return: dict
     """
     master = get_and_update_balance(id)
-    master['transactions'] = service.bunq.get_payments(master['bunq_id'])
+    master['transactions'] = get_payments_if_available(master['bunq_id'])
     return master
 
 
@@ -101,10 +101,26 @@ def get_and_update_balance(id):
     Get the master from the DB, update the balance from bunq, push the update
     to the DB, and return the master account.
 
+    If the master account can't be found (no access at bank level), None is
+    returned and the db is not updated.
+
     :param id:
     :return:
     """
     master = service.mongo.get_by_id(id, DB.masters)
-    master['balance'] = service.bunq.get_balance(master['bunq_id'])
-    master = service.mongo.update_by_id(master['id'], master, DB.masters)
+    try:
+        master['balance'] = service.bunq.get_balance(master['bunq_id'])
+        master = service.mongo.update_by_id(master['id'], master, DB.masters)
+
+    except service.exceptions.NotFoundException:
+        master['balance'] = None
+
     return master
+
+
+def get_payments_if_available(bunq_id):
+    try:
+        return service.bunq.get_payments(bunq_id)
+    except service.exceptions.NotFoundException:
+        return None
+

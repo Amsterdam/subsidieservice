@@ -8,6 +8,7 @@ from swagger_server import util
 import subsidy_service as service
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def subsidies_id_actions_approve_post(id, body):  # noqa: E501
     """Approve a subsidy

@@ -560,7 +560,6 @@ definitions:
         type: string
       balance:
         type: number
-        minimum: 0
   
   account:
     description: "A bank account"
@@ -622,12 +621,12 @@ definitions:
     description: "A citizen of Amsterdam who may be recieving subsidies"
     allOf:
     - $ref: "#/definitions/citizen-base"
-    - type: object
-      properties:
-        subsidies:
-          type: array
-          items: 
-            $ref: "#/definitions/subsidy-base"
+    # - type: object
+    #   properties:
+    #     subsidies:
+    #       type: array
+    #       items: 
+    #         $ref: "#/definitions/subsidy-base"
             
   subsidy-base:
     description: "A recurring allocation of funds made available from a master-account to a recipient citizen's account"

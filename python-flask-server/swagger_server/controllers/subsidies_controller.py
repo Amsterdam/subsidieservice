@@ -9,6 +9,7 @@ from swagger_server import util
 import subsidy_service as service
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def subsidies_get():  # noqa: E501
     """Returns a list of subsidies.
@@ -23,6 +24,7 @@ def subsidies_get():  # noqa: E501
     return output
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def subsidies_id_actions_approve_post(id, body):  # noqa: E501
     """Approve a subsidy
@@ -41,6 +43,7 @@ def subsidies_id_actions_approve_post(id, body):  # noqa: E501
     return 'do some magic!'
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def subsidies_id_delete(id):  # noqa: E501
     """Remove a subsidy
@@ -56,6 +59,7 @@ def subsidies_id_delete(id):  # noqa: E501
     return None
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def subsidies_id_get(id):  # noqa: E501
     """Returns a specific subsidy
@@ -71,6 +75,7 @@ def subsidies_id_get(id):  # noqa: E501
     return Subsidy.from_dict(response)
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def subsidies_id_patch(id, body):  # noqa: E501
     """Edit a subsidy&#39;s information
@@ -91,6 +96,7 @@ def subsidies_id_patch(id, body):  # noqa: E501
     # return Subsidy.from_dict(response)
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def subsidies_id_put(id, body):  # noqa: E501
     """Re-upload a subsidy&#39;s information
@@ -111,6 +117,7 @@ def subsidies_id_put(id, body):  # noqa: E501
     # return Subsidy.from_dict(response)
 
 
+@service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def subsidies_post(body):  # noqa: E501
     """Create a new subsidy
