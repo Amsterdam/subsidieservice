@@ -6,6 +6,10 @@ import warnings
 warnings.filterwarnings('ignore', message='\[bunq SDK')
 
 import subsidy_service as service
+import traceback
+
+from swagger_server.models.citizen_base import CitizenBase
+from swagger_server.models.subsidy_base import SubsidyBase
 
 
 def process_row(row: pd.Series, master_id: str):
@@ -17,7 +21,12 @@ def process_row(row: pd.Series, master_id: str):
         'phone_number': phnum
     }
 
-    # citizen = service.citizens.create(citizen)
+    try:
+        CitizenBase.from_dict(citizen)
+    except:
+        raise service.exceptions.BadRequestException('Invalid Citizen input')
+
+    citizen = service.citizens.create(citizen)
 
     subsidy = {
         'name': row['Subsidienaam'],
@@ -29,9 +38,17 @@ def process_row(row: pd.Series, master_id: str):
         'master': {'id': master_id},
     }
 
-    # subsidy = service.subsidies.create(subsidy)
-    # citizen = service.citizens.read(citizen['id'])
-    # citizen.pop('subsidies')
+    try:
+        SubsidyBase.from_dict(subsidy)
+    except:
+        service.citizens.delete(citizen['id'])
+        raise service.exceptions.BadRequestException('Invalid Subsidy input')
+
+    try:
+        subsidy = service.subsidies.create(subsidy)
+    except Exception as e:
+        service.citizens.delete(citizen['id'])
+        raise e
 
     return {'citizen': citizen, 'subsidy': subsidy}
 
@@ -39,7 +56,7 @@ def process_row(row: pd.Series, master_id: str):
 @click.command()
 @click.argument('filename')
 @click.argument('master_id')
-def process_csv(filename):
+def process_csv(filename, master_id):
     """
     Process subsidy recipients csv. Citizens and corresponding subsidies are
     added to the database, and subsidies are granted immediately upon
@@ -60,15 +77,26 @@ def process_csv(filename):
     }
 
     recipients_df = pd.read_csv(filename, **csv_spec)
-    print(recipients_df)
-
+    # print(recipients_df)
 
     for idx, row in recipients_df.iterrows():
-        output = process_row(row)
-        print('Created:')
-        pprint(output)
-        print()
+        try:
+            output = process_row(row, master_id)
+            print('Created:')
+            pprint(output)
+        except service.exceptions.BaseSubsidyServiceException as e:
+            print('ERROR: Could not create subsidy for')
+            print(row)
+            print('REASON:', e.message)
+            print()
+        except Exception as e:
+            traceback.print_exc()
+
+
+@service.auth.authenticate_promt
+def main():
+    process_csv()
 
 
 if __name__ == '__main__':
-    process_csv()
+    main()
