@@ -50,7 +50,10 @@ def read(id):
     :param id: the citizen's ID
     :return: dict
     """
-    return service.mongo.get_by_id(id, DB.citizens)
+    output = service.mongo.get_by_id(id, DB.citizens)
+    if not output:
+        raise service.exceptions.NotFoundException('Citizen not found')
+    return output
 
 
 def read_all():
