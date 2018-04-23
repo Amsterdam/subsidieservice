@@ -53,10 +53,10 @@ def process_row(row: pd.Series, master_id: str):
 
     return {'citizen': citizen, 'subsidy': subsidy}
 
-
 @click.command()
 @click.argument('filename')
 @click.argument('master_id')
+@service.auth.authenticate_promt
 def process_csv(filename, master_id):
     """
     Process subsidy recipients csv. Citizens and corresponding subsidies are
@@ -95,7 +95,6 @@ def process_csv(filename, master_id):
             traceback.print_exc()
 
 
-@service.auth.authenticate_promt
 def main():
     process_csv()
 

@@ -19,9 +19,11 @@ class TestSubsidiesController(BaseTestCase):
 
         Returns a list of subsidies.
         """
+        query_string = [('status', 'status_example')]
         response = self.client.open(
             '/v1/subsidies',
-            method='GET')
+            method='GET',
+            query_string=query_string)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 

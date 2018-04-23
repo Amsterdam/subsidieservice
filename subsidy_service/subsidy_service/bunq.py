@@ -43,11 +43,11 @@ def create_account(description: str='Subsidie Gemeente Amsterdam'):
     return read_account(acct_id)
 
 
-def read_account(id: int):
+def read_account(id: int, full=False):
     try:
         response = endpoint.MonetaryAccountBank.get(int(id))
         acct = response.value
-        return account_summary(acct)
+        return account_summary(acct, full)
     except Exception as e:
         raise _convert_exception(e)
 
@@ -228,12 +228,15 @@ def make_payment_to_acct_id(from_acct_id, to_acct_id, amount,
     return pmt
 
 
-def read_account_by_iban(iban: str, include_closed=False):
+def read_account_by_iban(iban: str, include_closed=False, full=False):
     accts = list_accounts(include_closed)
     output = None
     for acct in accts:
         if acct['iban'] == iban:
-            output = acct
+            if full:
+                output = read_account(acct['id'], full=full)
+            else:
+                output = acct
 
     if output is None:
         raise service.exceptions.NotFoundException('Account not found')
@@ -334,6 +337,10 @@ def _convert_exception(e: exception.ApiException):
         elif 'amount of a payment' in e.message:
             msg = 'Payment amount invalid'
             return service.exceptions.BadRequestException(msg)
+
+        elif 'No user found' in e.message:
+            msg = 'No bank account found for user'
+            return service.exceptions.NotFoundException(msg)
 
         else:
             return service.exceptions.BadRequestException('Invalid request')

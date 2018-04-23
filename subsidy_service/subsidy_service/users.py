@@ -40,7 +40,7 @@ def get(username: str):
     Get a user by username.
 
     :param username:
-    :return: dict with id, username, and password
+    :return: dict with id, username, and password hash
     """
     return service.mongo.find({'username': username}, DB.users)
 
@@ -59,7 +59,7 @@ def update_password(username: str, old_password: str, new_password: str):
     if existing is None:
         return {'Error': f'User "{username}" does not exist'}
     elif not service.auth.validate_password(new_password):
-        return {'Error': 'Password does not meet requirements'}
+        return {'Error': 'New password does not meet requirements'}
     elif not authenticate(username, old_password):
         return {'Error': 'Unauthorized'}
     else:
@@ -85,7 +85,7 @@ def authenticate(username: str, password: str):
 
 def delete(username: str, password: str):
     """
-    Remove a user from the databse (requires verification).
+    Remove a user from the database (requires verification).
 
     :param username:
     :param password:

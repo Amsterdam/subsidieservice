@@ -16,7 +16,7 @@ def audit(user: str, action: str, result=None):
 
 def audit_log_message(user: str, action: str, result=None):
     msg = f'User "{user}" took action "{action}" with the following result: '\
-        + str(result)
+        + pprint.pformat(result, width=999999999, compact=True)
 
     return msg
 

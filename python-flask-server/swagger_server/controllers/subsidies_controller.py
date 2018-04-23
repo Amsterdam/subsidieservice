@@ -11,7 +11,7 @@ import subsidy_service as service
 
 @service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
-def subsidies_get():  # noqa: E501
+def subsidies_get(status=None):  # noqa: E501
     """Returns a list of subsidies.
 
      # noqa: E501
@@ -19,7 +19,7 @@ def subsidies_get():  # noqa: E501
 
     :rtype: List[SubsidyBase]
     """
-    response = service.subsidies.read_all()
+    response = service.subsidies.read_all(status)
     output = [SubsidyBase().from_dict(doc) for doc in response]
     return output
 

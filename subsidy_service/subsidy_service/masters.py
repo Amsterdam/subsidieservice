@@ -21,7 +21,6 @@ def create(master: dict):
     :type master: dict
     :return: dict: the created object
     """
-
     if 'iban' in master:
         existing = service.mongo.find({'iban':master['iban']}, DB.masters)
 

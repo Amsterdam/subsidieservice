@@ -18,7 +18,7 @@ requirements:
 
 ## Rebuild the docker including new requirements
 docker-build: docker-stop .
-	-docker run -d -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
+	docker run -d -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
 	docker build -f docker/Dockerfile -t subsidies/server .
 
 ## Run the Service API linked to a new or existing mongo docker
@@ -38,6 +38,7 @@ docker-shell:
 docker-stop:
 	-docker kill subsidy_mongo_dev
 	-docker kill subsidy_service_dev
+	-docker rm subsidy_mongo_dev
 	-docker rm subsidy_service_dev
 
 ## Update the existing models and code, BUT NOT CONTROLLERS, to new swagger spec.

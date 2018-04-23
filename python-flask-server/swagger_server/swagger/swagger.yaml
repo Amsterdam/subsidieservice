@@ -276,7 +276,12 @@ paths:
       operationId: "subsidies_get"
       produces:
       - "application/json"
-      parameters: []
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "subsidy status filter"
+        required: false
+        type: "string"
       responses:
         200:
           description: "OK"

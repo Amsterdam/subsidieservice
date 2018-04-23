@@ -391,6 +391,12 @@ paths:
       summary: "Returns a list of subsidies."
       produces:
       - "application/json"
+      parameters:
+        - in: "query"
+          name: "status"
+          description: "subsidy status filter"
+          required: False
+          type: string
       responses:
         200:
           description: OK
