@@ -1,0 +1,4 @@
+"Voornaam";"Achternaam";"Mobiel nummer";"Bedrag";"Email";"Subsidienaam";"Begindatum";"Einddatum";"Referentie veld"
+"John";"Paton";"+31 6 10372314";1,00;"paton.john@kpmg.nl";"Subsidie Test Productie Omgeving";"01-03-2018";"01-03-2019";"12-CSV-3"
+"Anil";"Balgobind";"+31 6 81487357";1,00;"Anil.Balgobind@amsterdam.nl";"Subsidie Test Productie Omgeving";"01-03-2018";"01-03-2019";"12-CSV-3"
+"This";"row";"+is";1,00;"just@a.bunch";"of";"nonsense";"data";"0000"
