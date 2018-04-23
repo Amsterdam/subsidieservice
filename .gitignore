@@ -78,3 +78,6 @@ temp-swagger-server-dir
 *~*.docx
 *~*.pptx
 *.log
+
+data/mongodb/*
+!data/mongodb/placeholder
