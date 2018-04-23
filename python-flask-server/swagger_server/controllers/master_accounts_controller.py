@@ -71,7 +71,7 @@ def master_accounts_id_patch(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = MasterAccount.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     # response = service.masters.update(id, body.to_dict())
     # return MasterAccount.from_dict(response)
 
@@ -92,7 +92,7 @@ def master_accounts_id_put(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = MasterAccount.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     # response = service.masters.replace(id, body.to_dict())
     # return MasterAccount.from_dict(response)
 

@@ -13,8 +13,6 @@ tags:
   description: "Create, read, update, and delete citizens."
 - name: "subsidies"
   description: "Create, read, update, and delete subsidies."
-- name: "actions"
-  description: "Perform actions with side effects"
 schemes:
 - "https"
 paths:
@@ -398,7 +396,6 @@ paths:
     post:
       tags:
       - "subsidies"
-      - "actions"
       summary: "Approve a subsidy"
       operationId: "subsidies_id_actions_approve_post"
       consumes:

@@ -40,7 +40,7 @@ def subsidies_id_actions_approve_post(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = User.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    raise service.exceptions.NotImplementedException('Not yet implemented')
 
 
 @service.exceptions.exceptionHTTPencode
@@ -91,7 +91,7 @@ def subsidies_id_patch(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     # response = service.subsidies.update(id, body)
     # return Subsidy.from_dict(response)
 
@@ -112,7 +112,7 @@ def subsidies_id_put(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     # response = service.subsidies.replace(id, body)
     # return Subsidy.from_dict(response)
 

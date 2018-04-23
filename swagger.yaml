@@ -27,8 +27,6 @@ tags:
   description:  "Create, read, update, and delete citizens."
 - name: "subsidies"
   description:  "Create, read, update, and delete subsidies."
-- name: "actions"
-  description: "Perform actions with side effects"
 
 paths:
   # /users:
@@ -507,7 +505,6 @@ paths:
     post:
       tags: 
         - "subsidies"
-        - "actions"
       summary: "Approve a subsidy"
       consumes:
       - "application/nl.kpmg.v1.user+json"
