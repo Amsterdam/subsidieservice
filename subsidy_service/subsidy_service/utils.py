@@ -2,6 +2,7 @@ import os
 import configparser
 import subsidy_service as service
 import datetime
+import re
 
 
 def get_config(filename='subsidy_service.ini', configdir=None):
@@ -80,7 +81,14 @@ def format_phone_number(phone_number):
     :param phone_number: the phone number to format.
     :return: str
     """
+
     phnum = str(phone_number)
+
+    rx = r'\+?[0-9\-\s]+'
+
+    if not re.match(rx, phnum):
+        raise service.exceptions.BadRequestException('Invaild phone number')
+
     phnum = ''.join(phnum.split())  # Drop whitespace
 
     if phnum[0] == '0':

@@ -2,11 +2,13 @@
 Business logic for working with master accounts.
 """
 import subsidy_service as service
+import time
 
 # Globals
 CONF = service.utils.get_config()
 CLIENT = service.mongo.get_client(CONF)
 DB = CLIENT.subsidy
+
 
 # CRUD functionality
 def create(master: dict):
@@ -61,7 +63,10 @@ def read_all():
     :return: dict
     """
     masters = service.mongo.get_collection(DB.masters)
-    output = [get_and_update_balance(mast['id']) for mast in masters]
+    output = []
+    for mast in masters:
+        output.append(get_and_update_balance(mast['id']))
+        time.sleep(1)
     return masters
 
 
@@ -73,6 +78,7 @@ def update(id, master: dict):
     :param master: the fields to update. Nones will be ignored.
     :return: the updated master
     """
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     document = service.utils.drop_nones(master)
     obj = service.mongo.update_by_id(id, document, DB.masters)
     return obj
@@ -86,6 +92,7 @@ def replace(id, master: dict):
     :param master: the new details
     :return: the new master's details
     """
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     document = master
     document['id'] = str(id)
     obj = service.mongo.replace_by_id(id, document, DB.masters)

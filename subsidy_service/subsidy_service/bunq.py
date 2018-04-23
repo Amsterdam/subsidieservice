@@ -1,6 +1,7 @@
 import subsidy_service as service
 import os
 import re
+import time
 
 from bunq.sdk.context import ApiContext, BunqContext
 from bunq.sdk.model.generated import endpoint, object_
@@ -47,7 +48,7 @@ def read_account(id: int):
         response = endpoint.MonetaryAccountBank.get(int(id))
         acct = response.value
         return account_summary(acct)
-    except exception.NotFoundException as e:
+    except Exception as e:
         raise _convert_exception(e)
 
 
@@ -124,7 +125,7 @@ def create_share(acct_id: int, recip_phnum: str):
         else:
             raise _convert_exception(e)
 
-    except exception.NotFoundException as e:
+    except Exception as e:
         raise _convert_exception(e)
 
     share_id = response.value
@@ -148,11 +149,14 @@ def revoke_share(acct_id: int, share_id: int):
     elif status == 'ACCEPTED':
         new_status = 'CANCELLED'
 
-    response = endpoint.ShareInviteBankInquiry.update(
-        share_id,
-        acct_id,
-        status=new_status
-    )
+    try:
+        response = endpoint.ShareInviteBankInquiry.update(
+            share_id,
+            acct_id,
+            status=new_status
+        )
+    except Exception as e:
+        raise _convert_exception(e)
 
     share = endpoint.ShareInviteBankInquiry.get(response.value, acct_id).value
 
@@ -179,7 +183,7 @@ def make_payment_to_iban(acct_id, to_iban, to_name, amount,
 def get_payments(acct_id: int):
     try:
         payments = _list_all_pages(endpoint.Payment, {}, acct_id)
-    except exception.NotFoundException as e:
+    except Exception as e:
         raise _convert_exception(e)
     return [payment_summary(pmt) for pmt in payments]
 
@@ -203,7 +207,11 @@ def get_balance(acct_id: int):
 
 def revoke_all_shares(acct_id: int):
     share_ids = [s['id'] for s in list_shares(acct_id)]
-    return [revoke_share(acct_id, share_id) for share_id in share_ids]
+    output = []
+    for share_id in share_ids:
+        output.append(revoke_share(acct_id, share_id))
+        time.sleep(1.5)
+    return output
 
 
 def make_payment_to_acct_id(from_acct_id, to_acct_id, amount,
@@ -329,6 +337,11 @@ def _convert_exception(e: exception.ApiException):
 
         else:
             return service.exceptions.BadRequestException('Invalid request')
+    elif isinstance(e, exception.TooManyRequestsException):
+        return service.exceptions.RateLimitException(
+            'Too many request to bank API'
+        )
+
     else:
         return e
 
@@ -373,6 +386,7 @@ def _list_all_pages(endpoint_obj, list_params, *args, **kwargs):
 
     # keep getting pages while they are available
     while response.pagination.has_previous_page():
+        time.sleep(1.5)
         try:
             response = endpoint_obj.list(
                 *args,

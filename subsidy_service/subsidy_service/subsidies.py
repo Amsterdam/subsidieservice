@@ -1,4 +1,5 @@
 import subsidy_service as service
+import time
 
 # Globals
 CONF = service.utils.get_config()
@@ -38,20 +39,16 @@ def create(subsidy: dict):
         subsidy['name'] = 'Subsidie Gemeente Amsterdam'
 
     # TODO: Move to actions/approve
+    new_acct = service.bunq.create_account(description=subsidy['name'])
+    new_acct['bunq_id'] = new_acct.pop('id')
+
     try:
-        new_acct = service.bunq.create_account(description=subsidy['name'])
-        new_acct['bunq_id'] = new_acct.pop('id')
-    except:
-        return None
-
-    pmt = service.bunq.make_payment_to_acct_id(master['bunq_id'],
-                                               new_acct['bunq_id'],
-                                               subsidy['amount'])
-
-    if pmt is None:
-        # roll back account creation
+        pmt = service.bunq.make_payment_to_acct_id(master['bunq_id'],
+                                                   new_acct['bunq_id'],
+                                                   subsidy['amount'])
+    except Exception as e:
         service.bunq.close_account(new_acct['bunq_id'])
-        return None
+        raise e
 
     new_acct['balance'] = - float(pmt['amount'])
     master['balance'] = float(master['balance']) - float(pmt['amount'])
@@ -104,7 +101,13 @@ def read_all():
     """
 
     subsidies = service.mongo.get_collection(DB.subsidies)
-    output = [get_and_update_balance(sub['id']) for sub in subsidies]
+    output = []
+    if not subsidies:
+        return []
+    for sub in subsidies:
+        output.append(get_and_update_balance(sub['id']))
+        time.sleep(1)
+
     return output
 
 
@@ -116,9 +119,11 @@ def update(id, subsidy: dict):
     :param subsidy: the fields to update. Nones will be ignored.
     :return: the updated subsidy
     """
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     document = service.utils.drop_nones(subsidy)
     obj = service.mongo.update_by_id(id, document, DB.subsidies)
     return obj
+
 
 def replace(id, subsidy: dict):
     """
@@ -128,6 +133,7 @@ def replace(id, subsidy: dict):
     :param subsidy: the new details
     :return: the new subsidy's details
     """
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     document = subsidy
     document['id'] = str(id)
     obj = service.mongo.replace_by_id(id, document, DB.subsidies)
@@ -146,9 +152,9 @@ def delete(id):
     if subsidy is None:
         raise service.exceptions.NotFoundException('Subsidy not found')
 
-    balance = service.bunq.get_balance(subsidy['account']['bunq_id'])
+    balance = float(service.bunq.get_balance(subsidy['account']['bunq_id']))
 
-    if float(balance) > 0:
+    if balance > 0:
         pmt = service.bunq.make_payment_to_acct_id(
             subsidy['account']['bunq_id'],
             subsidy['master']['bunq_id'],
@@ -188,6 +194,8 @@ def get_and_update_balance(id):
     """
     # TODO: Do we even want to store balances?
     sub = service.mongo.get_by_id(id, DB.subsidies)
+    if sub is None:
+        raise service.exceptions.NotFoundException('Subsidy not found')
     sub['account']['balance'] = \
         service.bunq.get_balance(sub['account']['bunq_id'])
     sub['master']['balance'] = \
