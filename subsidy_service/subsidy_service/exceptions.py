@@ -9,9 +9,7 @@ class BaseSubsidyServiceException(Exception):
 
 
 class NotFoundException(BaseSubsidyServiceException):
-    def __init__(self, msg='', other_stuff=None):
-        super(NotFoundException, self).__init__(msg)
-        # do other stuff
+    pass
 
 
 class BadRequestException(BaseSubsidyServiceException):
@@ -60,9 +58,6 @@ def exceptionHTTPencode(func: callable):
         except BadRequestException as e:
             return connexion.problem(400, 'Bad request', e.message)
 
-        except NotImplementedException as e:
-            return connexion.problem(501, 'Not Implemented', e.message)
-
         except ForbiddenException as e:
             return connexion.problem(403, 'Forbidden', e.message)
 
@@ -71,6 +66,9 @@ def exceptionHTTPencode(func: callable):
 
         except RateLimitException as e:
             return connexion.problem(429, 'Too many requests', e.message)
+
+        except NotImplementedException as e:
+            return connexion.problem(501, 'Not Implemented', e.message)
 
         except Exception as other_exception:
             raise other_exception
