@@ -7,6 +7,7 @@ warnings.filterwarnings('ignore', message='\[bunq SDK')
 
 import subsidy_service as service
 import traceback
+import time
 
 from swagger_server.models.citizen_base import CitizenBase
 from swagger_server.models.subsidy_base import SubsidyBase
@@ -84,6 +85,7 @@ def process_csv(filename, master_id):
             output = process_row(row, master_id)
             print('Created:')
             pprint(output)
+            time.sleep(1)  # rate limit
         except service.exceptions.BaseSubsidyServiceException as e:
             print('ERROR: Could not create subsidy for')
             print(row)
