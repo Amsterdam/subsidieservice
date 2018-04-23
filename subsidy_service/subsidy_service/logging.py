@@ -15,8 +15,8 @@ def audit(user: str, action: str, result=None):
 
 
 def audit_log_message(user: str, action: str, result=None):
-    msg = f'User "{user}" took action "{action}" with the following result:\n'\
-        + pprint.pformat(result)
+    msg = f'User "{user}" took action "{action}" with the following result: '\
+        + str(result)
 
     return msg
 
@@ -33,7 +33,7 @@ def _setup_logger():
 
     # message format
     # TODO: Make this pure json?
-    fmt = '%(asctime)s - Audit Log \n%(message)s'
+    fmt = '%(asctime)s - Audit Log - %(message)s'
     fmtr = logging.Formatter(fmt=fmt)
 
     # write to file
