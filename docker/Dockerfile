@@ -4,8 +4,10 @@ FROM python:3.6
 RUN pip3 install --upgrade pip
 
 
-# --- copy files
+# --- copy files and install requirements
 COPY requirements.txt /usr/src/
+
+RUN pip3 install -r /usr/src/requirements.txt
 
 COPY python-flask-server /usr/src/python-flask-server
 
@@ -14,8 +16,10 @@ COPY subsidy_service /usr/src/subsidy_service
 WORKDIR /usr/src
 
 
-# --- Install requirements (including local packages)
-RUN pip3 install -r /usr/src/requirements.txt
+# --- Install local packages
+RUN pip3 install -e /usr/src/python-flask-server
+
+RUN pip3 install -e /usr/src/subsidy_service
 
 
 # --- mount points for configuration files and logs
