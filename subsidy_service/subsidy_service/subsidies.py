@@ -220,6 +220,17 @@ def delete(id):
     return None
 
 
+def approve(id):
+    """
+    Approve a subsidy.
+
+    :param id: int
+    :return:
+    """
+    raise service.exceptions.NotImplementedException(
+        'Subsidy approval not yet implemented'
+    )
+
 # # utilities
 # def update_accounts():
 #     accts = service.bunq.list_accounts(include_closed=True)
