@@ -33,5 +33,3 @@ six==1.11.0
 swagger-spec-validator==2.1.0
 urllib3==1.21.1
 Werkzeug==0.14.1
--e subsidy_service
--e python-flask-server
