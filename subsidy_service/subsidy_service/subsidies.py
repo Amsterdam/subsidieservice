@@ -71,6 +71,7 @@ def create(subsidy: dict):
         )
     except Exception as e:
         # rollback
+        time.sleep(1)
         service.bunq.close_account(new_acct['bunq_id'])
         raise e
 
@@ -78,6 +79,7 @@ def create(subsidy: dict):
     master['balance'] = float(master['balance']) - float(pmt['amount'])
 
     try:
+        time.sleep(1)
         new_share = service.bunq.create_share(new_acct['bunq_id'],
                                               recip['phone_number'])
         subsidy['status'] = 'PENDING_ACCEPT'
@@ -90,7 +92,7 @@ def create(subsidy: dict):
     subsidy['account'] = new_acct
     subsidy['master'] = master
 
-    # REMOVED
+    # # REMOVED
     # # add subsidy to recipient's subsidies
     # if not recip_full['subsidies']:
     #     recip_full['subsidies'] = [subsidy]
