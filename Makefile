@@ -9,8 +9,8 @@ venv:
 	mkdir venv
 	virtualenv venv/subsidy
 	ln -s venv/subsidy/bin/activate activate
-	source $(activate); pip3 install --upgrade pip; pip3 install -r requirements.txt
-	source $(activate); pip3 install -e python-flask-server; pip3 install -e subsidy_service
+	/bin/bash -c "source $(activate); pip3 install --upgrade pip; pip3 install -r requirements.txt"
+	/bin/bash -c "source $(activate); pip3 install -e python-flask-server; pip3 install -e subsidy_service"
 
 ## Update requirements in requirements.txt
 requirements: 
