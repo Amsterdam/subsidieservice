@@ -10,7 +10,7 @@ To run the subsidy service you must:
 2. Build and run the dockers
 3. Add a user for making requests
 
-The subsidy service is build to run on docker. It uses two dockers: one for running the service backend, and one for the mongoDB. To build and start these 
+The subsidy service is built to run on docker. It uses two dockers: one for running the service backend, and one for the mongoDB. To build and start these 
 
 ### 1. bunq.conf
 
@@ -26,24 +26,24 @@ This will create a virtualenv and a symlink to the activation script. You can ac
 source activate
 ```
 
-If your API key is a sandbox key, you can generate your file using
+If your API key is for the Bunq sandbox, you can generate your file using
 
 ```bash
 python3 scripts/generate_bunq_conf.py --sandbox --output_path config/bunq.conf "YOUR_API_KEY"
 ```
 
-If your key is for the production environment, just remove the `--sandbox` flag. For multiple bunq confs, save them to different files. Don't forget to indicate which bunq conf you are using in the `[bunq]` section of `config/subsidy_service.ini`.
+If your key is for the production environment (real money), just remove the `--sandbox` flag. For multiple bunq confs, save them to different files. Don't forget to indicate which bunq conf you are using in the `[bunq]` section of `config/subsidy_service.ini`.
 
 
 ### 2. Dockers
 
-The subsidy service runs on a docker with port 8080 exposed, and will attempt to communicate with a mongoDB at the host and port indicated in the `[mongo]` section of `config/subsidy_service.ini`. To build and run the subsidy service container, and link it to a vanilla mongoDB container, you can use the convenience command
+The subsidy service runs on a docker with port 8080 exposed, and will attempt to communicate with a mongoDB at the host and port indicated in the `[mongo]` section of `config/subsidy_service.ini`. To build and run the subsidy service container, and link it to a vanilla mongoDB container, you can use the convenience commands
 
 ```bash
-make docker-run
+make docker-build docker-run
 ```
 
-Now you will have the subsidy service API running on `localhost:8080`, and the mongoDB will be accessible at `localhost:27017`.
+Now you will have the subsidy service API running on `localhost:8080`, and the mongoDB will be accessible at `localhost:27017`. if you have already build images, then `make docker-run` is enough to get everything up and running from the previous build.
 
 ### 3. User
 

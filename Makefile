@@ -10,20 +10,26 @@ venv:
 	virtualenv venv/subsidy -p python3.6
 	ln -s venv/subsidy/bin/activate activate
 	source $(activate); pip install --upgrade pip; pip install -r requirements.txt
+	source $(activate); pip install -e python-flask-server; pip install -e subsidy_service
 
 ## Update requirements in requirements.txt
 requirements: 
 	source $(activate); pip freeze --exclude-editable > requirements.txt
-	echo "-e subsidy_service\n-e python-flask-server" >> requirements.txt
+	# echo "-e subsidy_service\n-e python-flask-server" >> requirements.txt
 
 ## Rebuild the docker including new requirements
 docker-build: docker-stop .
 	# docker run -d -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
 	docker build -f docker/Dockerfile -t subsidies/server .
 
+
+## Run the mongo docker
+mongo-run: 
+	docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
+
 ## Run the Service API linked to Mongo docker
-docker-run: docker-stop # docker-build
-	docker run -d -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
+docker-run: docker-stop mongo-run # docker-build
+	# docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
 	docker run -d --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service/config \
 		-v $(shell pwd)/logs:/etc/subsidy_service/logs \
 		--link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
