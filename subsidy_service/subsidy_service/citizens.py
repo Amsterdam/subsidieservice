@@ -8,6 +8,7 @@ CONF = service.utils.get_config()
 CLIENT = service.mongo.get_client(CONF)
 DB = CLIENT.subsidy
 
+
 # CRUD functionality
 def create(citizen: dict):
     """

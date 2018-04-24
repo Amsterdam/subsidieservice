@@ -111,7 +111,7 @@ def read(id):
     :param id: the subsidy's ID
     :return: dict
     """
-    subsidy = get_and_update(id)
+    subsidy = get_and_update(id, master_balance=True)
     subsidy['account']['transactions'] = \
         service.bunq.get_payments(subsidy['account']['bunq_id'])
     return subsidy
@@ -149,15 +149,14 @@ def read_all(status: str=None):
         check_statuses = ['PENDING_ACCEPT', 'OPEN']
 
     elif status == 'CLOSED':
-        # no need to update
-        return [sub for sub in subsidies if sub['status'] == 'CLOSED']
+        check_statuses = ['CLOSED']
 
     for sub in subsidies:
         if sub['status'] in check_statuses:
             sub_updated = get_and_update(sub['id'])
             if (sub_updated['status'] == status) or (not status):
                 output.append(sub_updated)
-            time.sleep(1)
+            time.sleep(0.8)
 
     return output
 
@@ -215,6 +214,7 @@ def delete(id):
     service.bunq.close_account(subsidy['account']['bunq_id'])
     subsidy['status'] = 'CLOSED'
     subsidy['account']['balance'] = 0.
+    subsidy['master']['balance'] = None
     subsidy = service.mongo.update_by_id(id, subsidy, DB.subsidies)
 
     return None
@@ -245,7 +245,7 @@ def approve(id):
 
 
 # utils
-def get_and_update(id):
+def get_and_update(id, master_balance=False):
     """
     Get the subsidy from the DB, update the balance from bunq, update the status
     as appropriate, push the updates to the server, and return the subsidy.
@@ -254,6 +254,8 @@ def get_and_update(id):
     is not updated.
 
     :param id:
+    :param master_balance: Get the most recent balance of the master (else
+        do not return the balance of the master).
     :return:
     """
     # TODO: Do we even want to store balances?
@@ -262,13 +264,22 @@ def get_and_update(id):
     if sub is None:
         raise service.exceptions.NotFoundException('Subsidy not found')
 
-    sub['account']['balance'] = \
-        service.bunq.get_balance(sub['account']['bunq_id'])
+    # temporarily removed for performance
+    # sub['account']['balance'] = \
+    #     service.bunq.get_balance(sub['account']['bunq_id'])
+    # time.sleep(1)
 
-    time.sleep(1)
+    # only need shares for PENDING_ACCEPT subsidies
+    full_read = (sub['status'] == 'PENDING_ACCEPT')
+    if sub['status'] != 'CLOSED':
+        acct = service.bunq.read_account(sub['account']['bunq_id'], full_read)
+        sub['account']['balance'] = acct['balance']
 
-    sub['master']['balance'] = \
-        service.bunq.get_balance(sub['master']['bunq_id'])
+    if master_balance:
+        sub['master']['balance'] = \
+            service.bunq.get_balance(sub['master']['bunq_id'])
+    else:
+        sub['master']['balance'] = None
 
     if sub['status'] == 'PENDING_ACCOUNT':
         # TODO: Should we trigger this action at this point? Or in a script?
@@ -281,10 +292,10 @@ def get_and_update(id):
         pass
 
     elif sub['status'] == 'PENDING_ACCEPT':
-        acct = service.bunq.read_account_by_iban(
-            sub['account']['iban'],
-            full=True
-        )
+        # acct = service.bunq.read_account_by_iban(
+        #     sub['account']['iban'],
+        #     full=True
+        # )
 
         if 'shares' in acct:
             if len(acct['shares']) > 0:
