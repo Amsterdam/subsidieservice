@@ -7,14 +7,14 @@ venv:
 	-rm -rf venv
 	-unlink activate
 	mkdir venv
-	virtualenv venv/subsidy -p python3.6
+	virtualenv venv/subsidy
 	ln -s venv/subsidy/bin/activate activate
-	source $(activate); pip install --upgrade pip; pip install -r requirements.txt
-	source $(activate); pip install -e python-flask-server; pip install -e subsidy_service
+	source $(activate); pip3 install --upgrade pip; pip3 install -r requirements.txt
+	source $(activate); pip3 install -e python-flask-server; pip3 install -e subsidy_service
 
 ## Update requirements in requirements.txt
 requirements: 
-	source $(activate); pip freeze --exclude-editable > requirements.txt
+	source $(activate); pip3 freeze --exclude-editable > requirements.txt
 	# echo "-e subsidy_service\n-e python-flask-server" >> requirements.txt
 
 ## Rebuild the docker including new requirements
