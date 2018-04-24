@@ -18,12 +18,12 @@ requirements:
 
 ## Rebuild the docker including new requirements
 docker-build: docker-stop .
-	docker run -d -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
+	# docker run -d -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
 	docker build -f docker/Dockerfile -t subsidies/server .
 
-## Run the Service API linked to a new or existing mongo docker
+## Run the Service API linked to Mongo docker
 docker-run: docker-stop # docker-build
-	-docker start subsidy_mongo_dev 
+	docker run -d -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
 	docker run -d --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service/config \
 		-v $(shell pwd)/logs:/etc/subsidy_service/logs \
 		--link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
@@ -38,8 +38,7 @@ docker-shell:
 docker-stop:
 	-docker kill subsidy_mongo_dev
 	-docker kill subsidy_service_dev
-	-docker rm subsidy_mongo_dev
-	-docker rm subsidy_service_dev
+	
 
 ## Update the existing models and code, BUT NOT CONTROLLERS, to new swagger spec.
 ## Shows the diff between the old and new controllers. Any inserts are interesting!
@@ -59,7 +58,7 @@ clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 	-rm -r temp-swagger-server-dir
-	-docker kill subsidy_mongo_dev
+	-docker rm subsidy_mongo_dev
 	-docker rm subsidy_service_dev
 
 

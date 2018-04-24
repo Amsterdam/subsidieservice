@@ -73,6 +73,7 @@ def update(id, citizen: dict):
     :param citizen: the fields to update. Nones will be ignored.
     :return: the updated citizen
     """
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     document = service.utils.drop_nones(citizen)
     obj = service.mongo.update_by_id(id, document, DB.citizens)
     return obj
@@ -86,6 +87,7 @@ def replace(id, citizen: dict):
     :param citizen: the new details
     :return: the new citizen's details
     """
+    raise service.exceptions.NotImplementedException('Not yet implemented')
     document = citizen
     document['id'] = str(id)
     obj = service.mongo.replace_by_id(id, document, DB.citizens)
