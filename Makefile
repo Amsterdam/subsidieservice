@@ -25,13 +25,14 @@ docker-build: docker-stop .
 
 ## Run the mongo docker
 mongo-run: 
+	-docker kill subsidy_mongo_dev
 	docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
 
 ## Run the Service API linked to Mongo docker
 docker-run: docker-stop mongo-run # docker-build
 	# docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
 	docker run -d --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service/config \
-		-v $(shell pwd)/logs:/etc/subsidy_service/logs \
+		-v $(shell pwd)/logs:/etc/subsidy_service/logs --hostname subsidy_service_dev  \
 		--link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
 	docker ps
 	# docker logs -f subsidy_service_dev | less
