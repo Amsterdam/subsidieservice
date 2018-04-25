@@ -1,4 +1,19 @@
-# Subsidy Service
+```
+                                           _  __
+                                          | |/ /
+                                          |   /
+                                         /   |
+   _____       __         _     __      /_/|_|  _____                 _
+  / ___/__  __/ /_  _____(_)___/ /_  __ | |/ / / ___/___  ______   __(_)_______
+  \__ \/ / / / __ \/ ___/ / __  / / / / |   /  \__ \/ _ \/ ___/ | / / / ___/ _ \
+ ___/ / /_/ / /_/ (__  ) / /_/ / /_/ / /   |  ___/ /  __/ /   | |/ / / /__/  __/
+/____/\__,_/_.___/____/_/\__,_/\__, / /_/|_| /____/\___/_/    |___/_/\___/\___/
+                              /____/  | |/ /
+                                      |   /
+                                     /   |
+                                    /_/|_|
+
+```
 
 This is the repository for the back end of the Subsidy Service for Gemeente Amsterdam. This guide assumes that all commands are run from the root directory of this repository.
 

@@ -27,9 +27,8 @@ WORKDIR /usr/src
 
 
 # --- Install local packages
-RUN pip3 install -e /usr/src/python-flask-server
-
-RUN pip3 install -e /usr/src/subsidy_service
+RUN pip3 install -e /usr/src/python-flask-server && \
+    pip3 install -e /usr/src/subsidy_service
 
 
 # --- set background jobs
@@ -55,3 +54,7 @@ EXPOSE 8080
 ENTRYPOINT ["/bin/bash"]
 
 CMD ["/usr/src/scripts/docker_start.sh"]
+
+#ENTRYPOINT ["python3"]
+#
+#CMD ["-m", "swagger_server"]
