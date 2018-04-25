@@ -168,12 +168,16 @@ def make_payment_to_iban(acct_id, to_iban, to_name, amount,
     counterparty = object_.Pointer(type_='IBAN', value=to_iban, name=to_name)
     amt = object_.Amount(value=str(amount), currency=CURRENCY)
 
-    response = endpoint.Payment.create(
-        amt,
-        counterparty,
-        description,
-        monetary_account_id=acct_id,
-    )
+    try:
+        response = endpoint.Payment.create(
+            amt,
+            counterparty,
+            description,
+            monetary_account_id=acct_id,
+        )
+
+    except Exception as e:
+        raise _convert_exception(e)
 
     pmt = endpoint.Payment.get(response.value, acct_id).value
 
@@ -314,6 +318,7 @@ def _get_alias_from_error_message(msg):
 def _convert_exception(e: exception.ApiException):
     """
     Convert bunq exceptions to service.exceptions exceptions.
+
     :param e:
     :return:
     """
@@ -341,6 +346,8 @@ def _convert_exception(e: exception.ApiException):
         elif 'No user found' in e.message:
             msg = 'No bank account found for user'
             return service.exceptions.NotFoundException(msg)
+        elif 'doesn\'t have enough money' in e.message:
+            return service.exceptions.BadRequestException('Insufficient funds')
 
         else:
             return service.exceptions.BadRequestException('Invalid request')
