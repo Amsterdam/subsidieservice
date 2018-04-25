@@ -26,8 +26,14 @@ def audit_log_message(user: str, action: str, result=None):
                                         ensure_ascii=False)
     except TypeError:
         msg = f'User "{user}" took action "{action}" with the following ' \
-              + pprint.pformat(obj, width=999999999, compact=True)
+              + 'result: ' + pprint.pformat(obj, width=999999999, compact=True)
 
+    except:
+        try:
+            msg = f'User "{user}" took action "{action}" with the following ' \
+                  + 'result: ' + str(obj)
+        except:
+            msg = f'User "{user}" took action "{action}"'
 
     return msg
 
@@ -57,11 +63,6 @@ def _convert_obj(obj):
         pass
 
     return obj
-
-
-
-
-
 
 
 def _setup_logger():
