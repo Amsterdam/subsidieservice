@@ -38,13 +38,21 @@ docker-run: docker-stop mongo-run # docker-build
 
 ## Open an interactive shell in the service docker. Current directory is mounted to /opt/
 docker-shell: 
-	docker exec -it subsidy_service_dev /bin/sh
+	docker exec -it subsidy_service_dev /bin/bash
 
 ## Kill the docker containers and remove the service containers
 docker-stop:
 	-docker kill subsidy_mongo_dev
 	-docker kill subsidy_service_dev
 	
+
+## Copy the data/*.csv into the subsidy_service_dev:/usr/src/data
+docker-data:
+	-docker exec subsidy_service_dev mkdir /usr/src/data
+	for file in data/*.csv; do \
+		docker cp $$file subsidy_service_dev:/usr/src/data; \
+		echo "Copied:" $$file; \
+	done
 
 ## Update the existing models and code, BUT NOT CONTROLLERS, to new swagger spec.
 ## Shows the diff between the old and new controllers. Any inserts are interesting!
