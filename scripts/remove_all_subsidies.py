@@ -7,7 +7,7 @@ import time
 
 subsidies = service.subsidies.read_all()
 
-@service.auth.authenticate_promt
+
 def remove_all_subsidies():
     for sub in subsidies:
         try:
