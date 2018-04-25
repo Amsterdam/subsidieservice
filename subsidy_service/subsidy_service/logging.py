@@ -65,11 +65,6 @@ def _convert_obj(obj):
     return obj
 
 
-
-
-
-
-
 def _setup_logger():
     LOGGER.setLevel(logging.DEBUG)
 
