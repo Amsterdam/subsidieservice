@@ -124,6 +124,9 @@ def get_and_update_balance(id):
     :return:
     """
     master = service.mongo.get_by_id(id, DB.masters)
+    if master is None:
+        raise service.exceptions.NotFoundException('Master-Account not found')
+
     try:
         master['balance'] = service.bunq.get_balance(master['bunq_id'])
         master = service.mongo.update_by_id(master['id'], master, DB.masters)
