@@ -17,3 +17,4 @@ echo -e \\033[31m \\e[1m '
 
 export LSCOLORS="exfxcxdxbxegedabagacad"
 alias ll='ls -GlaohF --color'
+alias ..='cd ..'

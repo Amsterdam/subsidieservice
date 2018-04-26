@@ -1,0 +1,23 @@
+version: '3'
+services:
+  subsidy_service:
+    image: 'subsidy/service'
+    container_name: subsidy_service_dev
+    ports:
+      - '8080:8080'
+    links:
+      - mongo:mongo
+    volumes:
+      - ./config:/etc/subsidy_service/config
+      - ./logs:/etc/subsidy_service/logs
+    build:
+      dockerfile: ./docker/Dockerfile
+      context: .
+      
+  mongo:
+    image: 'mongo'
+    container_name: subsidy_mongo_dev
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data/mongodb:/data/db

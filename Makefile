@@ -12,15 +12,17 @@ venv:
 	/bin/bash -c "source $(activate); pip3 install --upgrade pip; pip3 install -r requirements.txt"
 	/bin/bash -c "source $(activate); pip3 install -e python-flask-server; pip3 install -e subsidy_service"
 
+
 ## Update requirements in requirements.txt
 requirements: 
 	source $(activate); pip3 freeze --exclude-editable > requirements.txt
 	# echo "-e subsidy_service\n-e python-flask-server" >> requirements.txt
 
+
 ## Rebuild the docker including new requirements
 docker-build: docker-stop .
-	# docker run -d -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
-	docker build -f docker/Dockerfile -t subsidies/server .
+	# docker build -f docker/Dockerfile -t subsidies/server .
+	docker-compose build
 
 
 ## Run the mongo docker
@@ -28,12 +30,13 @@ mongo-run:
 	-docker kill subsidy_mongo_dev
 	docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
 
+
 ## Run the Service API linked to Mongo docker
 docker-run: docker-stop mongo-run # docker-build
-	# docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
-	docker run -d --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service/config \
-		-v $(shell pwd)/logs:/etc/subsidy_service/logs --hostname subsidy_service_dev  \
-		--link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidies/server
+	# docker run -d --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service/config \
+	# 	-v $(shell pwd)/logs:/etc/subsidy_service/logs --hostname subsidy_service_dev  \
+	# 	--link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidy/service
+	docker-compose up -d
 	docker ps
 	# docker logs -f subsidy_service_dev | less
 
@@ -42,13 +45,13 @@ docker-run: docker-stop mongo-run # docker-build
 docker-shell: 
 	docker exec -it subsidy_service_dev /bin/bash
 
+
 ## Kill the docker containers and remove the service containers
 docker-stop:
-	-docker kill subsidy_mongo_dev
-	-docker kill subsidy_service_dev
+	docker-compose down
 	
 
-## Copy the data/*.csv into the subsidy_service_dev:/usr/src/data
+## Copy the data/*.csv files into subsidy_service_dev:/usr/src/data
 docker-data:
 	-docker exec subsidy_service_dev mkdir /usr/src/data
 	for file in data/*.csv; do \
