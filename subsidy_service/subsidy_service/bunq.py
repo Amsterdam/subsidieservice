@@ -16,21 +16,26 @@ try:
 except FileNotFoundError:
     basepath = os.getcwd()
     path = os.path.join(basepath, CONF.get('bunq', 'conf_path'))
-    CTX = ApiContext.restore(path)
-    print('Bunq config loaded from', path)
+    try:
+        CTX = ApiContext.restore(path)
+        print('Bunq config loaded from', path)
+    except FileNotFoundError:
+        CTX = None
 
-BunqContext.load_api_context(CTX)
+if CTX is not None:
+    BunqContext.load_api_context(CTX)
 
-USER_CTX = BunqContext._user_context
+    USER_CTX = BunqContext._user_context
 
-if USER_CTX.is_both_user_type_set() or USER_CTX.is_only_user_company_set():
-    user_obj = USER_CTX.user_company
-    USER_NAME = user_obj.name
-else:
-    user_obj = USER_CTX.user_person
-    USER_NAME = user_obj.legal_name
+    if USER_CTX.is_both_user_type_set() or USER_CTX.is_only_user_company_set():
+        user_obj = USER_CTX.user_company
+        USER_NAME = user_obj.name
+    else:
+        user_obj = USER_CTX.user_person
+        USER_NAME = user_obj.legal_name
 
-USER_ID = int(user_obj.id_)
+    USER_ID = int(user_obj.id_)
+
 CURRENCY = 'EUR'
 
 
@@ -324,7 +329,7 @@ def _get_alias_from_error_message(msg):
         return None
 
 
-def _convert_exception(e: exception.ApiException):
+def _convert_exception(e: Exception):
     """
     Convert bunq exceptions to service.exceptions exceptions.
 

@@ -15,7 +15,7 @@
 
 ```
 
-This is the repository for the back end of the Subsidy Service for Gemeente Amsterdam. This guide assumes that all commands are run from the root directory of this repository.
+This is the repository for the back end of the Subsidy Service for Gemeente Amsterdam. This README assumes that all commands are run from the root directory of this repository.
 
 ## Installation
 
@@ -25,11 +25,15 @@ To run the subsidy service you must:
 2. Build and run the dockers
 3. Add a user for making requests
 
-The subsidy service is built to run on docker. It uses two dockers: one for running the service backend, and one for the mongoDB. To build and start these 
+The subsidy service is built to run on docker. It uses two containers: one for running the service backend, and one for the mongoDB. Building and starting these is as simple as:
+
+```bash
+docker-compose up -d --build
+```
 
 ### 1. bunq.conf
 
-To create a bunq.conf file you need an API key. This can be obtained from the Bunq app (for a real account) or from Bunq directly for a developer key. The bunq.conf file is loaded by the Bunq API client to access account information. To generate it, a script is provided at `scripts/generate_bunq_conf.py`. This script assumes that the python Bunq SDK is installed. If you want to do this in a virtual environment, you can first run 
+To create a bunq.conf file you need an API key. This can be obtained from the Bunq app (for a real account) or from Bunq directly for a developer key to their Sandbox environment. The bunq.conf file is loaded by the Bunq API client to access account information. To generate it, a script is provided at `scripts/generate_bunq_conf.py`. This script assumes that the python Bunq SDK is installed. If you want to do this in a virtual environment, you can first run 
 
 ```bash
 make venv
