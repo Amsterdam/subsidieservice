@@ -62,7 +62,12 @@ def exceptionHTTPencode(func: callable):
             return connexion.problem(403, 'Forbidden', e.message)
 
         except UnauthorizedException as e:
-            return connexion.problem(401, 'Unauthorized', e.message)
+            auth_header = {
+                'WWW-Authenticate': 'Basic realm="Subsidy Service API"',
+            }
+            return connexion.problem(
+                401, 'Unauthorized', e.message, headers=auth_header
+            )
 
         except RateLimitException as e:
             return connexion.problem(429, 'Too many requests', e.message)

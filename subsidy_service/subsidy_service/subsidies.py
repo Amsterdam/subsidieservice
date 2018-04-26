@@ -1,5 +1,6 @@
 import subsidy_service as service
 import time
+import collections
 
 # Globals
 CONF = service.utils.get_config()
@@ -12,8 +13,16 @@ STATUS_OPTIONS = [
     'PENDING_ACCOUNT',
     'PENDING_ACCEPT',
     'OPEN',
-    'CLOSED'
+    'SHARE_CLOSED',
+    'CLOSED',
 ]
+
+STATUSCODE = collections.namedtuple(
+    'subsidy_statuscode', STATUS_OPTIONS
+)(*STATUS_OPTIONS)
+# Usage:
+#    >>> STATUSCODE.PENDING_ACCOUNT == 'PENDING_ACCOUNT'
+#    True
 
 
 # CRUD functionality
@@ -64,10 +73,11 @@ def create(subsidy: dict):
     new_acct['bunq_id'] = new_acct.pop('id')
 
     try:
-        pmt = service.bunq.make_payment_to_acct_id(
+        pmt = service.bunq.make_payment_to_iban(
             master['bunq_id'],
-            new_acct['bunq_id'],
-            subsidy['amount']
+            new_acct['iban'],
+            new_acct['name'],
+            subsidy['amount'],
         )
     except Exception as e:
         # rollback
@@ -82,10 +92,10 @@ def create(subsidy: dict):
         time.sleep(1)
         new_share = service.bunq.create_share(new_acct['bunq_id'],
                                               recip['phone_number'])
-        subsidy['status'] = 'PENDING_ACCEPT'
+        subsidy['status'] = STATUSCODE.PENDING_ACCEPT
     except:
-        # TODO: Reflect this in the share status for later filtering
-        subsidy['status'] = 'PENDING_ACCOUNT'
+        # couldn't create share
+        subsidy['status'] = STATUSCODE.PENDING_ACCOUNT
 
     new_acct['transactions'] = service.bunq.get_payments(new_acct['bunq_id'])
 
@@ -139,26 +149,41 @@ def read_all(status: str=None):
 
     check_statuses = []
     if not status:
-        check_statuses = ['PENDING_ACCOUNT', 'PENDING_ACCEPT', 'OPEN']
+        check_statuses = [
+            STATUSCODE.PENDING_ACCOUNT,
+            STATUSCODE.PENDING_ACCEPT,
+            STATUSCODE.OPEN,
+            STATUSCODE.SHARE_CLOSED,
+        ]
 
-    elif status == 'PENDING_ACCOUNT':
-        check_statuses = ['PENDING_ACCOUNT']
+    elif status == STATUSCODE.PENDING_ACCOUNT:
+        check_statuses = [STATUSCODE.PENDING_ACCOUNT]
 
-    elif status == 'PENDING_ACCEPT':
-        check_statuses = ['PENDING_ACCOUNT', 'PENDING_ACCEPT']
+    elif status == STATUSCODE.PENDING_ACCEPT:
+        check_statuses = [
+            STATUSCODE.PENDING_ACCOUNT,
+            STATUSCODE.PENDING_ACCEPT
+        ]
 
-    elif status == 'OPEN':
-        check_statuses = ['PENDING_ACCEPT', 'OPEN']
+    elif status == STATUSCODE.OPEN:
+        check_statuses = [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]
 
-    elif status == 'CLOSED':
-        check_statuses = ['CLOSED']
+    elif status == STATUSCODE.SHARE_CLOSED:
+        check_statuses = [
+            STATUSCODE.PENDING_ACCEPT,
+            STATUSCODE.OPEN,
+            STATUSCODE.SHARE_CLOSED
+        ]
+
+    elif status == STATUSCODE.CLOSED:
+        check_statuses = [STATUSCODE.CLOSED]
 
     for sub in subsidies:
         if sub['status'] in check_statuses:
             sub_updated = get_and_update(sub['id'])
             if (sub_updated['status'] == status) or (not status):
                 output.append(sub_updated)
-            time.sleep(0.8)
+            time.sleep(1)
 
     return output
 
@@ -207,6 +232,9 @@ def delete(id):
         if subsidy['status'] == 'CLOSED':
             return None
 
+    elif subsidy['status'] == STATUSCODE.CLOSED:
+        raise service.exceptions.BadRequestException('Subsidy already closed')
+
     balance = float(service.bunq.get_balance(subsidy['account']['bunq_id']))
 
     if balance > 0:
@@ -217,7 +245,7 @@ def delete(id):
         )
     time.sleep(1)
     service.bunq.close_account(subsidy['account']['bunq_id'])
-    subsidy['status'] = 'CLOSED'
+    subsidy['status'] = STATUSCODE.CLOSED
     subsidy['account']['balance'] = 0.
     subsidy['master']['balance'] = None
     subsidy = service.mongo.update_by_id(id, subsidy, DB.subsidies)
@@ -274,9 +302,10 @@ def get_and_update(id, master_balance=False):
     #     service.bunq.get_balance(sub['account']['bunq_id'])
     # time.sleep(1)
 
-    # only need shares for PENDING_ACCEPT subsidies
-    full_read = (sub['status'] == 'PENDING_ACCEPT')
-    if sub['status'] != 'CLOSED':
+    # only need shares for PENDING_ACCEPT and OPEN subsidies
+    full_read = (sub['status'] in [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN])
+    acct = {}
+    if sub['status'] != STATUSCODE.CLOSED:
         acct = service.bunq.read_account(sub['account']['bunq_id'], full_read)
         sub['account']['balance'] = acct['balance']
 
@@ -286,7 +315,7 @@ def get_and_update(id, master_balance=False):
     else:
         sub['master']['balance'] = None
 
-    if sub['status'] == 'PENDING_ACCOUNT':
+    if sub['status'] == STATUSCODE.PENDING_ACCOUNT:
         # TODO: Should we trigger this action at this point? Or in a script?
         # try:
         #     service.bunq.create_share(sub['account']['bunq_id'],
@@ -296,16 +325,15 @@ def get_and_update(id, master_balance=False):
         #     pass
         pass
 
-    elif sub['status'] == 'PENDING_ACCEPT':
-        # acct = service.bunq.read_account_by_iban(
-        #     sub['account']['iban'],
-        #     full=True
-        # )
-
+    elif sub['status'] in [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]:
         if 'shares' in acct:
             if len(acct['shares']) > 0:
-                if acct['shares'][0]['status'] == 'ACCEPTED':
-                    sub['status'] = 'OPEN'
+                share_status = acct['shares'][0]['status']
+
+                if share_status == 'ACCEPTED':
+                    sub['status'] = STATUSCODE.OPEN
+                elif share_status in ['CANCELLED', 'REVOKED', 'REJECTED']:
+                    sub['status'] = STATUSCODE.SHARE_CLOSED
 
     sub = service.mongo.update_by_id(sub['id'], sub, DB.subsidies)
 
