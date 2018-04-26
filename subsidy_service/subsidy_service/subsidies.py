@@ -212,7 +212,7 @@ def delete(id):
             subsidy['master']['bunq_id'],
             balance
         )
-
+    time.sleep(1)
     service.bunq.close_account(subsidy['account']['bunq_id'])
     subsidy['status'] = 'CLOSED'
     subsidy['account']['balance'] = 0.

@@ -13,7 +13,7 @@ def remove_all_subsidies():
         try:
             service.subsidies.delete(sub['id'])
             print('DELETED: Subsidy', sub['id'])
-            time.sleep(1)  # don't hit rate limit
+            time.sleep(2)  # don't hit rate limit
         except Exception as e:
             traceback.print_exc()
             print('ERROR: Could not delete subsidy', sub['id'])
