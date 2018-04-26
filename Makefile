@@ -84,15 +84,20 @@ clean:
 	-docker rm subsidy_service_dev
 
 
-# Mirror this repository to the public Gemeente Amsterdam repository
+## Mirror this repository to the Gemeente Amsterdam GitHub repo
 mirror:
+	cd ../service-mirror; git fetch -p; git push;
+
+
+## Create the mirror repository for mirroring
+mirror-init:
 	-rm -rf ../service-mirror
 	git clone --mirror \
 		https://git.kpmg.nl/KPMG-NL-AABD/ClientProjects/GemeenteAmsterdam/SubsidyService.git \
 		../service-mirror
 	(\
 		cd ../service-mirror; \
-		git remote set-url --push origin https://github.com/Amsterdam/subsidieservice; \
+		git remote set-url --push origin git@github.com:Amsterdam/subsidieservice.git; \
 	)
 
 
