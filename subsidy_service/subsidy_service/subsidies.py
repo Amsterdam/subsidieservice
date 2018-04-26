@@ -203,6 +203,9 @@ def delete(id):
 
     if subsidy is None:
         raise service.exceptions.NotFoundException('Subsidy not found')
+    elif 'status' in subsidy:
+        if subsidy['status'] == 'CLOSED':
+            return None
 
     balance = float(service.bunq.get_balance(subsidy['account']['bunq_id']))
 
