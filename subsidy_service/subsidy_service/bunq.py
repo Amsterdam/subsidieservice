@@ -54,7 +54,7 @@ def read_account(id: int, full=False):
 
 def close_account(id):
     acct = read_account(id)
-
+    time.sleep(1)
     revoke_all_shares(id)
 
     response = endpoint.MonetaryAccountBank.update(
@@ -155,6 +155,7 @@ def revoke_share(acct_id: int, share_id: int):
             acct_id,
             status=new_status
         )
+        time.sleep(1)
     except Exception as e:
         raise _convert_exception(e)
 
@@ -174,7 +175,7 @@ def make_payment_to_iban(acct_id, to_iban, to_name, amount,
         description,
         monetary_account_id=acct_id,
     )
-
+    time.sleep(1)
     pmt = endpoint.Payment.get(response.value, acct_id).value
 
     return payment_summary(pmt)
