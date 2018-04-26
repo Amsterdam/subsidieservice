@@ -79,5 +79,6 @@ temp-swagger-server-dir
 *~*.pptx
 *.log
 
-data/mongodb/*
+data/*
 !data/mongodb/placeholder
+!data/test.csv
