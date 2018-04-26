@@ -73,10 +73,11 @@ def create(subsidy: dict):
     new_acct['bunq_id'] = new_acct.pop('id')
 
     try:
-        pmt = service.bunq.make_payment_to_acct_id(
+        pmt = service.bunq.make_payment_to_iban(
             master['bunq_id'],
-            new_acct['bunq_id'],
-            subsidy['amount']
+            new_acct['iban'],
+            new_acct['name'],
+            subsidy['amount'],
         )
     except Exception as e:
         # rollback
@@ -300,6 +301,7 @@ def get_and_update(id, master_balance=False):
 
     # only need shares for PENDING_ACCEPT and OPEN subsidies
     full_read = (sub['status'] in [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN])
+    acct = {}
     if sub['status'] != STATUSCODE.CLOSED:
         acct = service.bunq.read_account(sub['account']['bunq_id'], full_read)
         sub['account']['balance'] = acct['balance']
@@ -321,19 +323,14 @@ def get_and_update(id, master_balance=False):
         pass
 
     elif sub['status'] in [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]:
-        # acct = service.bunq.read_account_by_iban(
-        #     sub['account']['iban'],
-        #     full=True
-        # )
-
         if 'shares' in acct:
             if len(acct['shares']) > 0:
                 share_status = acct['shares'][0]['status']
+
                 if share_status == 'ACCEPTED':
                     sub['status'] = STATUSCODE.OPEN
                 elif share_status in ['CANCELLED', 'REVOKED', 'REJECTED']:
                     sub['status'] = STATUSCODE.SHARE_CLOSED
-
 
     sub = service.mongo.update_by_id(sub['id'], sub, DB.subsidies)
 
