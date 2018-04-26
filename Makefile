@@ -1,16 +1,20 @@
-.PHONY: clean venv docker-stop docker-run
+.PHONY: clean venv docker-stop docker-run docker-shell docker-data
 
 activate=venv/subsidy/bin/activate
 
-## Make virtual environment
+## Make virtual environment and install requirements (requires virtualenv)
 venv: 
 	-rm -rf venv
 	-unlink activate
 	mkdir venv
 	virtualenv venv/subsidy
 	ln -s venv/subsidy/bin/activate activate
-	/bin/bash -c "source $(activate); pip3 install --upgrade pip; pip3 install -r requirements.txt"
-	/bin/bash -c "source $(activate); pip3 install -e python-flask-server; pip3 install -e subsidy_service"
+	(\
+		source $(activate); \
+		pip3 install -r requirements.txt; \
+		pip3 install -e python-flask-server -e subsidy_service; \
+		deactivate; \
+	)
 
 
 ## Update requirements in requirements.txt
@@ -25,20 +29,15 @@ docker-build: docker-stop .
 	docker-compose build
 
 
-## Run the mongo docker
-mongo-run: 
-	-docker kill subsidy_mongo_dev
-	docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db --name "subsidy_mongo_dev" mongo 
-
-
 ## Run the Service API linked to Mongo docker
-docker-run: docker-stop mongo-run # docker-build
+docker-run: # docker-stop docker-build
+	# docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db \
+	# 	--name "subsidy_mongo_dev" mongo
 	# docker run -d --rm -p 8080:8080 -v $(shell pwd)/config:/etc/subsidy_service/config \
 	# 	-v $(shell pwd)/logs:/etc/subsidy_service/logs --hostname subsidy_service_dev  \
 	# 	--link subsidy_mongo_dev:mongo --name "subsidy_service_dev" subsidy/service
 	docker-compose up -d
 	docker ps
-	# docker logs -f subsidy_service_dev | less
 
 
 ## Open an interactive shell in the service docker. Current directory is mounted to /opt/
@@ -49,6 +48,8 @@ docker-shell:
 ## Kill the docker containers and remove the service containers
 docker-stop:
 	docker-compose down
+	-docker rm subsidy_mongo_dev
+	-docker rm subsidy_service_dev
 	
 
 ## Copy the data/*.csv files into subsidy_service_dev:/usr/src/data
@@ -81,6 +82,18 @@ clean:
 	-rm -r temp-swagger-server-dir
 	-docker rm subsidy_mongo_dev
 	-docker rm subsidy_service_dev
+
+
+# Mirror this repository to the public Gemeente Amsterdam repository
+mirror:
+	-rm -rf ../service-mirror
+	git clone --mirror \
+		https://git.kpmg.nl/KPMG-NL-AABD/ClientProjects/GemeenteAmsterdam/SubsidyService.git \
+		../service-mirror
+	(\
+		cd ../service-mirror; \
+		git remote set-url --push origin https://github.com/Amsterdam/subsidieservice; \
+	)
 
 
 #################################################################################

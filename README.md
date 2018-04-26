@@ -13,6 +13,7 @@
                                      /   |
                                     /_/|_|
 
+
 ```
 
 This is the repository for the back end of the Subsidy Service for Gemeente Amsterdam. This README assumes that all commands are run from the root directory of this repository.
