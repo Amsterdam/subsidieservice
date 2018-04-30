@@ -22,9 +22,13 @@ def add(username: str, password: str):
     existing = get(username)
 
     if existing is not None:
-        return {'Error': f'User "{username}" already exists'}
+        raise service.exceptions.AlreadyExistsException(
+            f'User "{username}" already exists.'
+        )
     elif not service.auth.validate_password(password):
-        return {'Error': 'Password does not meet requirements'}
+        raise service.exceptions.BadRequestException(
+            'Password does not meet requirements.'
+        )
     else:
         user = {
             'username': username,
@@ -52,16 +56,22 @@ def update_password(username: str, old_password: str, new_password: str):
     :param username:
     :param old_password:
     :param new_password:
-    :return: dict indicating success or error
+    :return: None
     """
     existing = get(username)
 
     if existing is None:
-        return {'Error': f'User "{username}" does not exist'}
+        raise service.exceptions.NotFoundException(
+            f'User "{username}" not found in database.'
+        )
     elif not service.auth.validate_password(new_password):
-        return {'Error': 'New password does not meet requirements'}
+        raise service.exceptions.BadRequestException(
+            'New password does not meet requirements.'
+        )
     elif not authenticate(username, old_password):
-        return {'Error': 'Unauthorized'}
+        raise service.exceptions.ForbiddenException(
+            'Old password verification failed.'
+        )
     else:
         hashed = service.auth.hash_password(new_password)
         service.mongo.update_by_id(
@@ -69,7 +79,6 @@ def update_password(username: str, old_password: str, new_password: str):
             {'password': hashed},
             DB.users
         )
-        return {'Status': 'Success'}
 
 
 def authenticate(username: str, password: str):

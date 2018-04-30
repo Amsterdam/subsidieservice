@@ -17,6 +17,9 @@ def audit(user: str, action: str, result=None):
 
 def audit_log_message(user: str, action: str, result=None):
 
+    if not result:
+        return f'User "{user}" took action "{action}"'
+
     obj = _convert_obj(result)
 
     try:

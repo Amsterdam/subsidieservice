@@ -1,7 +1,6 @@
 import unittest
 from unittest import mock
 import collections
-import subsidy_service as service
 from subsidy_service import auth, exceptions
 
 
@@ -72,7 +71,7 @@ class TestAuthenticate(unittest.TestCase):
     def test_verified(self):
         input = lambda x: x
         output = auth.authenticate(input)
-        self.assertEqual(output(123), 123)
+        self.assertEqual(output(123), input(123))
 
 
 class TestVerifyPassword(unittest.TestCase):
@@ -83,3 +82,5 @@ class TestVerifyPassword(unittest.TestCase):
     def test_bad(self):
         hashed = CRYPT_CTX.hash('pwd')
         self.assertFalse(auth.verify_password('wrong', hashed))
+
+

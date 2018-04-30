@@ -82,3 +82,5 @@ temp-swagger-server-dir
 data/*
 !data/mongodb/placeholder
 !data/test.csv
+
+*.pytest_cache/

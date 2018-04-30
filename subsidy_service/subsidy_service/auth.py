@@ -49,7 +49,7 @@ def authenticate(func: callable):
         if not verify_user(auth.username, auth.password):
             # user not found/password incorrect
             raise service.exceptions.ForbiddenException(
-                'User is not authorized to call ' + func.__name__
+                "Username or password incorrect."
             )
         else:
             # successfully authenticated

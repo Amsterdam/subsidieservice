@@ -1,4 +1,4 @@
-.PHONY: clean venv docker-stop docker-run docker-shell docker-data
+.PHONY: clean venv test docker-stop docker-run docker-shell docker-data
 
 activate=venv/subsidy/bin/activate
 
@@ -70,14 +70,19 @@ swagger-update: swagger.yaml
 	swagger-codegen generate -i swagger.yaml -l python-flask -o temp-swagger-server-dir
 	rsync -Iavh temp-swagger-server-dir/ python-flask-server/ --exclude="controller*" \
 		--exclude="*__pycache__*" --exclude=".DS_Store" --exclude="*__main__.py"
-	source $(activate); pip install -e python-flask-server
+	source $(activate) && pip install -e python-flask-server
 	git diff --no-index python-flask-server/swagger_server/controllers \
 		temp-swagger-server-dir/swagger_server/controllers
 
 
-## Run the subsisdy_service unit tests
+## Run the subsisdy_service unit tests and show the coverage report
 test:
-	source $(activate) && python3 -m unittest discover -vs subsidy_service
+	(\
+		source $(activate); \
+		pytest -lv --tb=long --cov=subsidy_service/subsidy_service \
+			--cov-report=term --cov-report=html subsidy_service; \
+	)
+	open htmlcov/index.html
 
 
 ## Delete all compiled Python files and remove docker containers
@@ -90,7 +95,7 @@ clean:
 
 
 ## Mirror this repository to the Gemeente Amsterdam GitHub repo
-mirror:
+mirror: test
 	cd ../service-mirror && git fetch -p && git push;
 
 
