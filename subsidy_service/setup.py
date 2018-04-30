@@ -7,5 +7,7 @@ setup(name='subsidy_service',
       install_requires=[
           'bunq_sdk',
           'pymongo',
+          'connexion',
+          'passlib',
       ],
-      python_requires='>=3.5')
+      python_requires='>=3.6')

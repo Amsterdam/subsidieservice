@@ -19,7 +19,7 @@ venv:
 
 ## Update requirements in requirements.txt
 requirements: 
-	source $(activate); pip3 freeze --exclude-editable > requirements.txt
+	source $(activate) && pip3 freeze --exclude-editable > requirements.txt
 	# echo "-e subsidy_service\n-e python-flask-server" >> requirements.txt
 
 
@@ -75,6 +75,11 @@ swagger-update: swagger.yaml
 		temp-swagger-server-dir/swagger_server/controllers
 
 
+## Run the subsisdy_service unit tests
+test:
+	source $(activate) && python3 -m unittest discover -vs subsidy_service
+
+
 ## Delete all compiled Python files and remove docker containers
 clean:
 	find . -type f -name "*.py[co]" -delete
@@ -86,7 +91,7 @@ clean:
 
 ## Mirror this repository to the Gemeente Amsterdam GitHub repo
 mirror:
-	cd ../service-mirror; git fetch -p; git push;
+	cd ../service-mirror && git fetch -p && git push;
 
 
 ## Create the mirror repository for mirroring

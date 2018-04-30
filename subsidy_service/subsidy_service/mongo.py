@@ -13,14 +13,9 @@ CONF = service.utils.get_config()
 
 
 # Database interactions
-def _id_query(id):
-    return {'_id': bson.ObjectId(str(id))}
-
-
 def find(document, collection):
     doc = collection.find_one(document)
-    if doc is not None:
-        doc.pop('_id')
+    doc = _drop_id(doc)
     return doc
 
 
@@ -33,8 +28,7 @@ def get_client(conf=CONF):
 def get_collection(collection):
     docs = []
     for doc in collection.find():
-        doc.pop('_id')
-        docs.append(doc)
+        docs.append(_drop_id(doc))
 
     return docs
 
@@ -54,8 +48,7 @@ def get_by_id(id, collection):
     except bson.errors.InvalidId:
         doc = None
 
-    if doc is not None:
-        doc.pop('_id')
+    doc = _drop_id(doc)
 
     return doc
 
@@ -95,3 +88,17 @@ def upsert(document, collection, const_fields):
         output = update_by_id(result['id'], document, collection)
 
     return output
+
+
+# util functions
+def _id_query(id):
+    return {'_id': bson.ObjectId(str(id))}
+
+
+def _drop_id(doc: [dict, None], id_field='_id'):
+    try:
+        doc.pop(id_field)
+    except (KeyError, AttributeError):
+        pass
+
+    return doc

@@ -37,8 +37,12 @@ def exceptionHTTPencode(func: callable):
     Decorator to encode exceptions as HTTP status codes. If during its execution
     func raises...
     * NotFoundException: return 404 problem
-    * badRequestException: return 400 problem
+    * BadRequestException: return 400 problem
+    * ForbiddenException: return 403 problem
+    * UnauthorizedException: return 401 problem with WWW-Authenticate header
+    * RateLimitExceptino: return 429 problem
     * NotImplementedException: return 501 problem
+    * Any other exception: return 500 problem
 
     The description of the problem (if any) will be equal to the message of the
     exception.
@@ -75,7 +79,11 @@ def exceptionHTTPencode(func: callable):
         except NotImplementedException as e:
             return connexion.problem(501, 'Not Implemented', e.message)
 
-        except Exception as other_exception:
-            raise other_exception
+        except Exception as e:
+            return connexion.problem(
+                500, 'Internal Server Error',
+                'Something has gone wrong on our server. '
+                + 'Please contact the administrators.'
+            )
 
     return wrapper
