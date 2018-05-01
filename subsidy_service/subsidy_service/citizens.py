@@ -61,7 +61,7 @@ def read_all():
     """
     Get all available citizens
 
-    :return: dict
+    :return: list[dict]
     """
     return service.mongo.get_collection(DB.citizens)
 
@@ -102,6 +102,10 @@ def delete(id):
     :param id: the id of the citizen to delete.
     :return: None
     """
+    document = service.mongo.get_by_id(id, DB.citizens)
+    if document is None:
+        raise service.exceptions.NotFoundException('Citizen not found')
+
     service.mongo.delete_by_id(id, DB.citizens)
     return None
 
