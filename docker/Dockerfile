@@ -2,7 +2,7 @@
 FROM python:3.6-stretch
 
 RUN apt-get update && \
-    apt-get install -y cron
+    apt-get install -y cron man-db
 
 RUN pip3 install --upgrade pip
 

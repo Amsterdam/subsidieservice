@@ -8,21 +8,12 @@ import bson
 
 import subsidy_service as service
 
-# Globals
-CONF = service.utils.get_config()
-
 
 # Database interactions
 def find(document, collection):
     doc = collection.find_one(document)
     doc = _drop_id(doc)
     return doc
-
-
-def get_client(conf=CONF):
-    client = pymongo.MongoClient(host=conf['mongo']['host'],
-                                 port=int(conf['mongo']['port']))
-    return client
 
 
 def get_collection(collection):
@@ -33,7 +24,7 @@ def get_collection(collection):
     return docs
 
 
-def add_and_copy_id(document:dict, collection, id_field='id'):
+def add_and_copy_id(document: dict, collection, id_field='id'):
     new_id = collection.insert_one(document).inserted_id
 
     new_record = collection.find_one(document)

@@ -3,9 +3,8 @@ import time
 import collections
 
 # Globals
-CONF = service.utils.get_config()
-CLIENT = service.mongo.get_client(CONF)
-DB = CLIENT.subsidy
+CTX = service.config.Context
+
 
 STATUS_OPTIONS = [
     # 'PENDING_APPROVAL',  # Not yet implemented
@@ -38,9 +37,9 @@ def create(subsidy: dict):
     """
     recip = service.utils.drop_nones(subsidy['recipient'])
 
-    # check required DB objects
+    # check required CTX.db objects
     master = service.utils.drop_nones(subsidy['master'])
-    master = service.mongo.find(master, DB.masters)
+    master = service.mongo.find(master, CTX.db.masters)
 
     if master is None:
         raise service.exceptions.NotFoundException('Master account not found')
@@ -52,10 +51,10 @@ def create(subsidy: dict):
         )
 
     if 'id' in recip:
-        recip = service.mongo.get_by_id(recip['id'], DB.citizens)
+        recip = service.mongo.get_by_id(recip['id'], CTX.db.citizens)
     else:
         recip = service.mongo.find({'phone_number': recip['phone_number']},
-                                   DB.citizens)
+                                   CTX.db.citizens)
 
     if recip is None:
         raise service.exceptions.NotFoundException(
@@ -109,9 +108,9 @@ def create(subsidy: dict):
     # else:
     #     recip_full['subsidies'].append(subsidy)
     #
-    # service.mongo.update_by_id(recip_full['id'], recip_full, DB.citizens)
+    # service.mongo.update_by_id(recip_full['id'], recip_full, CTX.db.citizens)
 
-    output = service.mongo.add_and_copy_id(subsidy, DB.subsidies)
+    output = service.mongo.add_and_copy_id(subsidy, CTX.db.subsidies)
 
     return service.utils.drop_nones(output)
 
@@ -142,7 +141,7 @@ def read_all(status: str=None):
             'Status should be one of: {}.'.format(', '.join(STATUS_OPTIONS))
         )
 
-    subsidies = service.mongo.get_collection(DB.subsidies)
+    subsidies = service.mongo.get_collection(CTX.db.subsidies)
     output = []
     if not subsidies:
         return output
@@ -198,7 +197,7 @@ def update(id, subsidy: dict):
     """
     raise service.exceptions.NotImplementedException('Not yet implemented')
     # document = service.utils.drop_nones(subsidy)
-    # obj = service.mongo.update_by_id(id, document, DB.subsidies)
+    # obj = service.mongo.update_by_id(id, document, CTX.db.subsidies)
     # return obj
 
 
@@ -213,7 +212,7 @@ def replace(id, subsidy: dict):
     raise service.exceptions.NotImplementedException('Not yet implemented')
     # document = subsidy
     # document['id'] = str(id)
-    # obj = service.mongo.replace_by_id(id, document, DB.subsidies)
+    # obj = service.mongo.replace_by_id(id, document, CTX.db.subsidies)
     # return obj
 
 
@@ -224,7 +223,7 @@ def delete(id):
     :param id: the id of the subsidy to delete.
     :return: None
     """
-    subsidy = service.mongo.get_by_id(id, DB.subsidies)
+    subsidy = service.mongo.get_by_id(id, CTX.db.subsidies)
 
     if subsidy is None:
         raise service.exceptions.NotFoundException('Subsidy not found')
@@ -248,7 +247,7 @@ def delete(id):
     subsidy['status'] = STATUSCODE.CLOSED
     subsidy['account']['balance'] = 0.
     subsidy['master']['balance'] = None
-    subsidy = service.mongo.update_by_id(id, subsidy, DB.subsidies)
+    subsidy = service.mongo.update_by_id(id, subsidy, CTX.db.subsidies)
 
     return None
 
@@ -270,9 +269,9 @@ def approve(id):
 #     for acct in accts:
 #         acct_db = acct.copy()
 #         acct_db['bunq_id'] = acct_db.pop('id')
-#         service.mongo.upsert(acct_db, DB.accounts, ['iban'])
+#         service.mongo.upsert(acct_db, CTX.db.accounts, ['iban'])
 #
-#     accts_db = service.mongo.get_collection(DB.accounts)
+#     accts_db = service.mongo.get_collection(CTX.db.accounts)
 #
 #     return accts_db
 
@@ -280,10 +279,10 @@ def approve(id):
 # utils
 def get_and_update(id, master_balance=False):
     """
-    Get the subsidy from the DB, update the balance from bunq, update the status
+    Get the subsidy from the CTX.db, update the balance from bunq, update the status
     as appropriate, push the updates to the server, and return the subsidy.
 
-    If the account is not accessible, a balance of None is reported and the DB
+    If the account is not accessible, a balance of None is reported and the CTX.db
     is not updated.
 
     :param id:
@@ -292,7 +291,7 @@ def get_and_update(id, master_balance=False):
     :return:
     """
     # TODO: Do we even want to store balances?
-    sub = service.mongo.get_by_id(id, DB.subsidies)
+    sub = service.mongo.get_by_id(id, CTX.db.subsidies)
 
     if sub is None:
         raise service.exceptions.NotFoundException('Subsidy not found')
@@ -335,7 +334,7 @@ def get_and_update(id, master_balance=False):
                 elif share_status in ['CANCELLED', 'REVOKED', 'REJECTED']:
                     sub['status'] = STATUSCODE.SHARE_CLOSED
 
-    sub = service.mongo.update_by_id(sub['id'], sub, DB.subsidies)
+    sub = service.mongo.update_by_id(sub['id'], sub, CTX.db.subsidies)
 
     return sub
 

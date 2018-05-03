@@ -1,5 +1,9 @@
-from subsidy_service import utils, exceptions
+from subsidy_service import utils, exceptions, config
 import unittest
+
+
+# config.Context.replace('subsidy_service/tests/subsidy_service_unittest.ini')
+
 
 
 class TestDropNones(unittest.TestCase):
@@ -65,6 +69,7 @@ class TestFormatPhoneNumber(unittest.TestCase):
         output = utils.format_phone_number(input)
         self.assertEqual(output, expected)
 
+    # todo: check if this can be done in a decorator
     def test_bad_input(self):
         inputs = [
             'this is not a phone number',

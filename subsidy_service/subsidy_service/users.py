@@ -1,9 +1,7 @@
 import subsidy_service as service
 
 # Globals
-CONF = service.utils.get_config()
-CLIENT = service.mongo.get_client(CONF)
-DB = CLIENT.subsidy
+CTX = service.config.Context
 
 # TODO: Verify this interface (breaks convention but also isn't to be used in
 #       the same way)
@@ -34,7 +32,7 @@ def add(username: str, password: str):
             'username': username,
             'password': service.auth.hash_password(password)
         }
-        output = service.mongo.add_and_copy_id(user, DB.users)
+        output = service.mongo.add_and_copy_id(user, CTX.db.users)
         output.pop('password')
         return output
 
@@ -46,7 +44,7 @@ def get(username: str):
     :param username:
     :return: dict with id, username, and password hash
     """
-    return service.mongo.find({'username': username}, DB.users)
+    return service.mongo.find({'username': username}, CTX.db.users)
 
 
 def update_password(username: str, old_password: str, new_password: str):
@@ -77,7 +75,7 @@ def update_password(username: str, old_password: str, new_password: str):
         service.mongo.update_by_id(
             existing['id'],
             {'password': hashed},
-            DB.users
+            CTX.db.users
         )
 
 
@@ -101,8 +99,8 @@ def delete(username: str, password: str):
     :return: dict: success or error
     """
     if not authenticate(username, password):
-        return {'Error':'Unauthorized'}
+        raise service.exceptions.ForbiddenException('Not Authorized')
     else:
-        user = service.mongo.find({'username': username}, DB.users)
-        service.mongo.delete_by_id(user['id'], DB.users)
-        return {'Status': 'Success'}
+        user = service.mongo.find({'username': username}, CTX.db.users)
+        service.mongo.delete_by_id(user['id'], CTX.db.users)
+        return None

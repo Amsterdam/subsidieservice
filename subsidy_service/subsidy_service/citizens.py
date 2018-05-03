@@ -4,9 +4,8 @@ Business logic for working with citizens.
 import subsidy_service as service
 
 # Globals
-CONF = service.utils.get_config()
-CLIENT = service.mongo.get_client(CONF)
-DB = CLIENT.subsidy
+CTX = service.config.Context
+
 
 
 # CRUD functionality
@@ -33,13 +32,18 @@ def create(citizen: dict):
 
     existing = service.mongo.find(
         {'phone_number': citizen['phone_number']},
-        DB.citizens
+        CTX.db.citizens
     )
 
     if existing:
-        return existing
+        msg = 'A Citizen with that phone_number already exists. '
+        if 'id' in existing:
+            id = existing['id']
+            msg += f'The id is "{id}".'
 
-    obj = service.mongo.add_and_copy_id(citizen, DB.citizens)
+        raise service.exceptions.AlreadyExistsException(msg)
+
+    obj = service.mongo.add_and_copy_id(citizen, CTX.db.citizens)
 
     return obj
 
@@ -51,7 +55,7 @@ def read(id):
     :param id: the citizen's ID
     :return: dict
     """
-    output = service.mongo.get_by_id(id, DB.citizens)
+    output = service.mongo.get_by_id(id, CTX.db.citizens)
     if not output:
         raise service.exceptions.NotFoundException('Citizen not found')
     return output
@@ -63,7 +67,7 @@ def read_all():
 
     :return: list[dict]
     """
-    return service.mongo.get_collection(DB.citizens)
+    return service.mongo.get_collection(CTX.db.citizens)
 
 
 def update(id, citizen: dict):
@@ -76,7 +80,7 @@ def update(id, citizen: dict):
     """
     raise service.exceptions.NotImplementedException('Not yet implemented')
     document = service.utils.drop_nones(citizen)
-    obj = service.mongo.update_by_id(id, document, DB.citizens)
+    obj = service.mongo.update_by_id(id, document, CTX.db.citizens)
     return obj
 
 
@@ -91,7 +95,7 @@ def replace(id, citizen: dict):
     raise service.exceptions.NotImplementedException('Not yet implemented')
     document = citizen
     document['id'] = str(id)
-    obj = service.mongo.replace_by_id(id, document, DB.citizens)
+    obj = service.mongo.replace_by_id(id, document, CTX.db.citizens)
     return obj
 
 
@@ -102,10 +106,10 @@ def delete(id):
     :param id: the id of the citizen to delete.
     :return: None
     """
-    document = service.mongo.get_by_id(id, DB.citizens)
+    document = service.mongo.get_by_id(id, CTX.db.citizens)
     if document is None:
         raise service.exceptions.NotFoundException('Citizen not found')
 
-    service.mongo.delete_by_id(id, DB.citizens)
+    service.mongo.delete_by_id(id, CTX.db.citizens)
     return None
 

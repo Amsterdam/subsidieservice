@@ -1,4 +1,4 @@
-.PHONY: clean venv test docker-stop docker-run docker-shell docker-data
+.PHONY: clean venv test docker-stop docker-run docker-data
 
 activate=venv/subsidy/bin/activate
 
@@ -24,7 +24,7 @@ requirements:
 
 
 ## Rebuild the docker including new requirements
-docker-build: docker-stop .
+docker-build: docker-stop test
 	# docker build -f docker/Dockerfile -t subsidies/server .
 	docker-compose build
 
@@ -41,7 +41,7 @@ docker-run: # docker-stop docker-build
 
 
 ## Open an interactive shell in the service docker. Current directory is mounted to /opt/
-docker-shell: 
+docker-shell: docker-run
 	docker exec -it subsidy_service_dev /bin/bash
 
 
@@ -75,14 +75,20 @@ swagger-update: swagger.yaml
 		temp-swagger-server-dir/swagger_server/controllers
 
 
-## Run the subsisdy_service unit tests and show the coverage report
+## Run the subsisdy_service unit tests 
 test:
 	(\
 		source $(activate); \
 		pytest -lv --tb=long --cov=subsidy_service/subsidy_service \
 			--cov-report=term --cov-report=html subsidy_service; \
 	)
+
+
+## Run the unit tests and open the coverage report
+coverage: htmlcov/index.html
 	open htmlcov/index.html
+
+htmlcov: test
 
 
 ## Delete all compiled Python files and remove docker containers
