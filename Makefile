@@ -1,5 +1,5 @@
 .PHONY: clean venv test docker-stop docker-run docker-shell docker-data
-
+SHELL:=/bin/bash
 activate=venv/subsidy/bin/activate
 
 ## Make virtual environment and install requirements (requires virtualenv)
@@ -8,7 +8,7 @@ venv:
 	-unlink activate
 	mkdir venv
 	virtualenv venv/subsidy
-	ln -s venv/subsidy/bin/activate activate
+	ln -s $(activate) activate
 	(\
 		source $(activate); \
 		pip3 install -r requirements.txt; \
@@ -85,13 +85,15 @@ test:
 	open htmlcov/index.html
 
 
-## Delete all compiled Python files and remove docker containers
+## Delete all compiled Python files and remove docker containers, remove venv
 clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 	-rm -r temp-swagger-server-dir
 	-docker rm subsidy_mongo_dev
 	-docker rm subsidy_service_dev
+	-rm -rf venv
+	-unlink activate
 
 
 ## Mirror this repository to the Gemeente Amsterdam GitHub repo
