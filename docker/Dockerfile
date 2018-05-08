@@ -19,8 +19,6 @@ COPY subsidy_service /usr/src/subsidy_service
 # --- Add command line scripts and cron jobs
 COPY scripts /usr/src/scripts
 
-ADD docker/crontab /usr/src/scripts
-
 ADD docker/docker_start.sh /usr/src/scripts
 
 WORKDIR /usr/src
@@ -30,22 +28,17 @@ WORKDIR /usr/src
 RUN pip3 install -e /usr/src/python-flask-server && \
     pip3 install -e /usr/src/subsidy_service
 
-
-# --- set background jobs
-RUN chmod +x /usr/src/scripts/crontab && \
-    crontab /usr/src/scripts/crontab
-
+RUN mkdir -p /etc/subsidy_service/config/
+RUN chmod 777 /etc/subsidy_service/config/
 
 # --- mount points for configuration files and logs
-VOLUME /etc/subsidy_service/config
-
 VOLUME /etc/subsidy_service/logs
 
 
 # --- customize bashrc
-ADD docker/bashrc_addendum /tmp
-
-RUN cat /tmp/bashrc_addendum >> /root/.bashrc
+#ADD docker/bashrc_addendum /tmp
+#
+#RUN cat /tmp/bashrc_addendum >> /root/.bashrc
 
 
 # --- expose port 8080 and start the app on run

@@ -1,5 +1,0 @@
-MAILTO="paton.john@kpmg.nl"
-SHELL=/bin/bash
-
-#m  h  dom mon dow command
-*   *   *   *   *  echo "I did the thing at $(date)!" >> /usr/src/test.txt
