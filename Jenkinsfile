@@ -24,10 +24,7 @@ node {
 
     stage("Build image") {
         tryStep "build", {
-            def image = docker.build("build.app.amsterdam.nl:5000/cto/subsidieservice:${env.BUILD_NUMBER}",
-                "--shm-size 1G " +
-                "--build-arg BUILD_ENV=acc" +
-                " .")
+            def image = docker.build("build.app.amsterdam.nl:5000/cto/subsidieservice:${env.BUILD_NUMBER}", "docker")
             image.push()
         }
     }
