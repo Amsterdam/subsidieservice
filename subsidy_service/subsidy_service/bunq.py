@@ -386,7 +386,7 @@ def _list_all_pages(endpoint_obj, list_params: dict, *args, **kwargs):
 
     # keep getting pages while they are available
     while response.pagination.has_previous_page():
-        time.sleep(1.5)
+        time.sleep(1)
         try:
             response = endpoint_obj.list(
                 *args,
