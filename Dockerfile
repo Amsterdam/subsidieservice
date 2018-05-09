@@ -19,7 +19,7 @@ COPY subsidy_service /usr/src/subsidy_service
 # --- Add command line scripts and cron jobs
 COPY scripts /usr/src/scripts
 
-ADD docker/docker_start.sh /usr/src/scripts
+ADD docker_run.sh /bin
 
 WORKDIR /usr/src
 
@@ -46,7 +46,7 @@ EXPOSE 8080
 
 ENTRYPOINT ["/bin/bash"]
 
-CMD ["/usr/src/scripts/docker_start.sh"]
+CMD ["docker_run.sh"]
 
 #ENTRYPOINT ["python3"]
 #

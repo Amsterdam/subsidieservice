@@ -10,7 +10,7 @@ services:
     volumes:
       - ./logs:/etc/subsidy_service/logs
     build:
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./Dockerfile
       context: .
     environment:
       MONGO_HOST:     "mongo"
