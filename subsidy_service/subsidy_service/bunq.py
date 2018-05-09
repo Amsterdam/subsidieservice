@@ -282,6 +282,8 @@ def payment_summary(payment: endpoint.Payment):
         'id': payment.id_,
         'amount': float(payment.amount.value),
         'description': payment.description,
+        'name': payment.alias.pointer.name,
+        'iban': payment.alias.pointer.name,
         'counterparty_name': payment.counterparty_alias.pointer.name,
         'counterparty_iban': payment.counterparty_alias.pointer.value,
         'timestamp': payment.created

@@ -14,6 +14,7 @@ STATUS_OPTIONS = [
     'OPEN',
     'SHARE_CLOSED',
     'CLOSED',
+    'UNKNOWN',
 ]
 
 STATUSCODE = collections.namedtuple(
@@ -100,15 +101,6 @@ def create(subsidy: dict):
 
     subsidy['account'] = new_acct
     subsidy['master'] = master
-
-    # # REMOVED
-    # # add subsidy to recipient's subsidies
-    # if not recip_full['subsidies']:
-    #     recip_full['subsidies'] = [subsidy]
-    # else:
-    #     recip_full['subsidies'].append(subsidy)
-    #
-    # service.mongo.update_by_id(recip_full['id'], recip_full, CTX.db.citizens)
 
     output = service.mongo.add_and_copy_id(subsidy, CTX.db.subsidies)
 
@@ -240,8 +232,14 @@ def delete(id):
         pmt = service.bunq.make_payment_to_acct_id(
             subsidy['account']['bunq_id'],
             subsidy['master']['bunq_id'],
-            balance
+            balance,
+            'Closing subsidy account'
         )
+
+    time.sleep(1)
+    payments = service.masters.get_payments_if_available(subsidy['bunq_id'])
+
+
     time.sleep(1)
     service.bunq.close_account(subsidy['account']['bunq_id'])
     subsidy['status'] = STATUSCODE.CLOSED
@@ -296,35 +294,33 @@ def get_and_update(id, master_balance=False):
     if sub is None:
         raise service.exceptions.NotFoundException('Subsidy not found')
 
-    # temporarily removed for performance
+    # # temporarily removed for performance
     # sub['account']['balance'] = \
     #     service.bunq.get_balance(sub['account']['bunq_id'])
     # time.sleep(1)
 
     # only need shares for PENDING_ACCEPT and OPEN subsidies
-    full_read = (sub['status'] in [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN])
+    get_share_statuscodes = [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]
+    full_read = (sub['status'] in get_share_statuscodes)
     acct = {}
     if sub['status'] != STATUSCODE.CLOSED:
-        acct = service.bunq.read_account(sub['account']['bunq_id'], full_read)
-        sub['account']['balance'] = acct['balance']
+        try:
+            acct = service.bunq.read_account(sub['account']['bunq_id'],
+                                             full_read)
+            sub['account']['balance'] = acct['balance']
+        except service.exceptions.NotFoundException:
+            sub['account']['balance'] = None
 
     if master_balance:
-        sub['master']['balance'] = \
-            service.bunq.get_balance(sub['master']['bunq_id'])
+        try:
+            sub['master']['balance'] = \
+                service.bunq.get_balance(sub['master']['bunq_id'])
+        except service.exceptions.NotFoundException:
+            sub['master']['balance'] = None
     else:
         sub['master']['balance'] = None
 
-    if sub['status'] == STATUSCODE.PENDING_ACCOUNT:
-        # TODO: Should we trigger this action at this point? Or in a script?
-        # try:
-        #     service.bunq.create_share(sub['account']['bunq_id'],
-        #                               sub['recipient']['phone_number'])
-        #     sub['status'] = 'PENDING_ACCEPT'
-        # except service.exceptions.NotFoundException:
-        #     pass
-        pass
-
-    elif sub['status'] in [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]:
+    if sub['status'] in get_share_statuscodes:
         if 'shares' in acct:
             if len(acct['shares']) > 0:
                 share_status = acct['shares'][0]['status']
@@ -337,4 +333,3 @@ def get_and_update(id, master_balance=False):
     sub = service.mongo.update_by_id(sub['id'], sub, CTX.db.subsidies)
 
     return sub
-

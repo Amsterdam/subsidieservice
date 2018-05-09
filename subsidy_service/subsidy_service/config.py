@@ -71,13 +71,13 @@ class Context():
                 port=int(cls.config['mongo']['port'])
             )
             cls.db = cls.mongo_client.subsidy
-        except (ValueError, IndexError):
+        except (ValueError, IndexError, KeyError):
             pass
 
     @classmethod
     def _reload_bunq_ctx(cls):
+        conf_path = cls.config.get('bunq', 'conf_path', fallback='')
         try:
-            conf_path = cls.config.get('bunq', 'conf_path')
             ctx = ApiContext.restore(conf_path)
             print('Bunq config loaded from', conf_path)
         except FileNotFoundError:
@@ -96,12 +96,7 @@ class Context():
 
     @classmethod
     def reset_to_default(cls):
-        cls.config = configparser.ConfigParser()
-        cls.mongo_client = None
-        cls.bunq_ctx = None
-        cls._last_read = None
-
-        cls.read(cls.default_paths)
+        cls.replace(cls.default_paths)
 
     @classmethod
     def replace(cls, config_path):
