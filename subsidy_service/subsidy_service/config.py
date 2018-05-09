@@ -1,5 +1,6 @@
 import configparser
 import os
+import sys
 import pymongo
 from bunq.sdk.context import ApiContext, BunqContext
 import subsidy_service as service
@@ -79,13 +80,13 @@ class Context():
         conf_path = cls.config.get('bunq', 'conf_path', fallback='')
         try:
             ctx = ApiContext.restore(conf_path)
-            print('Bunq config loaded from', conf_path)
+            print('Bunq config loaded from', conf_path, file=sys.stderr)
         except FileNotFoundError:
             basepath = os.getcwd()
             path = os.path.join(basepath, conf_path)
             try:
                 ctx = ApiContext.restore(path)
-                print('Bunq config loaded from', path)
+                print('Bunq config loaded from', path, file=sys.stderr)
             except:
                 ctx = None
 

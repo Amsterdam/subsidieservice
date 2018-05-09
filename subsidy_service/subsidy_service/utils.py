@@ -20,7 +20,7 @@ def now():
     Get the current datetime (YYYY-MM-DD HH:MM:SS)
     :return: str
     """
-    return datetime.datetime.now().strftime('%Y-%M-%d %H:%m:%S')
+    return datetime.datetime.now().strftime('%D %S')
 
 
 def today():
@@ -28,7 +28,7 @@ def today():
     Get the current date (YYYY-MM-DD)
     :return: str
     """
-    return datetime.datetime.today().strftime('%Y-%M-%d')
+    return datetime.datetime.today().strftime('%D')
 
 
 def format_phone_number(phone_number: str):
