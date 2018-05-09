@@ -43,31 +43,30 @@ DUMMY_SUBSIDY = {
 class TestCreate(unittest.TestCase):
     pass
 
-
 @mock.patch('subsidy_service.subsidies.get_and_update',
-            new=common.dummy_func(return_value=[]))
+            return_value=DUMMY_SUBSIDY)
 class TestRead(unittest.TestCase):
     def setUp(self):
-
         service.bunq.get_payments = mock.MagicMock(return_value=[])
 
         self.original_dummy_sub = DUMMY_SUBSIDY.copy()
         self.original_dummy_share = DUMMY_SHARE.copy()
+        self.original_dummy_acct = DUMMY_ACCOUNT.copy()
 
     def tearDown(self):
         super().tearDown()
-        global DUMMY_SUBSIDY, DUMMY_SHARE
+        global DUMMY_SUBSIDY, DUMMY_SHARE, DUMMY_ACCOUNT
         DUMMY_SUBSIDY = self.original_dummy_sub.copy()
         DUMMY_SHARE = self.original_dummy_share.copy()
+        DUMMY_ACCOUNT = self.original_dummy_acct.copy()
 
-    def test_updated(self):
+    def test_updated(self, get_update_mock: mock.Mock):
         subsidies.read(123)
         subsidies.get_and_update.assert_called()
 
-    def test_got_payments(self):
+    def test_got_payments(self, get_update_mock: mock.Mock):
         output = subsidies.read(123)
         self.assertIn('transactions', output['account'])
-
 
 
 class TestReadAll(unittest.TestCase):
