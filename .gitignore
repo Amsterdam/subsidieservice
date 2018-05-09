@@ -84,3 +84,4 @@ data/*
 !data/test.csv
 
 *.pytest_cache/
+*.pidfile
