@@ -6,10 +6,14 @@ import os
 import signal
 import time
 import click
+import logging
+import traceback
+import multiprocessing.dummy as mp
+import subprocess
 
 # Globals
-filedir = os.path.split(os.path.realpath(__file__))[0]
-PID_PATH = os.path.join(filedir, 'db_update_daemon.pidfile')
+FILEDIR = os.path.split(os.path.realpath(__file__))[0]
+PID_PATH = os.path.join(FILEDIR, 'db_update_daemon.pidfile')
 PIDFILE = PIDLockFile(PID_PATH, timeout=1)
 PID = PIDFILE.read_pid()
 
@@ -26,11 +30,13 @@ class DaemonStatus():
         self.started = ''
         self.total_updates = 0
         self.last_update = ''
+        self.last_update_unix = time.time()
         self.pid = PID
 
     def increment_total_updates(self):
         self.total_updates += 1
         self.last_update = self.now()
+        self.last_update_unix = time.time()
 
     def mark_started(self):
         self.started = self.now()
@@ -44,7 +50,6 @@ class DaemonStatus():
         self.total_items = 0
         self._status = stat
 
-
     @staticmethod
     def now():
         return time.strftime('%D %T')
@@ -56,7 +61,6 @@ class DaemonStatus():
 
         if self.started:
             msg += f'.\ndb_update_daemon running since {self.started}'
-
 
         if self.total_updates:
             msg += f'.\nTotal updates made: {self.total_updates} '\
@@ -109,7 +113,7 @@ def update_masters():
         STATUS.increment_total_updates()
 
         if i < len(master_list)-1:
-            # don't both sleeping on laast list entry
+            # don't both sleeping on last list entry
             time.sleep(1)
 
 
@@ -127,7 +131,7 @@ def info_handler(signum, frame):
 
 
 def main_loop():
-    # only do imports after fork
+    # only import subsidy_service after fork
     global service, CTX
 
     try:
@@ -136,6 +140,9 @@ def main_loop():
     except SystemExit:
         print('Terminating graciously')
         raise
+    except Exception as e:
+        traceback.print_tb(e.__traceback__, file=sys.stdout)
+        sys.exit(1)
 
     global STATUS
 
@@ -179,7 +186,7 @@ def exit_if_unlocked():
         sys.exit(1)
 
 
-def start_daemon():
+def start_daemon(debug=False, watchdog=True):
     """Run main_loop() until SIGTERM is received, then raise SystemExit
     exception (should be caught and handled in main_loop before
     breaking out of the loop).
@@ -193,8 +200,11 @@ def start_daemon():
         detach_process=True,
         stdout=sys.stdout,
         pidfile=PIDFILE,
-        working_directory=os.path.realpath(os.path.join(filedir, '..'))
+        working_directory=os.path.realpath(os.path.join(FILEDIR, '..'))
     )
+
+    if debug:
+        context.stderr = sys.stderr
 
     context.signal_map[signal.SIGINFO] = info_handler
     # context.signal_map[signal.SIGABRT] = context.terminate
@@ -209,7 +219,27 @@ def start_daemon():
             + f'with with PID {context.pidfile.read_pid()}.'
         )
         STATUS.pid = context.pidfile.read_pid()
+
         main_loop()
+
+
+def kill_daemon():
+    """Kill db_update_daemon"""
+    global STATUS
+    STATUS.status = 'Killing daemon'
+    while True:
+        try:
+            os.kill(PID, signal.SIGTERM)
+            time.sleep(0.2)  # give stdout time to flush
+        except ProcessLookupError:
+            PIDFILE.break_lock()
+            return
+
+
+def restart_daemon(debug=False,  watchdog=True):
+    """Kill db_update_daemon and restart it"""
+    kill_daemon()
+    start_daemon(debug, watchdog)
 
 
 # set up command line interface
@@ -217,12 +247,14 @@ def start_daemon():
 def cli():
     pass
 
+click.option()
 
 @cli.command('start')
-def start_command():
+@click.option('-d', '--debug', is_flag=True, help='Display stderr in terminal')
+def start_command(debug):
     """Start db_update_daemon if not already running"""
     exit_if_locked()
-    start_daemon()
+    start_daemon(debug, watchdog=True)
 
 
 @cli.command('status')
@@ -234,19 +266,16 @@ def info_command():
 
 @cli.command('kill')
 def kill_command():
-    """Kill db_update_daemon if running"""
     exit_if_unlocked()
-    os.kill(PID, signal.SIGTERM)
-    PIDFILE.break_lock()
+    kill_daemon()
 
 
 @cli.command('restart')
-def restart_command():
+@click.option('-d', '--debug', is_flag=True, help='Display stderr in terminal')
+def restart_command(debug):
     """Kill db_update_daemon if running and restart it"""
     exit_if_unlocked()
-    os.kill(PID, signal.SIGTERM)
-    PIDFILE.break_lock()
-    start_daemon()
+    restart_daemon(debug, watchdog=True)
 
 
 if __name__ == '__main__':
