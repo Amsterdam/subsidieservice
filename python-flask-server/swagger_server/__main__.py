@@ -15,7 +15,7 @@ def main():
     app.add_api('swagger.yaml', arguments={'title': 'subsidy Allocation API'})
 
     # TODO: Improve SSL by generating and using non-adhoc certificates
-    app.run(port=8080, ssl_context='adhoc', debug=False)
+    app.run(port=80, debug=False)
 
 
 if __name__ == '__main__':

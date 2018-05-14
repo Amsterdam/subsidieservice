@@ -9,7 +9,7 @@ host: "188.166.29.174:8080"
 basePath: "/v1"
 
 schemes:
-- "https"
+- "http"
 
 # security:
 # - basic_auth: []
