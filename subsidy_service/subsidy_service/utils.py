@@ -5,6 +5,7 @@ import datetime
 import pymongo
 import re
 
+
 def drop_nones(dct: dict):
     """
     Drop all key-value pairs from a dict where the value is None.
@@ -20,7 +21,7 @@ def now():
     Get the current datetime (YYYY-MM-DD HH:MM:SS)
     :return: str
     """
-    return datetime.datetime.now().strftime('%D %S')
+    return datetime.datetime.now().strftime('%D %T')
 
 
 def today():
@@ -47,7 +48,7 @@ def format_phone_number(phone_number: str):
     rx = r'\+?[0-9\-\ ]+\Z'
 
     if not re.match(rx, phnum):
-        raise service.exceptions.BadRequestException('Invaild phone number')
+        raise service.exceptions.BadRequestException('Invalid phone number')
 
     phnum = phnum.replace('-', '')
     phnum = ''.join(phnum.split())  # Drop whitespace

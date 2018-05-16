@@ -85,3 +85,5 @@ data/*
 
 *.pytest_cache/
 *.pidfile
+*.env
+*.update

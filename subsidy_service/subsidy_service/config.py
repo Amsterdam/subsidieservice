@@ -80,20 +80,22 @@ class Context():
         conf_path = cls.config.get('bunq', 'conf_path', fallback='')
         try:
             ctx = ApiContext.restore(conf_path)
-            print('Bunq config loaded from', conf_path, file=sys.stderr)
+            # print('Bunq config loaded from', conf_path, file=sys.stderr)
         except FileNotFoundError:
             basepath = os.getcwd()
             path = os.path.join(basepath, conf_path)
             try:
                 ctx = ApiContext.restore(path)
-                print('Bunq config loaded from', path, file=sys.stderr)
+                # print('Bunq config loaded from', path, file=sys.stderr)
             except:
                 ctx = None
 
         cls.bunq_ctx = ctx
 
-        if ctx is not None:
+        try:
             BunqContext.load_api_context(ctx)
+        except AttributeError:
+            raise service.exceptions.ConfigException('Bunq config invalid')
 
     @classmethod
     def reset_to_default(cls):

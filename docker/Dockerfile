@@ -1,6 +1,11 @@
 # --- python3.6 image with gcc (required for dependency installation)
 FROM python:3.6-stretch
 
+ENV TZ="Europe/Amsterdam"
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
+
 RUN apt-get update && \
     apt-get install -y cron man-db
 

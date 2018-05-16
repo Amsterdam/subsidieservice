@@ -1,24 +1,33 @@
 #!/usr/bin/env python3
-import daemon
-from daemon.pidfile import PIDLockFile
+from lockfile.pidlockfile import PIDLockFile
+import lockfile
 import sys
 import os
 import signal
 import time
 import click
-import logging
-import traceback
-import multiprocessing.dummy as mp
-import subprocess
+import multiprocessing as mp
+import warnings
+
+# Filter deluge of Bunq warnings
+warnings.filterwarnings('ignore', message='[bunq SDK beta]*')
+
+# Options
+MAX_RESTART_RETRIES = 5  # Watchdog attempts to restart cleanly before forcing
+TIMEOUT = 300  # Time before watchdog attempts to restart
 
 # Globals
 FILEDIR = os.path.split(os.path.realpath(__file__))[0]
+WORKDIR = os.path.realpath(os.path.join(FILEDIR, '..'))
 PID_PATH = os.path.join(FILEDIR, 'db_update_daemon.pidfile')
-PIDFILE = PIDLockFile(PID_PATH, timeout=1)
-PID = PIDFILE.read_pid()
+WATCHDOG_PATH = os.path.join(FILEDIR, 'db_update_watchdog.pidfile')
+UPDATE_PATH = os.path.join(FILEDIR, 'db_update_daemon.updated')
+
+DAEMONLOCK = PIDLockFile(PID_PATH)
+WATCHDOGLOCK = PIDLockFile(WATCHDOG_PATH)
 
 
-class DaemonStatus():
+class DaemonStatus:
     """
     Object to track status of the daemon process and display nicely.
     """
@@ -31,14 +40,19 @@ class DaemonStatus():
         self.total_updates = 0
         self.last_update = ''
         self.last_update_unix = time.time()
-        self.pid = PID
+
+        self.sigterm = False
 
     def increment_total_updates(self):
+        """Record an update and write to the updatefile."""
         self.total_updates += 1
         self.last_update = self.now()
         self.last_update_unix = time.time()
 
+        write_update()
+
     def mark_started(self):
+        """Indicate that the daemon has started running"""
         self.started = self.now()
 
     @property
@@ -47,11 +61,18 @@ class DaemonStatus():
 
     @status.setter
     def status(self, stat: str):
+        """Changing the status implies resetting the number of items being
+        looped over."""
         self.total_items = 0
         self._status = stat
 
+    @property
+    def pid(self):
+        return DAEMONLOCK.read_pid()
+
     @staticmethod
     def now():
+        """Return the current time."""
         return time.strftime('%D %T')
 
     def __str__(self):
@@ -66,12 +87,22 @@ class DaemonStatus():
             msg += f'.\nTotal updates made: {self.total_updates} '\
                 + f'(last update at {self.last_update})'
 
-        msg += f'.\ndb_update_daemon\'s PID is {self.pid}.'
+        msg += f'.\ndb_update_daemon\'s PID is {self.pid}.\n'
         return msg
 
 
 STATUS = DaemonStatus()
 
+
+class AbortException(Exception):
+    """Exception to be raised on SIGABRT (force kill)."""
+    pass
+
+
+# ## Update functions
+# These functions are to be called sequentially in the main daemon loop. Each
+# update function should update one set of database objects and be considerate
+# of external rate limits.
 
 def update_masters():
     """
@@ -95,6 +126,8 @@ def update_masters():
         try:
             acct = service.bunq.read_account(master['bunq_id'])
             time.sleep(1)
+            if STATUS.sigterm:
+                break
             payments = service.bunq.get_payments(master['bunq_id'])
 
         except service.exceptions.NotFoundException:
@@ -110,55 +143,184 @@ def update_masters():
             updated_master,
             CTX.db.masters
         )
+
         STATUS.increment_total_updates()
 
-        if i < len(master_list)-1:
-            # don't both sleeping on last list entry
-            time.sleep(1)
+        sleep_or_terminate(1)
+        if STATUS.sigterm:
+            break
 
 
 def update_subsidies():
     global STATUS, service, CTX
+    import subsidy_service as service
     STATUS.status = 'Updating subsidies'
-    time.sleep(10)
-    pass
+
+    STATUSCODE = service.subsidies.STATUSCODE
+
+    subsidy_list = service.mongo.get_collection(CTX.db.subsidies)
+    STATUS.total_items = len(subsidy_list)
+
+    for i, subsidy in enumerate(subsidy_list):
+        STATUS.current_item = i
+        updated_subsidy = subsidy.copy()
+
+        if subsidy['status'] == STATUSCODE.CLOSED:
+            # skip updating
+            continue
+
+        # only need shares for PENDING_ACCEPT and OPEN subsidies
+        get_share_statuscodes = [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]
+        full_read = (subsidy['status'] in get_share_statuscodes)
+
+        try:
+            # masters already updated in other function
+            updated_subsidy['master'] = \
+                service.mongo.get_by_id(
+                    subsidy['master']['id'],
+                    CTX.db.subsidies
+                )
+        except TypeError:
+            # master not found -> no access, don't update
+            continue
+
+        acct = service.bunq.read_account(subsidy['account']['bunq_id'],
+                                         full=full_read)
+        sleep_or_terminate(1)
+
+        if STATUS.sigterm:
+            break
+
+        payments = service.bunq.get_payments(subsidy['account']['bunq_id'])
+
+        if STATUS.sigterm:
+            break
+
+        acct['transactions'] = payments
+
+        acct['bunq_id'] = acct.pop('id')
+
+        if full_read and 'shares' in acct:
+            if len(acct['shares']) > 0:
+                share_status = acct['shares'][0]['status']
+
+                if share_status == 'ACCEPTED':
+                    updated_subsidy['status'] = STATUSCODE.OPEN
+                elif share_status in ['CANCELLED', 'REVOKED',
+                                      'REJECTED']:
+                    updated_subsidy['status'] = STATUSCODE.SHARE_CLOSED
+            acct.pop('shares')
+
+        updated_subsidy['last_updated'] = service.utils.now()
+        service.mongo.update_by_id(
+            subsidy['id'],
+            updated_subsidy,
+            CTX.db.subsidies
+        )
+
+        STATUS.increment_total_updates()
+        sleep_or_terminate(1)
+        if STATUS.sigterm:
+            break
 
 
-def info_handler(signum, frame):
-    """Print the status message"""
-    global STATUS
-    print(STATUS.__str__())
+# ## Daemon loops
+# The main loops that are spawned as background processes on daemon start.
+
+def watchdog_loop(timeout: float):
+    """Watch the main loop and restart if no progress is being made. Relies on
+    main_loop writing regularly to the update file. After the max retries,
+    will force restart.
+    """
+    global STATUS, WATCHDOGLOCK, DAEMONLOCK
+
+    # only one watchdog
+    WATCHDOGLOCK.acquire()
+
+    retries = 0
+
+    while not STATUS.sigterm:
+        # get the last update time
+        try:
+            with open(UPDATE_PATH, 'r') as h:
+                raw = h.read()
+        except FileNotFoundError:
+            continue
+
+        if raw:
+            last_update = float(raw)
+            current_time = time.time()
+
+            # take action if required
+            if current_time - last_update > timeout:
+                if retries > MAX_RESTART_RETRIES:
+                    print('Max retries reached, force killing')
+
+                    if DAEMONLOCK.is_locked():
+                        kill_daemon(watchdog=False, force=True)
+
+                    # try to remove lockfiles if they persisted
+                    try:
+                        DAEMONLOCK.break_lock()
+                    except lockfile.NotMyLock:
+                        os.remove(PID_PATH)
+                    except lockfile.NotLocked:
+                        pass
+
+                    spawn_daemon()
+                    retries = 0
+
+                else:
+                    # Restart patiently
+                    print('Timeout, trying to restart daemon...')
+                    kill_daemon(watchdog=False)
+                    try:
+                        spawn_daemon()
+                        retries = 0
+                    except (FileExistsError, lockfile.AlreadyLocked):
+                        # If process hasn't exited yet, try again on next iter
+                        # Don't wait on process dying in case it has hung
+                        retries += 1
+            else:
+                retries = 0
+
+        sleep_or_terminate(timeout)
+
+    print('Watchdog exiting')
+    WATCHDOGLOCK.release()
 
 
 def main_loop():
-    # only import subsidy_service after fork
-    global service, CTX
+    """Update the database entries continually.
 
-    try:
-        service = __import__('subsidy_service', globals(), locals())
-        CTX = service.config.Context
-    except SystemExit:
-        print('Terminating graciously')
-        raise
-    except Exception as e:
-        traceback.print_tb(e.__traceback__, file=sys.stdout)
-        sys.exit(1)
+    Assumes that update functions are patient and won't overload external APIs.
+    If a RateLimitException is raised, back off and sleep for a long time.
 
-    global STATUS
+    :return:
+    """
+    global service, CTX, STATUS
 
+    DAEMONLOCK.acquire()
+    STATUS.status = 'Initializing daemon'
+
+    # only import service after forking, as otherwise external connections
+    # (e.g. to mongo) can become unstable.
+    service = __import__('subsidy_service', globals(), locals())
+    CTX = service.config.Context
+
+
+    write_update()
+
+    # indicate startup
     STATUS.status = 'Starting subsidy service'
     STATUS.mark_started()
 
-    while True:
+    while not STATUS.sigterm:
         try:
             update_masters()
-            time.sleep(1)
             update_subsidies()
-            time.sleep(1)
-        except SystemExit:
-            print('Terminating graciously')
-            raise
         except service.exceptions.RateLimitException:
+            #TODO: Log this
             sleep_mins = 15
             STATUS.total_items = None
             STATUS.status = \
@@ -166,116 +328,265 @@ def main_loop():
             time.sleep(sleep_mins*60)
             continue
 
+    print('Daemon exiting')
+    DAEMONLOCK.release()
+
+
+# ## Signal Handlers
+# See docs for signal.signal for more info. Each signal handler should be
+# registered in start_daemon using signal.signal(<signal>, <handler>).
+
+def handle_cont(signum, frame):
+    """Print the status message"""
+    global STATUS
+    sys.stdout.write(STATUS.__str__())
+
+
+def handle_hup(signum, frame):
+    """Don't exit if terminal closed"""
+    pass
+
+
+def handle_term(signum, frame):
+    """Signal that the daemon should terminate at next opportunity"""
+    global STATUS
+    STATUS.sigterm = True
+
+
+def handle_abort(signum, frame):
+    """Remove the current PID and update files, and raise AbortException."""
+    print("Aborted")
+
+    pid = os.getpid()
+
+    if pid == DAEMONLOCK.read_pid():
+        DAEMONLOCK.break_lock()
+        raise AbortException('Daemon force killed')
+
+    elif pid == WATCHDOGLOCK.read_pid():
+        WATCHDOGLOCK.break_lock()
+
+        if os.path.exists(UPDATE_PATH):
+            os.remove(UPDATE_PATH)
+        raise AbortException('Watchdog force killed')
+
+    raise AbortException
+
+
+# ## File actions and responses
+def write_update():
+    """Record the current time in the update file."""
+    with open(UPDATE_PATH, 'w') as h:
+        h.write(str(time.time())+'\n')
+
+
+def touch(path):
+    """Create empty file if it doesn't exist."""
+    with open(path, 'a'):
+        pass
+
 
 def exit_if_locked():
     """Exit with status 1 if the daemon is running"""
-    if PIDFILE.is_locked():
+    if DAEMONLOCK.is_locked():
         print(
             'db_update_daemon already running '
-            + f'with with PID {PIDFILE.read_pid()}.'
+            + f'with with PID {DAEMONLOCK.read_pid()}.'
         )
-        sys.exit(1)
+        os._exit(1)
 
 
 def exit_if_unlocked():
     """Exit with status 1 if the daemon is not running"""
-    if not PIDFILE.is_locked():
+    if not DAEMONLOCK.is_locked():
         print(
             'db_update_daemon is not running.'
         )
-        sys.exit(1)
+        os._exit(1)
 
 
-def start_daemon(debug=False, watchdog=True):
-    """Run main_loop() until SIGTERM is received, then raise SystemExit
-    exception (should be caught and handled in main_loop before
-    breaking out of the loop).
-    """
+# ## Blocking calls
+# These are functions that will halt execution until some condition is met
+
+def wait_until_unlocked(watchdog=False):
+    while DAEMONLOCK.is_locked():
+        time.sleep(0.1)
+
+    while WATCHDOGLOCK.is_locked() and watchdog:
+        time.sleep(0.1)
+
+
+def wait_until_locked(watchdog=False):
+    while not DAEMONLOCK.is_locked():
+        time.sleep(0.1)
+
+    while not WATCHDOGLOCK.is_locked() and watchdog:
+        time.sleep(0.1)
+
+
+def sleep_or_terminate(seconds):
+    """Sleep for the inidcated time. Returns early if a sigterm is detected."""
     global STATUS
-    STATUS.status = 'Initializing daemon'
-
-    exit_if_locked()
-
-    context = daemon.DaemonContext(
-        detach_process=True,
-        stdout=sys.stdout,
-        pidfile=PIDFILE,
-        working_directory=os.path.realpath(os.path.join(FILEDIR, '..'))
-    )
-
-    if debug:
-        context.stderr = sys.stderr
-
-    context.signal_map[signal.SIGINFO] = info_handler
-    # context.signal_map[signal.SIGABRT] = context.terminate
-    # context.signal_map[signal.SIGKILL] = context.terminate
-    # context.signal_map[signal.SIGTERM] = context.terminate
-    # context.signal_map[signal.SIGSTOP] = context.terminate
-
-    context.open()
-    with context:
-        print(
-            'Starting db_update_daemon started '
-            + f'with with PID {context.pidfile.read_pid()}.'
-        )
-        STATUS.pid = context.pidfile.read_pid()
-
-        main_loop()
+    start = time.time()
+    while (time.time() - start < seconds) and not STATUS.sigterm:
+        time.sleep(0.1)
 
 
-def kill_daemon():
-    """Kill db_update_daemon"""
+# ## Non blocking process calls
+# These functions should send signals or spawn processes and return immediately,
+# allowing the current thread to continue execution. If a break is required,
+# use the blocking calls
+
+def spawn_daemon():
+    """Spawn a new process for main_loop if DAEMONLOCK is not locked"""
+    if DAEMONLOCK.is_locked():
+        raise lockfile.AlreadyLocked('Daemon already running')
+    main_proc = mp.Process(target=main_loop)
+    main_proc.start()
+    print(f'Started main process on {main_proc.pid}')
+
+
+def spawn_watchdog():
+    """Spawn a new process for watchdog_loop if WATCHDOGLOCK is not locked"""
+    if WATCHDOGLOCK.is_locked():
+        raise lockfile.AlreadyLocked('Watchdog already runing')
+    watchdog_proc = mp.Process(target=watchdog_loop, args=(TIMEOUT,))
+    watchdog_proc.start()
+    print(f'Started watchdog process on {watchdog_proc.pid}')
+
+
+def start_daemon(watchdog=True):
+    """Initialize the update file, set up signal handlers, and spawn the main
+    loop (and watchdog if requested).
+    """
+    touch(UPDATE_PATH)
+    write_update()
+
+    os.chdir(WORKDIR)
+
+    signal.signal(signal.SIGTERM, handle_term)
+    signal.signal(signal.SIGCONT, handle_cont)
+    signal.signal(signal.SIGHUP, handle_hup)
+    signal.signal(signal.SIGTSTP, handle_hup)
+    signal.signal(signal.SIGABRT, handle_abort)
+
+    spawn_daemon()
+
+    if watchdog:
+        time.sleep(0.5)
+        spawn_watchdog()
+
+
+def kill_daemon(watchdog=False, force=False):
+    """Kill the daemon and optionally the watchdog. If force=True, sends a
+    SIGABRT, else sends a SIGTERM. Attempts cleanup of persisting .pidfiles."""
     global STATUS
     STATUS.status = 'Killing daemon'
-    while True:
+
+    if force:
+        sig = signal.SIGABRT
+    else:
+        sig = signal.SIGTERM
+
+    if watchdog and WATCHDOGLOCK.is_locked():
         try:
-            os.kill(PID, signal.SIGTERM)
-            time.sleep(0.2)  # give stdout time to flush
+            os.remove(UPDATE_PATH)
+        except FileNotFoundError:
+            pass
+
+        try:
+            os.kill(WATCHDOGLOCK.read_pid(), sig)
         except ProcessLookupError:
-            PIDFILE.break_lock()
-            return
+            WATCHDOGLOCK.break_lock()
+
+    if DAEMONLOCK.is_locked():
+        try:
+            os.kill(DAEMONLOCK.read_pid(), sig)
+        except ProcessLookupError:
+            DAEMONLOCK.break_lock()
 
 
-def restart_daemon(debug=False,  watchdog=True):
-    """Kill db_update_daemon and restart it"""
-    kill_daemon()
-    start_daemon(debug, watchdog)
+def restart_daemon(watchdog=True, force=False):
+    """Kill db_update_daemon and restart it. Will block until successful exit.
+    """
+    kill_daemon(watchdog, force)
+    wait_until_unlocked(watchdog)
+    start_daemon(watchdog)
 
 
-# set up command line interface
+# ## Command line interface functions
+
 @click.group()
 def cli():
+    """
+    CLI for the Subsidy Service database update daemon.
+
+    The DB Update Daemon spawns two background processes before exiting.
+    The main process is the update loop, which will get information on various
+    database objects from external sources and cache this in the database. In
+    case this process hangs or dies, a second watchdog process monitors the
+    progress and restarts the main process if necessary.
+
+    Only one daemon may run at a time to prevent too many concurrent calls to
+    external APIs. This is achieved using locking .pidfiles in the same
+    directory as this script. An additional file (.update) is used to
+    communicate progress of the main process to the watchdog.
+
+    BUGS: Output only appears in the terminal where the script was initially
+    called. If this terminal is closed, the daemon will continue running but
+    the output from `db_update_daemon.py status` and the other commands will
+    no longer be visible.
+
+    Run `db_update_daemon.py COMMAND --help` for more information on the
+    commands.
+    """
     pass
 
-click.option()
 
 @cli.command('start')
-@click.option('-d', '--debug', is_flag=True, help='Display stderr in terminal')
-def start_command(debug):
-    """Start db_update_daemon if not already running"""
+def start_command():
+    """Start daemon if not already running.
+    """
     exit_if_locked()
-    start_daemon(debug, watchdog=True)
+    start_daemon(watchdog=True)
+    wait_until_locked(watchdog=True)
+    os._exit(0)
 
 
 @cli.command('status')
 def info_command():
-    """Display the status of the db_update_daemon if running"""
+    """Display the status of the daemon if running."""
     exit_if_unlocked()
-    os.kill(PID, signal.SIGINFO)
+    os.kill(DAEMONLOCK.read_pid(), signal.SIGCONT)
+    os._exit(0)
 
 
 @cli.command('kill')
-def kill_command():
+@click.option('-f', '--force', is_flag=True, help='Kill aggressively')
+def kill_command(force):
+    """Kill the daemon.
+
+    Default behaviour is patient, sending a signal and waiting for the daemon's
+    loop to reach an acceptable termination point (this may take around a
+    minute). If the daemon is hanging for some reason, the --force option will
+    interrupt the process. This will still attempt some cleanup but ongoing
+    operations are not guaranteed to exit cleanly. Leftover .pidfiles may
+    prevent future starts."""
     exit_if_unlocked()
-    kill_daemon()
+    kill_daemon(watchdog=True, force=force)
+    wait_until_unlocked(watchdog=True)
+    os._exit(0)
 
 
 @cli.command('restart')
-@click.option('-d', '--debug', is_flag=True, help='Display stderr in terminal')
-def restart_command(debug):
-    """Kill db_update_daemon if running and restart it"""
+@click.option('-f', '--force', is_flag=True,
+              help='Kill aggressively (see `db_update_daemon.py kill --help`)')
+def restart_command(force):
+    """Kill the daemon if running and restart."""
     exit_if_unlocked()
-    restart_daemon(debug, watchdog=True)
+    restart_daemon(watchdog=True, force=force)
+    wait_until_locked(watchdog=True)
+    os._exit(0)
 
 
 if __name__ == '__main__':

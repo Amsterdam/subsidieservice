@@ -36,6 +36,10 @@ class AlreadyExistsException(BaseSubsidyServiceException):
     pass
 
 
+class ConfigException(BaseSubsidyServiceException):
+    pass
+
+
 def exceptionHTTPencode(func: callable):
     """
     Decorator to encode exceptions as HTTP status codes. If during its execution
