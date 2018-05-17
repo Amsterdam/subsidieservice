@@ -6,9 +6,10 @@ import collections
 
 DUMMY_CLIENT = collections.namedtuple('client', ['subsidy'])('test_db')
 
-
 @mock.patch('pymongo.MongoClient', new=common.dummy_func(DUMMY_CLIENT))
 @mock.patch('bunq.sdk.context.ApiContext.restore', new=common.dummy_func(None))
+@mock.patch('bunq.sdk.context.BunqContext.load_api_context',
+            new=common.dummy_func(None))
 class TestContext(unittest.TestCase):
 
     @classmethod

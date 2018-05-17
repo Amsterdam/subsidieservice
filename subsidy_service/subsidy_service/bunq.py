@@ -132,7 +132,7 @@ def revoke_share(acct_id: int, share_id: int):
             acct_id,
             status=new_status
         )
-        time.sleep(1)
+
     except Exception as e:
         raise _convert_exception(e)
 
@@ -146,13 +146,6 @@ def make_payment_to_iban(acct_id, to_iban, to_name, amount,
     counterparty = object_.Pointer(type_='IBAN', value=to_iban, name=to_name)
     amt = object_.Amount(value=str(amount), currency=CURRENCY)
 
-    response = endpoint.Payment.create(
-        amt,
-        counterparty,
-        description,
-        monetary_account_id=acct_id,
-    )
-
     try:
         response = endpoint.Payment.create(
             amt,
@@ -160,7 +153,6 @@ def make_payment_to_iban(acct_id, to_iban, to_name, amount,
             description,
             monetary_account_id=acct_id,
         )
-        time.sleep(1)
 
     except Exception as e:
         raise _convert_exception(e)

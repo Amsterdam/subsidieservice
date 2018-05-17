@@ -17,7 +17,7 @@ class Account(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, transactions: List[Transaction]=None):  # noqa: E501
+    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, last_updated: str=None, transactions: List[Transaction]=None):  # noqa: E501
         """Account - a model defined in Swagger
 
         :param name: The name of this Account.  # noqa: E501
@@ -28,6 +28,8 @@ class Account(Model):
         :type iban: str
         :param balance: The balance of this Account.  # noqa: E501
         :type balance: float
+        :param last_updated: The last_updated of this Account.  # noqa: E501
+        :type last_updated: str
         :param transactions: The transactions of this Account.  # noqa: E501
         :type transactions: List[Transaction]
         """
@@ -36,6 +38,7 @@ class Account(Model):
             'description': str,
             'iban': str,
             'balance': float,
+            'last_updated': str,
             'transactions': List[Transaction]
         }
 
@@ -44,6 +47,7 @@ class Account(Model):
             'description': 'description',
             'iban': 'iban',
             'balance': 'balance',
+            'last_updated': 'last_updated',
             'transactions': 'transactions'
         }
 
@@ -51,6 +55,7 @@ class Account(Model):
         self._description = description
         self._iban = iban
         self._balance = balance
+        self._last_updated = last_updated
         self._transactions = transactions
 
     @classmethod
@@ -147,6 +152,27 @@ class Account(Model):
         """
 
         self._balance = balance
+
+    @property
+    def last_updated(self) -> str:
+        """Gets the last_updated of this Account.
+
+
+        :return: The last_updated of this Account.
+        :rtype: str
+        """
+        return self._last_updated
+
+    @last_updated.setter
+    def last_updated(self, last_updated: str):
+        """Sets the last_updated of this Account.
+
+
+        :param last_updated: The last_updated of this Account.
+        :type last_updated: str
+        """
+
+        self._last_updated = last_updated
 
     @property
     def transactions(self) -> List[Transaction]:

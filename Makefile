@@ -29,6 +29,12 @@ docker-build: docker-stop test
 	docker-compose build
 
 
+## Bring up the mongo db
+mongo:
+	-docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db \
+		--name "subsidy_mongo_dev" mongo
+
+
 ## Run the Service API linked to Mongo docker
 docker-run: # docker-stop docker-build
 	# docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db \

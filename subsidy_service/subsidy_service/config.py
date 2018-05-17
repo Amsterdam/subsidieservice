@@ -78,6 +78,9 @@ class Context():
     @classmethod
     def _reload_bunq_ctx(cls):
         conf_path = cls.config.get('bunq', 'conf_path', fallback='')
+        if not conf_path:
+            return
+
         try:
             ctx = ApiContext.restore(conf_path)
             # print('Bunq config loaded from', conf_path, file=sys.stderr)

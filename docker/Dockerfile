@@ -20,9 +20,8 @@ COPY python-flask-server /usr/src/python-flask-server
 
 COPY subsidy_service /usr/src/subsidy_service
 
-
 # --- Add command line scripts and cron jobs
-COPY scripts /usr/src/scripts
+COPY scripts/*.py /usr/src/scripts/
 
 ADD docker/crontab /usr/src/scripts
 
