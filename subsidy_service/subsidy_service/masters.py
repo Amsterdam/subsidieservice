@@ -51,8 +51,15 @@ def read(id):
     :param id: the master's ID
     :return: dict
     """
-    master = get_and_update_balance(id)
-    master['transactions'] = get_payments_if_available(master['bunq_id'])
+    # # Bunq get & update
+    # master = get_and_update_balance(id)
+    # master['transactions'] = get_payments_if_available(master['bunq_id'])
+    master = service.mongo.get_by_id(id, CTX.db.masters)
+    if master is None:
+        raise service.exceptions.NotFoundException(
+            f'Master Account with id {id} not found'
+        )
+
     return master
 
 
@@ -63,10 +70,16 @@ def read_all():
     :return: dict
     """
     masters = service.mongo.get_collection(CTX.db.masters)
-    output = []
-    for mast in masters:
-        output.append(get_and_update_balance(mast['id']))
-        time.sleep(1)
+    # output = []
+    # for mast in masters:
+    #     output.append(get_and_update_balance(mast['id']))
+    #     time.sleep(1)
+    if not masters:
+        return []
+    for master in masters:
+        if 'transactions' in master:
+            master.pop('transactions')
+
     return masters
 
 
@@ -79,9 +92,9 @@ def update(id, master: dict):
     :return: the updated master
     """
     raise service.exceptions.NotImplementedException('Not yet implemented')
-    document = service.utils.drop_nones(master)
-    obj = service.mongo.update_by_id(id, document, CTX.db.masters)
-    return obj
+    # document = service.utils.drop_nones(master)
+    # obj = service.mongo.update_by_id(id, document, CTX.db.masters)
+    # return obj
 
 
 def replace(id, master: dict):
@@ -93,10 +106,10 @@ def replace(id, master: dict):
     :return: the new master's details
     """
     raise service.exceptions.NotImplementedException('Not yet implemented')
-    document = master
-    document['id'] = str(id)
-    obj = service.mongo.replace_by_id(id, document, CTX.db.masters)
-    return obj
+    # document = master
+    # document['id'] = str(id)
+    # obj = service.mongo.replace_by_id(id, document, CTX.db.masters)
+    # return obj
 
 
 def delete(id):

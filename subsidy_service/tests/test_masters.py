@@ -11,7 +11,8 @@ DUMMY_MASTER = {
     'name': 'Dummy Master',
     'bunq_id': 1234,
     'id': 'abcd',
-    'iban':'NL66 1234'
+    'iban':'NL66 1234',
+    'transactions': [{'from': 'a', 'to': 'b'}],
 }
 
 

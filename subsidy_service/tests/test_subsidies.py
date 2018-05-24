@@ -24,7 +24,8 @@ DUMMY_ACCOUNT = {
     "iban": "NL46BUNQ9900130413",
     "name": "Lovelace N.V.",
     "bunq_id": 1234,
-    "balance": 100.0
+    "balance": 100.0,
+    "transactions": [{'from': 'a', 'to': 'b'}]
 }
 
 DUMMY_SHARE = {'status': 'ACCEPTED'}
@@ -43,7 +44,7 @@ DUMMY_SUBSIDY = {
 class TestCreate(unittest.TestCase):
     pass
 
-@mock.patch('subsidy_service.subsidies.get_and_update',
+@mock.patch('subsidy_service.mongo.get_by_id',
             return_value=DUMMY_SUBSIDY)
 class TestRead(unittest.TestCase):
     def setUp(self):
@@ -60,9 +61,9 @@ class TestRead(unittest.TestCase):
         DUMMY_SHARE = self.original_dummy_share.copy()
         DUMMY_ACCOUNT = self.original_dummy_acct.copy()
 
-    def test_updated(self, get_update_mock: mock.Mock):
-        subsidies.read(123)
-        subsidies.get_and_update.assert_called()
+    # def test_updated(self, get_update_mock: mock.Mock):
+    #     subsidies.read(123)
+    #     subsidies.get_and_update.assert_called()
 
     def test_got_payments(self, get_update_mock: mock.Mock):
         output = subsidies.read(123)

@@ -15,6 +15,7 @@ STATUS_OPTIONS = [
     'SHARE_CLOSED',
     'CLOSED',
     'UNKNOWN',
+    'ALL'  # for filtering
 ]
 
 STATUSCODE = collections.namedtuple(
@@ -114,11 +115,18 @@ def read(id):
     :param id: the subsidy's ID
     :return: dict
     """
-    subsidy = get_and_update(id, master_balance=True)
-    subsidy['account']['transactions'] = \
-        service.bunq.get_payments(subsidy['account']['bunq_id'])
-    return subsidy
+    # # Bunq get & update
+    # subsidy = get_and_update(id, master_balance=True)
+    # subsidy['account']['transactions'] = \
+    #     service.bunq.get_payments(subsidy['account']['bunq_id'])
 
+    subsidy = service.mongo.get_by_id(id, CTX.db.subsidies)
+    if subsidy is None:
+        raise service.exceptions.NotFoundException(
+            f'Subsidy with id {id} not found'
+        )
+
+    return subsidy
 
 def read_all(status: str=None):
     """
@@ -130,7 +138,8 @@ def read_all(status: str=None):
 
     if status and status not in STATUS_OPTIONS:
         raise service.exceptions.BadRequestException(
-            'Status should be one of: {}.'.format(', '.join(STATUS_OPTIONS))
+            'Status should be one of: {}.'
+            .format(', '.join(STATUS_OPTIONS))
         )
 
     subsidies = service.mongo.get_collection(CTX.db.subsidies)
@@ -138,43 +147,69 @@ def read_all(status: str=None):
     if not subsidies:
         return output
 
-    check_statuses = []
-    if not status:
-        check_statuses = [
-            STATUSCODE.PENDING_ACCOUNT,
+    for subsidy in subsidies:
+        if 'transactions' in subsidy:
+            subsidy.pop('transactions')
+
+    # # Bunq Get & Update
+    # check_statuses = []
+    # if not status:
+    #     check_statuses = [
+    #         STATUSCODE.PENDING_ACCOUNT,
+    #         STATUSCODE.PENDING_ACCEPT,
+    #         STATUSCODE.OPEN,
+    #         STATUSCODE.SHARE_CLOSED,
+    #     ]
+    #
+    # elif status == STATUSCODE.PENDING_ACCOUNT:
+    #     check_statuses = [STATUSCODE.PENDING_ACCOUNT]
+    #
+    # elif status == STATUSCODE.PENDING_ACCEPT:
+    #     check_statuses = [
+    #         STATUSCODE.PENDING_ACCOUNT,
+    #         STATUSCODE.PENDING_ACCEPT
+    #     ]
+    #
+    # elif status == STATUSCODE.OPEN:
+    #     check_statuses = [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]
+    #
+    # elif status == STATUSCODE.SHARE_CLOSED:
+    #     check_statuses = [
+    #         STATUSCODE.PENDING_ACCEPT,
+    #         STATUSCODE.OPEN,
+    #         STATUSCODE.SHARE_CLOSED
+    #     ]
+    #
+    # elif status == STATUSCODE.CLOSED:
+    #     check_statuses = [STATUSCODE.CLOSED]
+    #
+    # for sub in subsidies:
+    #     if sub['status'] in check_statuses:
+    #         sub_updated = get_and_update(sub['id'])
+    #         if (sub_updated['status'] == status) or (not status):
+    #             output.append(sub_updated)
+    #         time.sleep(1)
+
+    if status is None:
+        targets = [
             STATUSCODE.PENDING_ACCEPT,
+            STATUSCODE.PENDING_ACCOUNT,
             STATUSCODE.OPEN,
             STATUSCODE.SHARE_CLOSED,
         ]
-
-    elif status == STATUSCODE.PENDING_ACCOUNT:
-        check_statuses = [STATUSCODE.PENDING_ACCOUNT]
-
-    elif status == STATUSCODE.PENDING_ACCEPT:
-        check_statuses = [
-            STATUSCODE.PENDING_ACCOUNT,
-            STATUSCODE.PENDING_ACCEPT
-        ]
-
-    elif status == STATUSCODE.OPEN:
-        check_statuses = [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]
-
-    elif status == STATUSCODE.SHARE_CLOSED:
-        check_statuses = [
-            STATUSCODE.PENDING_ACCEPT,
-            STATUSCODE.OPEN,
-            STATUSCODE.SHARE_CLOSED
-        ]
-
-    elif status == STATUSCODE.CLOSED:
-        check_statuses = [STATUSCODE.CLOSED]
+    elif status == 'ALL':
+        targets = STATUS_OPTIONS
+    elif status in STATUS_OPTIONS:
+        targets = [status]
+    else:
+        raise service.exceptions.BadRequestException(
+            'Status should be one of: {}.'
+            .format(', '.join(STATUS_OPTIONS))
+        )
 
     for sub in subsidies:
-        if sub['status'] in check_statuses:
-            sub_updated = get_and_update(sub['id'])
-            if (sub_updated['status'] == status) or (not status):
-                output.append(sub_updated)
-            time.sleep(1)
+        if sub['status'] in targets:
+            output.append(sub)
 
     return output
 
