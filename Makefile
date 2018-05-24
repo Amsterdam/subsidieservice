@@ -1,14 +1,14 @@
-.PHONY: clean venv docker-stop docker-run docker-shell docker-data
-
+.PHONY: clean test docker-stop docker-run docker-data
+SHELL:=/bin/bash
 activate=venv/subsidy/bin/activate
 
 ## Make virtual environment and install requirements (requires virtualenv)
-venv: 
+venv: requirements.txt
 	-rm -rf venv
 	-unlink activate
 	mkdir venv
 	virtualenv venv/subsidy
-	ln -s venv/subsidy/bin/activate activate
+	ln -s $(activate) activate
 	(\
 		source $(activate); \
 		pip3 install -r requirements.txt; \
@@ -19,14 +19,20 @@ venv:
 
 ## Update requirements in requirements.txt
 requirements: 
-	source $(activate); pip3 freeze --exclude-editable > requirements.txt
+	source $(activate) && pip3 freeze --exclude-editable > requirements.txt
 	# echo "-e subsidy_service\n-e python-flask-server" >> requirements.txt
 
 
 ## Rebuild the docker including new requirements
-docker-build: docker-stop .
+docker-build: docker-stop test
 	# docker build -f docker/Dockerfile -t subsidies/server .
 	docker-compose build
+
+
+## Bring up the mongo db
+mongo:
+	-docker run -d --rm -p 27017:27017 -v $(shell pwd)/data/mongodb:/data/db \
+		--name "subsidy_mongo_dev" mongo
 
 
 ## Run the Service API linked to Mongo docker
@@ -41,7 +47,7 @@ docker-run: docker-stop docker-build
 
 
 ## Open an interactive shell in the service docker. Current directory is mounted to /opt/
-docker-shell: 
+docker-shell: docker-run
 	docker exec -it subsidy_service_dev /bin/bash
 
 
@@ -70,23 +76,44 @@ swagger-update: swagger.yaml
 	swagger-codegen generate -i swagger.yaml -l python-flask -o temp-swagger-server-dir
 	rsync -Iavh temp-swagger-server-dir/ python-flask-server/ --exclude="controller*" \
 		--exclude="*__pycache__*" --exclude=".DS_Store" --exclude="*__main__.py"
-	source $(activate); pip install -e python-flask-server
+	source $(activate) && pip install -e python-flask-server
 	git diff --no-index python-flask-server/swagger_server/controllers \
 		temp-swagger-server-dir/swagger_server/controllers
 
 
-## Delete all compiled Python files and remove docker containers
-clean:
+## Run the subsisdy_service unit tests 
+test:
+	(\
+		source $(activate); \
+		pytest -lv --tb=long --cov=subsidy_service/subsidy_service \
+			--cov-report=term --cov-report=html subsidy_service; \
+	)
+
+
+## Run the unit tests and open the coverage report
+coverage: htmlcov/index.html
+	open htmlcov/index.html
+
+htmlcov: test
+
+
+## Delete all compiled Python files and remove docker containers, remove venv
+clean: docker-stop
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
+	-find . -type d -name ".pytest_cache" -exec rm -r "{}" \;
 	-rm -r temp-swagger-server-dir
 	-docker rm subsidy_mongo_dev
 	-docker rm subsidy_service_dev
+	-rm -rf venv
+	-unlink activate
+	-rm .coverage
+	-rm -r htmlcov
 
 
 ## Mirror this repository to the Gemeente Amsterdam GitHub repo
-mirror:
-	cd ../service-mirror; git fetch -p; git push;
+mirror: test
+	cd ../service-mirror && git fetch -p && git push;
 
 
 ## Create the mirror repository for mirroring

@@ -452,8 +452,11 @@ definitions:
         type: "string"
       balance:
         type: "number"
+      last_updated:
+        type: "string"
     description: "A bank account"
     example:
+      last_updated: "last_updated"
       balance: 0.80082819046101150206595775671303272247314453125
       iban: "iban"
       name: "name"
@@ -531,11 +534,14 @@ definitions:
         type: "string"
       status:
         type: "string"
+      last_updated:
+        type: "string"
     description: "A recurring allocation of funds made available from a master-account\
       \ to a recipient citizen's account"
     example:
       end_date: "2000-01-23"
       amount: 0.602745618307040320615897144307382404804229736328125
+      last_updated: "last_updated"
       name: "name"
       recipient:
         name: "name"
@@ -545,6 +551,7 @@ definitions:
       comment: "comment"
       id: "id"
       account:
+        last_updated: "last_updated"
         balance: 0.80082819046101150206595775671303272247314453125
         iban: "iban"
         name: "name"

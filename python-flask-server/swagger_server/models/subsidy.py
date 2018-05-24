@@ -19,7 +19,7 @@ class Subsidy(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, account: Account=None, frequency: str=None, amount: float=None, start_date: date=None, end_date: date=None, comment: str=None, status: str=None):  # noqa: E501
+    def __init__(self, id: str=None, name: str=None, master: MasterAccountBase=None, recipient: CitizenBase=None, account: Account=None, frequency: str=None, amount: float=None, start_date: date=None, end_date: date=None, comment: str=None, status: str=None, last_updated: str=None):  # noqa: E501
         """Subsidy - a model defined in Swagger
 
         :param id: The id of this Subsidy.  # noqa: E501
@@ -44,6 +44,8 @@ class Subsidy(Model):
         :type comment: str
         :param status: The status of this Subsidy.  # noqa: E501
         :type status: str
+        :param last_updated: The last_updated of this Subsidy.  # noqa: E501
+        :type last_updated: str
         """
         self.swagger_types = {
             'id': str,
@@ -56,7 +58,8 @@ class Subsidy(Model):
             'start_date': date,
             'end_date': date,
             'comment': str,
-            'status': str
+            'status': str,
+            'last_updated': str
         }
 
         self.attribute_map = {
@@ -70,7 +73,8 @@ class Subsidy(Model):
             'start_date': 'start_date',
             'end_date': 'end_date',
             'comment': 'comment',
-            'status': 'status'
+            'status': 'status',
+            'last_updated': 'last_updated'
         }
 
         self._id = id
@@ -84,6 +88,7 @@ class Subsidy(Model):
         self._end_date = end_date
         self._comment = comment
         self._status = status
+        self._last_updated = last_updated
 
     @classmethod
     def from_dict(cls, dikt) -> 'Subsidy':
@@ -328,3 +333,24 @@ class Subsidy(Model):
         """
 
         self._status = status
+
+    @property
+    def last_updated(self) -> str:
+        """Gets the last_updated of this Subsidy.
+
+
+        :return: The last_updated of this Subsidy.
+        :rtype: str
+        """
+        return self._last_updated
+
+    @last_updated.setter
+    def last_updated(self, last_updated: str):
+        """Sets the last_updated of this Subsidy.
+
+
+        :param last_updated: The last_updated of this Subsidy.
+        :type last_updated: str
+        """
+
+        self._last_updated = last_updated

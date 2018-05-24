@@ -18,7 +18,7 @@ class MasterAccount(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, id: str=None, transactions: List[Transaction]=None):  # noqa: E501
+    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, last_updated: str=None, id: str=None, transactions: List[Transaction]=None):  # noqa: E501
         """MasterAccount - a model defined in Swagger
 
         :param name: The name of this MasterAccount.  # noqa: E501
@@ -29,6 +29,8 @@ class MasterAccount(Model):
         :type iban: str
         :param balance: The balance of this MasterAccount.  # noqa: E501
         :type balance: float
+        :param last_updated: The last_updated of this MasterAccount.  # noqa: E501
+        :type last_updated: str
         :param id: The id of this MasterAccount.  # noqa: E501
         :type id: str
         :param transactions: The transactions of this MasterAccount.  # noqa: E501
@@ -39,6 +41,7 @@ class MasterAccount(Model):
             'description': str,
             'iban': str,
             'balance': float,
+            'last_updated': str,
             'id': str,
             'transactions': List[Transaction]
         }
@@ -48,6 +51,7 @@ class MasterAccount(Model):
             'description': 'description',
             'iban': 'iban',
             'balance': 'balance',
+            'last_updated': 'last_updated',
             'id': 'id',
             'transactions': 'transactions'
         }
@@ -56,6 +60,7 @@ class MasterAccount(Model):
         self._description = description
         self._iban = iban
         self._balance = balance
+        self._last_updated = last_updated
         self._id = id
         self._transactions = transactions
 
@@ -153,6 +158,27 @@ class MasterAccount(Model):
         """
 
         self._balance = balance
+
+    @property
+    def last_updated(self) -> str:
+        """Gets the last_updated of this MasterAccount.
+
+
+        :return: The last_updated of this MasterAccount.
+        :rtype: str
+        """
+        return self._last_updated
+
+    @last_updated.setter
+    def last_updated(self, last_updated: str):
+        """Sets the last_updated of this MasterAccount.
+
+
+        :param last_updated: The last_updated of this MasterAccount.
+        :type last_updated: str
+        """
+
+        self._last_updated = last_updated
 
     @property
     def id(self) -> str:

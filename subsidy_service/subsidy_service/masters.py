@@ -5,10 +5,7 @@ import subsidy_service as service
 import time
 
 # Globals
-CONF = service.utils.get_config()
-CLIENT = service.mongo.get_client(CONF)
-DB = CLIENT.subsidy
-
+CTX = service.config.Context
 
 # CRUD functionality
 def create(master: dict):
@@ -22,12 +19,16 @@ def create(master: dict):
     :return: dict: the created object
     """
     if 'iban' in master:
-        existing = service.mongo.find({'iban': master['iban']}, DB.masters)
+        existing = service.mongo.find({'iban': master['iban']}, CTX.db.masters)
 
-        if existing is not None:
-            existing['transactions'] = \
-                get_payments_if_available(existing['bunq_id'])
-            return existing
+        if existing:
+            msg = 'A Master-account with that iban already exists. '
+            if 'id' in existing:
+                id = existing['id']
+                msg += f'The id is "{id}".'
+
+            raise service.exceptions.AlreadyExistsException(msg)
+
         else:
             mast = service.bunq.read_account_by_iban(master['iban'])
 
@@ -37,7 +38,7 @@ def create(master: dict):
         mast = service.bunq.create_account()
 
     mast['bunq_id'] = mast.pop('id')
-    mast = service.mongo.add_and_copy_id(mast, DB.masters)
+    mast = service.mongo.add_and_copy_id(mast, CTX.db.masters)
     mast['transactions'] = get_payments_if_available(mast['bunq_id'])
 
     return mast
@@ -50,8 +51,15 @@ def read(id):
     :param id: the master's ID
     :return: dict
     """
-    master = get_and_update_balance(id)
-    master['transactions'] = get_payments_if_available(master['bunq_id'])
+    # # Bunq get & update
+    # master = get_and_update_balance(id)
+    # master['transactions'] = get_payments_if_available(master['bunq_id'])
+    master = service.mongo.get_by_id(id, CTX.db.masters)
+    if master is None:
+        raise service.exceptions.NotFoundException(
+            f'Master Account with id {id} not found'
+        )
+
     return master
 
 
@@ -61,11 +69,17 @@ def read_all():
 
     :return: dict
     """
-    masters = service.mongo.get_collection(DB.masters)
-    output = []
-    for mast in masters:
-        output.append(get_and_update_balance(mast['id']))
-        time.sleep(1)
+    masters = service.mongo.get_collection(CTX.db.masters)
+    # output = []
+    # for mast in masters:
+    #     output.append(get_and_update_balance(mast['id']))
+    #     time.sleep(1)
+    if not masters:
+        return []
+    for master in masters:
+        if 'transactions' in master:
+            master.pop('transactions')
+
     return masters
 
 
@@ -78,9 +92,9 @@ def update(id, master: dict):
     :return: the updated master
     """
     raise service.exceptions.NotImplementedException('Not yet implemented')
-    document = service.utils.drop_nones(master)
-    obj = service.mongo.update_by_id(id, document, DB.masters)
-    return obj
+    # document = service.utils.drop_nones(master)
+    # obj = service.mongo.update_by_id(id, document, CTX.db.masters)
+    # return obj
 
 
 def replace(id, master: dict):
@@ -92,10 +106,10 @@ def replace(id, master: dict):
     :return: the new master's details
     """
     raise service.exceptions.NotImplementedException('Not yet implemented')
-    document = master
-    document['id'] = str(id)
-    obj = service.mongo.replace_by_id(id, document, DB.masters)
-    return obj
+    # document = master
+    # document['id'] = str(id)
+    # obj = service.mongo.replace_by_id(id, document, CTX.db.masters)
+    # return obj
 
 
 def delete(id):
@@ -106,16 +120,19 @@ def delete(id):
     :return: None
     """
     # TODO: Do we want to close the acct in Bunq too?
+    document = service.mongo.get_by_id(id)
+    if document is None:
+        raise service.exceptions.NotFoundException('Master account not found')
     # service.bunq.close_account(id)
-    service.mongo.delete_by_id(id, DB.masters)
+    service.mongo.delete_by_id(id, CTX.db.masters)
     return None
 
 
 # utils
 def get_and_update_balance(id):
     """
-    Get the master from the DB, update the balance from bunq, push the update
-    to the DB, and return the master account.
+    Get the master from the db, update the balance from bunq, push the update
+    to the db, and return the master account.
 
     If the master account can't be found (no access at bank level), None is
     returned and the db is not updated.
@@ -123,13 +140,14 @@ def get_and_update_balance(id):
     :param id:
     :return:
     """
-    master = service.mongo.get_by_id(id, DB.masters)
+    master = service.mongo.get_by_id(id, CTX.db.masters)
     if master is None:
         raise service.exceptions.NotFoundException('Master-Account not found')
 
     try:
         master['balance'] = service.bunq.get_balance(master['bunq_id'])
-        master = service.mongo.update_by_id(master['id'], master, DB.masters)
+        master = service.mongo.update_by_id(master['id'], master,
+                                            CTX.db.masters)
 
     except service.exceptions.NotFoundException:
         master['balance'] = None

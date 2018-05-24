@@ -16,7 +16,7 @@ class MasterAccountBase(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, id: str=None):  # noqa: E501
+    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, last_updated: str=None, id: str=None):  # noqa: E501
         """MasterAccountBase - a model defined in Swagger
 
         :param name: The name of this MasterAccountBase.  # noqa: E501
@@ -27,6 +27,8 @@ class MasterAccountBase(Model):
         :type iban: str
         :param balance: The balance of this MasterAccountBase.  # noqa: E501
         :type balance: float
+        :param last_updated: The last_updated of this MasterAccountBase.  # noqa: E501
+        :type last_updated: str
         :param id: The id of this MasterAccountBase.  # noqa: E501
         :type id: str
         """
@@ -35,6 +37,7 @@ class MasterAccountBase(Model):
             'description': str,
             'iban': str,
             'balance': float,
+            'last_updated': str,
             'id': str
         }
 
@@ -43,6 +46,7 @@ class MasterAccountBase(Model):
             'description': 'description',
             'iban': 'iban',
             'balance': 'balance',
+            'last_updated': 'last_updated',
             'id': 'id'
         }
 
@@ -50,6 +54,7 @@ class MasterAccountBase(Model):
         self._description = description
         self._iban = iban
         self._balance = balance
+        self._last_updated = last_updated
         self._id = id
 
     @classmethod
@@ -146,6 +151,27 @@ class MasterAccountBase(Model):
         """
 
         self._balance = balance
+
+    @property
+    def last_updated(self) -> str:
+        """Gets the last_updated of this MasterAccountBase.
+
+
+        :return: The last_updated of this MasterAccountBase.
+        :rtype: str
+        """
+        return self._last_updated
+
+    @last_updated.setter
+    def last_updated(self, last_updated: str):
+        """Sets the last_updated of this MasterAccountBase.
+
+
+        :param last_updated: The last_updated of this MasterAccountBase.
+        :type last_updated: str
+        """
+
+        self._last_updated = last_updated
 
     @property
     def id(self) -> str:

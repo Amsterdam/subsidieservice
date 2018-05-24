@@ -70,3 +70,19 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+
+# Misc
+activate
+temp-swagger-server-dir
+*.zip
+*.key
+*.cert
+*~*.docx
+*~*.pptx
+*.log
+
+*.pytest_cache/
+*.pidfile
+*.env
+*.updated

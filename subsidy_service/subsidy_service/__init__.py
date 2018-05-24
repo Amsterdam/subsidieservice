@@ -1,6 +1,10 @@
 # 1. Base
 from subsidy_service import utils
-from subsidy_service import logging, exceptions
+from subsidy_service import config
+from subsidy_service import exceptions
+
+###
+from subsidy_service import logging
 
 # 2. Backend interfaces
 from subsidy_service import bunq, mongo

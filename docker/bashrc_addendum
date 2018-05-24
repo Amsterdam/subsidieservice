@@ -18,3 +18,8 @@ echo -e \\033[31m \\e[1m '
 export LSCOLORS="exfxcxdxbxegedabagacad"
 alias ll='ls -GlaohF --color'
 alias ..='cd ..'
+
+# make python3 default
+alias python2=$(which python)
+alias python=python3
+alias pip=pip3

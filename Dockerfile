@@ -1,8 +1,13 @@
 # --- python3.6 image with gcc (required for dependency installation)
 FROM python:3.6-stretch
 
+ENV TZ="Europe/Amsterdam"
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
+
 RUN apt-get update && \
-    apt-get install -y cron
+    apt-get install -y cron man-db
 
 RUN pip3 install --upgrade pip
 
@@ -15,9 +20,8 @@ COPY python-flask-server /usr/src/python-flask-server
 
 COPY subsidy_service /usr/src/subsidy_service
 
-
 # --- Add command line scripts and cron jobs
-COPY scripts /usr/src/scripts
+COPY scripts/*.py /usr/src/scripts/
 
 ADD docker_run.sh /bin
 

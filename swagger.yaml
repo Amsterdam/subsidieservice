@@ -563,6 +563,8 @@ definitions:
         type: string
       balance:
         type: number
+      last_updated:
+        type: string
   
   account:
     description: "A bank account"
@@ -666,6 +668,8 @@ definitions:
       comment:
         type: string
       status:
+        type: string
+      last_updated:
         type: string
         # enum:
         # - 

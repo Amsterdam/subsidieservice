@@ -3,9 +3,8 @@ import time
 import collections
 
 # Globals
-CONF = service.utils.get_config()
-CLIENT = service.mongo.get_client(CONF)
-DB = CLIENT.subsidy
+CTX = service.config.Context
+
 
 STATUS_OPTIONS = [
     # 'PENDING_APPROVAL',  # Not yet implemented
@@ -15,6 +14,8 @@ STATUS_OPTIONS = [
     'OPEN',
     'SHARE_CLOSED',
     'CLOSED',
+    'UNKNOWN',
+    'ALL'  # for filtering
 ]
 
 STATUSCODE = collections.namedtuple(
@@ -38,9 +39,9 @@ def create(subsidy: dict):
     """
     recip = service.utils.drop_nones(subsidy['recipient'])
 
-    # check required DB objects
+    # check required CTX.db objects
     master = service.utils.drop_nones(subsidy['master'])
-    master = service.mongo.find(master, DB.masters)
+    master = service.mongo.find(master, CTX.db.masters)
 
     if master is None:
         raise service.exceptions.NotFoundException('Master account not found')
@@ -52,10 +53,10 @@ def create(subsidy: dict):
         )
 
     if 'id' in recip:
-        recip = service.mongo.get_by_id(recip['id'], DB.citizens)
+        recip = service.mongo.get_by_id(recip['id'], CTX.db.citizens)
     else:
         recip = service.mongo.find({'phone_number': recip['phone_number']},
-                                   DB.citizens)
+                                   CTX.db.citizens)
 
     if recip is None:
         raise service.exceptions.NotFoundException(
@@ -102,16 +103,7 @@ def create(subsidy: dict):
     subsidy['account'] = new_acct
     subsidy['master'] = master
 
-    # # REMOVED
-    # # add subsidy to recipient's subsidies
-    # if not recip_full['subsidies']:
-    #     recip_full['subsidies'] = [subsidy]
-    # else:
-    #     recip_full['subsidies'].append(subsidy)
-    #
-    # service.mongo.update_by_id(recip_full['id'], recip_full, DB.citizens)
-
-    output = service.mongo.add_and_copy_id(subsidy, DB.subsidies)
+    output = service.mongo.add_and_copy_id(subsidy, CTX.db.subsidies)
 
     return service.utils.drop_nones(output)
 
@@ -123,11 +115,18 @@ def read(id):
     :param id: the subsidy's ID
     :return: dict
     """
-    subsidy = get_and_update(id, master_balance=True)
-    subsidy['account']['transactions'] = \
-        service.bunq.get_payments(subsidy['account']['bunq_id'])
-    return subsidy
+    # # Bunq get & update
+    # subsidy = get_and_update(id, master_balance=True)
+    # subsidy['account']['transactions'] = \
+    #     service.bunq.get_payments(subsidy['account']['bunq_id'])
 
+    subsidy = service.mongo.get_by_id(id, CTX.db.subsidies)
+    if subsidy is None:
+        raise service.exceptions.NotFoundException(
+            f'Subsidy with id {id} not found'
+        )
+
+    return subsidy
 
 def read_all(status: str=None):
     """
@@ -139,51 +138,78 @@ def read_all(status: str=None):
 
     if status and status not in STATUS_OPTIONS:
         raise service.exceptions.BadRequestException(
-            'Status should be one of: {}.'.format(', '.join(STATUS_OPTIONS))
+            'Status should be one of: {}.'
+            .format(', '.join(STATUS_OPTIONS))
         )
 
-    subsidies = service.mongo.get_collection(DB.subsidies)
+    subsidies = service.mongo.get_collection(CTX.db.subsidies)
     output = []
     if not subsidies:
         return output
 
-    check_statuses = []
-    if not status:
-        check_statuses = [
-            STATUSCODE.PENDING_ACCOUNT,
+    for subsidy in subsidies:
+        if 'transactions' in subsidy:
+            subsidy.pop('transactions')
+
+    # # Bunq Get & Update
+    # check_statuses = []
+    # if not status:
+    #     check_statuses = [
+    #         STATUSCODE.PENDING_ACCOUNT,
+    #         STATUSCODE.PENDING_ACCEPT,
+    #         STATUSCODE.OPEN,
+    #         STATUSCODE.SHARE_CLOSED,
+    #     ]
+    #
+    # elif status == STATUSCODE.PENDING_ACCOUNT:
+    #     check_statuses = [STATUSCODE.PENDING_ACCOUNT]
+    #
+    # elif status == STATUSCODE.PENDING_ACCEPT:
+    #     check_statuses = [
+    #         STATUSCODE.PENDING_ACCOUNT,
+    #         STATUSCODE.PENDING_ACCEPT
+    #     ]
+    #
+    # elif status == STATUSCODE.OPEN:
+    #     check_statuses = [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]
+    #
+    # elif status == STATUSCODE.SHARE_CLOSED:
+    #     check_statuses = [
+    #         STATUSCODE.PENDING_ACCEPT,
+    #         STATUSCODE.OPEN,
+    #         STATUSCODE.SHARE_CLOSED
+    #     ]
+    #
+    # elif status == STATUSCODE.CLOSED:
+    #     check_statuses = [STATUSCODE.CLOSED]
+    #
+    # for sub in subsidies:
+    #     if sub['status'] in check_statuses:
+    #         sub_updated = get_and_update(sub['id'])
+    #         if (sub_updated['status'] == status) or (not status):
+    #             output.append(sub_updated)
+    #         time.sleep(1)
+
+    if status is None:
+        targets = [
             STATUSCODE.PENDING_ACCEPT,
+            STATUSCODE.PENDING_ACCOUNT,
             STATUSCODE.OPEN,
             STATUSCODE.SHARE_CLOSED,
         ]
-
-    elif status == STATUSCODE.PENDING_ACCOUNT:
-        check_statuses = [STATUSCODE.PENDING_ACCOUNT]
-
-    elif status == STATUSCODE.PENDING_ACCEPT:
-        check_statuses = [
-            STATUSCODE.PENDING_ACCOUNT,
-            STATUSCODE.PENDING_ACCEPT
-        ]
-
-    elif status == STATUSCODE.OPEN:
-        check_statuses = [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]
-
-    elif status == STATUSCODE.SHARE_CLOSED:
-        check_statuses = [
-            STATUSCODE.PENDING_ACCEPT,
-            STATUSCODE.OPEN,
-            STATUSCODE.SHARE_CLOSED
-        ]
-
-    elif status == STATUSCODE.CLOSED:
-        check_statuses = [STATUSCODE.CLOSED]
+    elif status == 'ALL':
+        targets = STATUS_OPTIONS
+    elif status in STATUS_OPTIONS:
+        targets = [status]
+    else:
+        raise service.exceptions.BadRequestException(
+            'Status should be one of: {}.'
+            .format(', '.join(STATUS_OPTIONS))
+        )
 
     for sub in subsidies:
-        if sub['status'] in check_statuses:
-            sub_updated = get_and_update(sub['id'])
-            if (sub_updated['status'] == status) or (not status):
-                output.append(sub_updated)
-            time.sleep(1)
+        if sub['status'] in targets:
+            output.append(sub)
 
     return output
 
@@ -198,7 +224,7 @@ def update(id, subsidy: dict):
     """
     raise service.exceptions.NotImplementedException('Not yet implemented')
     # document = service.utils.drop_nones(subsidy)
-    # obj = service.mongo.update_by_id(id, document, DB.subsidies)
+    # obj = service.mongo.update_by_id(id, document, CTX.db.subsidies)
     # return obj
 
 
@@ -213,7 +239,7 @@ def replace(id, subsidy: dict):
     raise service.exceptions.NotImplementedException('Not yet implemented')
     # document = subsidy
     # document['id'] = str(id)
-    # obj = service.mongo.replace_by_id(id, document, DB.subsidies)
+    # obj = service.mongo.replace_by_id(id, document, CTX.db.subsidies)
     # return obj
 
 
@@ -224,7 +250,7 @@ def delete(id):
     :param id: the id of the subsidy to delete.
     :return: None
     """
-    subsidy = service.mongo.get_by_id(id, DB.subsidies)
+    subsidy = service.mongo.get_by_id(id, CTX.db.subsidies)
 
     if subsidy is None:
         raise service.exceptions.NotFoundException('Subsidy not found')
@@ -241,14 +267,31 @@ def delete(id):
         pmt = service.bunq.make_payment_to_acct_id(
             subsidy['account']['bunq_id'],
             subsidy['master']['bunq_id'],
-            balance
+            balance,
+            'Closing subsidy account'
         )
+
     time.sleep(1)
-    service.bunq.close_account(subsidy['account']['bunq_id'])
+    payments = service.masters.get_payments_if_available(
+        subsidy['account']['bunq_id']
+    )
+
+
+    time.sleep(1)
+    try:
+        service.bunq.close_account(subsidy['account']['bunq_id'])
+    except service.exceptions.BadRequestException:
+        # Don't crash if account was closed externally
+        acct = service.bunq.read_account(subsidy['account']['bunq_id'])
+        if acct['status'] != 'CANCELLED':
+            raise
+
     subsidy['status'] = STATUSCODE.CLOSED
     subsidy['account']['balance'] = 0.
+    subsidy['account']['transactions'] = payments
     subsidy['master']['balance'] = None
-    subsidy = service.mongo.update_by_id(id, subsidy, DB.subsidies)
+    subsidy['last_updated'] = service.utils.now()
+    subsidy = service.mongo.update_by_id(id, subsidy, CTX.db.subsidies)
 
     return None
 
@@ -270,9 +313,9 @@ def approve(id):
 #     for acct in accts:
 #         acct_db = acct.copy()
 #         acct_db['bunq_id'] = acct_db.pop('id')
-#         service.mongo.upsert(acct_db, DB.accounts, ['iban'])
+#         service.mongo.upsert(acct_db, CTX.db.accounts, ['iban'])
 #
-#     accts_db = service.mongo.get_collection(DB.accounts)
+#     accts_db = service.mongo.get_collection(CTX.db.accounts)
 #
 #     return accts_db
 
@@ -280,10 +323,10 @@ def approve(id):
 # utils
 def get_and_update(id, master_balance=False):
     """
-    Get the subsidy from the DB, update the balance from bunq, update the status
+    Get the subsidy from the CTX.db, update the balance from bunq, update the status
     as appropriate, push the updates to the server, and return the subsidy.
 
-    If the account is not accessible, a balance of None is reported and the DB
+    If the account is not accessible, a balance of None is reported and the CTX.db
     is not updated.
 
     :param id:
@@ -292,40 +335,38 @@ def get_and_update(id, master_balance=False):
     :return:
     """
     # TODO: Do we even want to store balances?
-    sub = service.mongo.get_by_id(id, DB.subsidies)
+    sub = service.mongo.get_by_id(id, CTX.db.subsidies)
 
     if sub is None:
         raise service.exceptions.NotFoundException('Subsidy not found')
 
-    # temporarily removed for performance
+    # # temporarily removed for performance
     # sub['account']['balance'] = \
     #     service.bunq.get_balance(sub['account']['bunq_id'])
     # time.sleep(1)
 
     # only need shares for PENDING_ACCEPT and OPEN subsidies
-    full_read = (sub['status'] in [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN])
+    get_share_statuscodes = [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]
+    full_read = (sub['status'] in get_share_statuscodes)
     acct = {}
     if sub['status'] != STATUSCODE.CLOSED:
-        acct = service.bunq.read_account(sub['account']['bunq_id'], full_read)
-        sub['account']['balance'] = acct['balance']
+        try:
+            acct = service.bunq.read_account(sub['account']['bunq_id'],
+                                             full_read)
+            sub['account']['balance'] = acct['balance']
+        except service.exceptions.NotFoundException:
+            sub['account']['balance'] = None
 
     if master_balance:
-        sub['master']['balance'] = \
-            service.bunq.get_balance(sub['master']['bunq_id'])
+        try:
+            sub['master']['balance'] = \
+                service.bunq.get_balance(sub['master']['bunq_id'])
+        except service.exceptions.NotFoundException:
+            sub['master']['balance'] = None
     else:
         sub['master']['balance'] = None
 
-    if sub['status'] == STATUSCODE.PENDING_ACCOUNT:
-        # TODO: Should we trigger this action at this point? Or in a script?
-        # try:
-        #     service.bunq.create_share(sub['account']['bunq_id'],
-        #                               sub['recipient']['phone_number'])
-        #     sub['status'] = 'PENDING_ACCEPT'
-        # except service.exceptions.NotFoundException:
-        #     pass
-        pass
-
-    elif sub['status'] in [STATUSCODE.PENDING_ACCEPT, STATUSCODE.OPEN]:
+    if sub['status'] in get_share_statuscodes:
         if 'shares' in acct:
             if len(acct['shares']) > 0:
                 share_status = acct['shares'][0]['status']
@@ -335,7 +376,6 @@ def get_and_update(id, master_balance=False):
                 elif share_status in ['CANCELLED', 'REVOKED', 'REJECTED']:
                     sub['status'] = STATUSCODE.SHARE_CLOSED
 
-    sub = service.mongo.update_by_id(sub['id'], sub, DB.subsidies)
+    sub = service.mongo.update_by_id(sub['id'], sub, CTX.db.subsidies)
 
     return sub
-

@@ -8,36 +8,8 @@ from bunq.sdk.model.generated import endpoint, object_
 from bunq.sdk import exception
 
 # Globals
-CONF = service.utils.get_config()
-
-try:
-    CTX = ApiContext.restore(CONF.get('bunq', 'conf_path'))
-    print('Bunq config loaded from', CONF.get('bunq', 'conf_path'))
-except FileNotFoundError:
-    basepath = os.getcwd()
-    path = os.path.join(basepath, CONF.get('bunq', 'conf_path'))
-    try:
-        CTX = ApiContext.restore(path)
-        print('Bunq config loaded from', path)
-    except FileNotFoundError:
-        CTX = None
-
-if CTX is not None:
-    BunqContext.load_api_context(CTX)
-
-    USER_CTX = BunqContext._user_context
-
-    if USER_CTX.is_both_user_type_set() or USER_CTX.is_only_user_company_set():
-        user_obj = USER_CTX.user_company
-        USER_NAME = user_obj.name
-    else:
-        user_obj = USER_CTX.user_person
-        USER_NAME = user_obj.legal_name
-
-    USER_ID = int(user_obj.id_)
-
 CURRENCY = 'EUR'
-
+CTX = service.config.Context
 
 # Direct Interaction with Bunq
 # Actions
@@ -86,8 +58,8 @@ def list_shares(acct_id: int):
     try:
         response = \
             endpoint.ShareInviteBankInquiry.list(monetary_account_id=acct_id)
-    except exception.NotFoundException:
-        raise service.exceptions.NotFoundException
+    except Exception as e:
+        raise _convert_exception(e)
 
     shares = [share_summary(share) for share in list(response.value)]
     return shares
@@ -160,7 +132,7 @@ def revoke_share(acct_id: int, share_id: int):
             acct_id,
             status=new_status
         )
-        time.sleep(1)
+
     except Exception as e:
         raise _convert_exception(e)
 
@@ -174,13 +146,6 @@ def make_payment_to_iban(acct_id, to_iban, to_name, amount,
     counterparty = object_.Pointer(type_='IBAN', value=to_iban, name=to_name)
     amt = object_.Amount(value=str(amount), currency=CURRENCY)
 
-    response = endpoint.Payment.create(
-        amt,
-        counterparty,
-        description,
-        monetary_account_id=acct_id,
-    )
-
     try:
         response = endpoint.Payment.create(
             amt,
@@ -188,7 +153,6 @@ def make_payment_to_iban(acct_id, to_iban, to_name, amount,
             description,
             monetary_account_id=acct_id,
         )
-        time.sleep(1)
 
     except Exception as e:
         raise _convert_exception(e)
@@ -264,7 +228,7 @@ def read_account_by_iban(iban: str, include_closed=False, full=False):
 
 # Object abstractions
 def account_summary(acct: endpoint.MonetaryAccountBank, full: bool=False):
-    if type(acct) is not endpoint.MonetaryAccountBank:
+    if not isinstance(acct, endpoint.MonetaryAccountBank):
         return None
     iban = ''
     name = ''
@@ -280,6 +244,7 @@ def account_summary(acct: endpoint.MonetaryAccountBank, full: bool=False):
         'balance': acct.balance.value,
         'iban': iban,
         'name': name,
+        'status': acct.status
     }
 
     if full:
@@ -289,7 +254,7 @@ def account_summary(acct: endpoint.MonetaryAccountBank, full: bool=False):
 
 
 def share_summary(share: endpoint.ShareInviteBankInquiry):
-    if type(share) is not endpoint.ShareInviteBankInquiry:
+    if not isinstance(share, endpoint.ShareInviteBankInquiry):
         return None
     share_dict = {
         'type': 'bunq_connect',
@@ -304,12 +269,14 @@ def share_summary(share: endpoint.ShareInviteBankInquiry):
 
 
 def payment_summary(payment: endpoint.Payment):
-    if type(payment) is not endpoint.Payment:
+    if not isinstance(payment, endpoint.Payment):
         return None
     pmt_dict = {
         'id': payment.id_,
         'amount': float(payment.amount.value),
         'description': payment.description,
+        'name': payment.alias.pointer.name,
+        'iban': payment.alias.pointer.name,
         'counterparty_name': payment.counterparty_alias.pointer.name,
         'counterparty_iban': payment.counterparty_alias.pointer.value,
         'timestamp': payment.created
@@ -336,8 +303,6 @@ def _convert_exception(e: Exception):
     :param e:
     :return:
     """
-    if not isinstance(e, exception.ApiException):
-        return e
 
     if isinstance(e, exception.NotFoundException):
         if 'Connect with id' in e.message:
@@ -374,7 +339,7 @@ def _convert_exception(e: Exception):
         return e
 
 
-def _list_all_pages(endpoint_obj, list_params, *args, **kwargs):
+def _list_all_pages(endpoint_obj, list_params: dict, *args, **kwargs):
     """
     The list method on endpoint objects may return paginated results. This
     function iterates through the pages and returns all results appended into
@@ -414,7 +379,7 @@ def _list_all_pages(endpoint_obj, list_params, *args, **kwargs):
 
     # keep getting pages while they are available
     while response.pagination.has_previous_page():
-        time.sleep(1.5)
+        time.sleep(1)
         try:
             response = endpoint_obj.list(
                 *args,
@@ -427,37 +392,6 @@ def _list_all_pages(endpoint_obj, list_params, *args, **kwargs):
 
     return output
 
-
-def _reload_context(conf=CONF):
-    """
-    Reload the Bunq Context from the given config object. Updates the global
-    context-derived variables (CTX, USER_CTX, USER_ID, USER_NAME).
-
-    :param conf:
-    :return:
-    """
-    global CTX, USER_CTX, USER_ID, USER_NAME
-    try:
-        CTX = ApiContext.restore(conf.get('bunq', 'conf_path'))
-        print('Bunq config loaded from', conf.get('bunq', 'conf_path'))
-    except FileNotFoundError:
-        basepath = os.getcwd()
-        path = os.path.join(basepath, conf.get('bunq', 'conf_path'))
-        CTX = ApiContext.restore(path)
-        print('Bunq config loaded from', path)
-
-    BunqContext.load_api_context(CTX)
-
-    USER_CTX = BunqContext._user_context
-
-    if USER_CTX.is_both_user_type_set() or USER_CTX.is_only_user_company_set():
-        user_obj = USER_CTX.user_company
-        USER_NAME = user_obj.name
-    else:
-        user_obj = USER_CTX.user_person
-        USER_NAME = user_obj.legal_name
-
-    USER_ID = int(user_obj.id_)
 
 # new_acct = create_account('SS Test')
 # pmt = make_payment_to_acct_id(6146, new_acct['id'], 100.00)

@@ -6,7 +6,7 @@ import json
 import subsidy_service as service
 
 # globals
-CONF = service.utils.get_config()
+CTX = service.config.Context
 LOGGER = logging.getLogger('audit')
 
 
@@ -16,6 +16,9 @@ def audit(user: str, action: str, result=None):
 
 
 def audit_log_message(user: str, action: str, result=None):
+
+    if not result:
+        return f'User "{user}" took action "{action}"'
 
     obj = _convert_obj(result)
 
@@ -69,7 +72,7 @@ def _setup_logger():
     LOGGER.setLevel(logging.DEBUG)
 
     # setup logger
-    audit_log_path = os.path.realpath(CONF['logging']['audit_path'])
+    audit_log_path = os.path.realpath(CTX.config['logging']['audit_path'])
 
     # touch log file if doesn't exist
     if not os.path.isfile(audit_log_path):

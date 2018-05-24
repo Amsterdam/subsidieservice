@@ -5,10 +5,7 @@ import passlib.context
 import getpass
 
 # Globals
-CONF = service.utils.get_config()
-CLIENT = service.mongo.get_client(CONF)
-DB = CLIENT.subsidy
-
+CTX = service.config.Context
 CRYPT_CTX = passlib.context.CryptContext(schemes=['bcrypt_sha256'])
 
 
@@ -49,7 +46,7 @@ def authenticate(func: callable):
         if not verify_user(auth.username, auth.password):
             # user not found/password incorrect
             raise service.exceptions.ForbiddenException(
-                'User is not authorized to call ' + func.__name__
+                "Username or password incorrect."
             )
         else:
             # successfully authenticated
@@ -101,7 +98,7 @@ def verify_user(username: str, password: str):
     :param password:
     :return: bool
     """
-    user = service.mongo.find({'username': username}, DB.users)
+    user = service.mongo.find({'username': username}, CTX.db.users)
     if user is None:
         # username not found
         return False
