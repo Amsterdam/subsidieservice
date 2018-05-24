@@ -244,6 +244,7 @@ def account_summary(acct: endpoint.MonetaryAccountBank, full: bool=False):
         'balance': acct.balance.value,
         'iban': iban,
         'name': name,
+        'status': acct.status
     }
 
     if full:

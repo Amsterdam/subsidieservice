@@ -272,14 +272,25 @@ def delete(id):
         )
 
     time.sleep(1)
-    payments = service.masters.get_payments_if_available(subsidy['bunq_id'])
+    payments = service.masters.get_payments_if_available(
+        subsidy['account']['bunq_id']
+    )
 
 
     time.sleep(1)
-    service.bunq.close_account(subsidy['account']['bunq_id'])
+    try:
+        service.bunq.close_account(subsidy['account']['bunq_id'])
+    except service.exceptions.BadRequestException:
+        # Don't crash if account was closed externally
+        acct = service.bunq.read_account(subsidy['account']['bunq_id'])
+        if acct['status'] != 'CANCELLED':
+            raise
+
     subsidy['status'] = STATUSCODE.CLOSED
     subsidy['account']['balance'] = 0.
+    subsidy['account']['transactions'] = payments
     subsidy['master']['balance'] = None
+    subsidy['last_updated'] = service.utils.now()
     subsidy = service.mongo.update_by_id(id, subsidy, CTX.db.subsidies)
 
     return None
