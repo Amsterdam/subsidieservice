@@ -11,6 +11,66 @@ def set_to_default(cls):
     return cls
 
 
+def _get_mongo_uri(config: configparser.ConfigParser):
+    """Get the mongo host, port, and any credentials from the provided
+    config object or from the environment.
+
+    Returns a (uri, port) tuple, with the uri in the format
+    mongodb://[usr[:pwd]@]host
+
+    Preference is given to the config object. If no host is found,
+    returns (None, None).
+
+    """
+    try:
+        section = config['mongo']
+    except KeyError:
+        section = dict()
+
+    host = None
+    port = None
+
+    usr = None
+    pwd = None
+
+    if 'host' in section:
+        host = section['host']
+    elif 'MONGO_HOST' in os.environ:
+        host = os.environ['MONGO_HOST']
+    else:
+        return (None, None)
+
+    if 'port' in section:
+        port = section['port']
+    elif 'MONGO_PORT' in os.environ:
+        port = os.environ['MONGO_PORT']
+
+    if 'user' in section:
+        usr = section['user']
+    elif 'MONGO_USER' in os.environ:
+        usr = os.environ['MONGO_USER']
+
+    if 'password' in section:
+        pwd = section['password']
+    elif 'MONGO_PASSWORD' in os.environ:
+        pwd = os.environ['MONGO_PASSWORD']
+
+    uri = 'mongodb://'
+    if usr:
+        uri += usr  # -> mongodb://usr
+        if pwd:
+            # -> mongodb://usr:pwd
+            uri += ':' + pwd
+        uri += '@'  # -> mongodb://usr[:pwd]@
+
+    uri += host  # -> mongodb://[usr[:pwd]@]host
+
+    if port:
+        port = int(port)
+
+    return uri, port
+
+
 @set_to_default
 class Context():
     """
@@ -115,61 +175,4 @@ class Context():
 
         cls.read(config_path)
 
-
-
-def _get_mongo_uri(config: configparser.ConfigParser):
-    """Get the mongo host, port, and any credentials from the provided
-    config object or from the environment.
-
-    Returns a (uri, port) tuple, with the uri in the format
-    mongodb://[usr[:pwd]@]host
-
-    Preference is given to the config object. If no host is found,
-    returns (None, None).
-
-    """
-    try:
-        section = config['mongo']
-    except KeyError:
-        section = dict()
-
-    host = None
-    port = None
-
-    usr = None
-    pwd = None
-
-    if 'host' in section:
-        host = section['host']
-    elif 'MONGO_HOST' in os.environ:
-        host = os.environ['MONGO_HOST']
-    else:
-        return None
-
-    if 'port' in section:
-        port = section['port']
-    elif 'MONGO_PORT' in os.environ:
-        port = os.environ['MONGO_PORT']
-
-    if 'user' in section:
-        usr = section['user']
-    elif 'MONGO_USER' in os.environ:
-        usr = os.environ['MONGO_USER']
-
-    if 'password' in section:
-        pwd = section['password']
-    elif 'MONGO_PASSWORD' in os.environ:
-        pwd = os.environ['MONGO_PASSWORD']
-
-    uri = 'mongodb://'
-    if usr:
-        uri += usr  # -> mongodb://usr
-        if pwd:
-            # -> mongodb://usr:pwd
-            uri += ':' + pwd
-        uri += '@'  # -> mongodb://usr[:pwd]@
-
-    uri += host  # -> mongodb://[usr[:pwd]@]host
-
-    return uri, int(port)
 
