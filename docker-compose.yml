@@ -18,8 +18,11 @@ services:
       MONGO_PORT:     "27017"
       MONGO_USER:     "subsidieservice"
       MONGO_PASSWORD: "insecure"
-      BUNQ_API_KEY:   "<insert key here>"
+      # BUNQ_API_KEY:   "<insert key here>"
       ENV:            "develop"
+    env_file:
+      ".env"
+
 
   mongo:
     image: 'mongo'
