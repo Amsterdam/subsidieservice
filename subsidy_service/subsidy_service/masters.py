@@ -18,6 +18,8 @@ def create(master: dict):
     :type master: dict
     :return: dict: the created object
     """
+    master = service.utils.drop_nones(master.copy())
+
     if 'iban' in master:
         existing = service.mongo.find({'iban': master['iban']}, CTX.db.masters)
 

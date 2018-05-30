@@ -139,9 +139,10 @@ class Context():
             pass
 
     @classmethod
-    def _reload_bunq_ctx(cls):
+    def _reload_bunq_ctx(cls, conf_path=None):
+        if conf_path is None:
+            conf_path = cls.config.get('bunq', 'conf_path', fallback='')
 
-        conf_path = cls.config.get('bunq', 'conf_path', fallback='')
         if not conf_path:
             return
 

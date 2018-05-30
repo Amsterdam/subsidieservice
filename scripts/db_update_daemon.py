@@ -229,7 +229,8 @@ def update_subsidies():
             # master not found -> no access, don't update
             LOGGER.warning(f'Master not found for subsidy {subsidy["id"]}')
             continue
-
+        else:
+            updated_subsidy['master'] = master
 
         acct = service.bunq.read_account(subsidy['account']['bunq_id'],
                                          full=full_read)
