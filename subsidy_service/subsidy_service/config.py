@@ -3,6 +3,7 @@ import os
 import sys
 import pymongo
 from bunq.sdk.context import ApiContext, BunqContext
+from bunq.sdk.exception import BunqException
 import subsidy_service as service
 
 
@@ -90,7 +91,7 @@ class Context():
 
     config = configparser.ConfigParser()
     mongo_client = None
-    bunq_ctx = None
+    bunq_ctx = BunqContext
     db = None
 
     default_paths = [
@@ -139,26 +140,32 @@ class Context():
 
     @classmethod
     def _reload_bunq_ctx(cls):
+
         conf_path = cls.config.get('bunq', 'conf_path', fallback='')
         if not conf_path:
             return
 
         try:
-            ctx = ApiContext.restore(conf_path)
+            api_ctx = ApiContext.restore(conf_path)
             # print('Bunq config loaded from', conf_path, file=sys.stderr)
         except FileNotFoundError:
             basepath = os.getcwd()
             path = os.path.join(basepath, conf_path)
             try:
-                ctx = ApiContext.restore(path)
+                api_ctx = ApiContext.restore(path)
                 # print('Bunq config loaded from', path, file=sys.stderr)
-            except:
-                ctx = None
-
-        cls.bunq_ctx = ctx
+            except FileNotFoundError:
+                raise service.exceptions.NotFoundException(
+                    f'Bunq config not found at {path}'
+                )
 
         try:
-            BunqContext.load_api_context(ctx)
+            cls.bunq_ctx.api_context().close_session()
+        except (BunqException, TypeError):
+            pass
+
+        try:
+            cls.bunq_ctx.load_api_context(api_ctx)
         except AttributeError:
             raise service.exceptions.ConfigException('Bunq config invalid')
 
@@ -170,7 +177,6 @@ class Context():
     def replace(cls, config_path):
         cls.config = configparser.ConfigParser()
         cls.mongo_client = None
-        cls.bunq_ctx = None
         cls._last_read = None
 
         cls.read(config_path)

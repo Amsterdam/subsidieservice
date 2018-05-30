@@ -56,7 +56,6 @@ class TestContext(unittest.TestCase):
     def test_replace(self):
         Context.replace('not/a/path.txt')
         self.assertIsNone(Context.mongo_client)
-        self.assertIsNone(Context.bunq_ctx)
         self.assertIsNone(Context._last_read)
 
 

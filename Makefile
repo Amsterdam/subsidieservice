@@ -1,4 +1,4 @@
-.PHONY: clean test docker-stop docker-run docker-data
+.PHONY: clean test docker-stop docker-run docker-data venv
 SHELL:=/bin/bash
 activate=venv/subsidy/bin/activate
 
