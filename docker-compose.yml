@@ -8,12 +8,22 @@ services:
     links:
       - mongo:mongo
     volumes:
-      - ./config:/etc/subsidy_service/config
       - ./logs:/etc/subsidy_service/logs
     build:
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./Dockerfile
       context: .
-      
+    environment:
+      MONGO_HOST:     "mongo"
+      MONGO_DB:       "subsidieservice"
+      MONGO_PORT:     "27017"
+      MONGO_USER:     "subsidieservice"
+      MONGO_PASSWORD: "insecure"
+      # BUNQ_API_KEY:   "<insert key here>"
+      ENV:            "develop"
+    env_file:
+      ".env"
+
+
   mongo:
     image: 'mongo'
     container_name: subsidy_mongo_dev

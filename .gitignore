@@ -78,12 +78,13 @@ temp-swagger-server-dir
 *~*.docx
 *~*.pptx
 *.log
+*.env
 
 data/*
 !data/mongodb/placeholder
 !data/test.csv
 
-*.pytest_cache/
+*.pytest_cache
 *.pidfile
 *.env
 *.update

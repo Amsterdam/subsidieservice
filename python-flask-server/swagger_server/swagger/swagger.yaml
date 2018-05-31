@@ -14,7 +14,7 @@ tags:
 - name: "subsidies"
   description: "Create, read, update, and delete subsidies."
 schemes:
-- "https"
+- "http"
 paths:
   /master-accounts:
     get:
