@@ -10,7 +10,7 @@ import multiprocessing as mp
 import warnings
 import logging
 import functools
-import requests
+import graypy
 import atexit
 
 #
@@ -29,6 +29,10 @@ WATCHDOG_PATH = os.path.join(FILEDIR, 'db_update_watchdog.pidfile')
 UPDATE_PATH = os.path.join(FILEDIR, 'db_update_daemon.updated')
 LOG_PATH = os.path.join(FILEDIR, 'db_update_daemon.log')
 
+# kibana
+LOGSTASH_HOST = os.getenv('LOGSTASH_HOST', '127.0.0.1')
+LOGSTASH_PORT = int(os.getenv('LOGSTASH_GELF_UDP_PORT', 12201))
+
 DAEMONLOCK = PIDLockFile(PID_PATH)
 WATCHDOGLOCK = PIDLockFile(WATCHDOG_PATH)
 
@@ -43,6 +47,9 @@ formatter = logging.Formatter(
 fh.setFormatter(formatter)
 fh.setLevel(logging.DEBUG)
 LOGGER.addHandler(fh)
+
+gh = graypy.GELFHandler(LOGSTASH_HOST, LOGSTASH_PORT)
+LOGGER.addHandler(gh)
 
 
 class DaemonStatus:

@@ -2,6 +2,8 @@ import connexion
 import functools
 import bunq.sdk.exception
 
+import subsidy_service as service
+
 
 class BaseSubsidyServiceException(Exception):
     def __init__(self, message=''):
@@ -66,15 +68,19 @@ def exceptionHTTPencode(func: callable):
             return func(*args, **kwargs)
 
         except NotFoundException as e:
+            service.logging.exception(e)
             return connexion.problem(404, 'Not Found', e.message)
 
         except BadRequestException as e:
+            service.logging.exception(e)
             return connexion.problem(400, 'Bad request', e.message)
 
         except ForbiddenException as e:
+            service.logging.exception(e)
             return connexion.problem(403, 'Forbidden', e.message)
 
         except UnauthorizedException as e:
+            service.logging.exception(e)
             auth_header = {
                 'WWW-Authenticate': 'Basic realm="Subsidy Service API"',
             }
@@ -83,15 +89,19 @@ def exceptionHTTPencode(func: callable):
             )
 
         except RateLimitException as e:
+            service.logging.exception(e)
             return connexion.problem(429, 'Too many requests', e.message)
 
         except NotImplementedException as e:
+            service.logging.exception(e)
             return connexion.problem(501, 'Not Implemented', e.message)
 
         except AlreadyExistsException as e:
+            service.logging.exception(e)
             return connexion.problem(409, 'Conflict', e.message)
 
         except Exception as e:
+            service.logging.exception(e)
             return connexion.problem(
                 500,
                 'Internal Server Error',

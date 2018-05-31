@@ -2,6 +2,8 @@ import logging
 import os
 import pprint
 import json
+import graypy
+import traceback
 
 import subsidy_service as service
 
@@ -9,14 +11,22 @@ import subsidy_service as service
 CTX = service.config.Context
 LOGGER = logging.getLogger('audit')
 
+# kibana
+LOGSTASH_HOST = os.getenv('LOGSTASH_HOST', '127.0.0.1')
+LOGSTASH_PORT = int(os.getenv('LOGSTASH_GELF_UDP_PORT', 12201))
+
 
 def audit(user: str, action: str, result=None):
     msg = audit_log_message(user, action, result)
     LOGGER.info(msg)
 
 
-def audit_log_message(user: str, action: str, result=None):
+def exception(e: Exception):
+    LOGGER.exception(e)
 
+
+
+def audit_log_message(user: str, action: str, result=None):
     if not result:
         return f'User "{user}" took action "{action}"'
 
@@ -87,6 +97,9 @@ def _setup_logger():
     fh = logging.FileHandler(audit_log_path)
     fh.setFormatter(fmtr)
     LOGGER.addHandler(fh)
+
+    gh = graypy.GELFHandler(LOGSTASH_HOST, LOGSTASH_PORT)
+    LOGGER.addHandler(gh)
 
     # # write to stderr
     # sh = logging.StreamHandler()
