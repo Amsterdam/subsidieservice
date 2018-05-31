@@ -65,6 +65,7 @@ def _get_mongo_uri(config: configparser.ConfigParser):
         uri += '@'  # -> mongodb://usr[:pwd]@
 
     uri += host  # -> mongodb://[usr[:pwd]@]host
+    uri += '/subsidieservice?authMechanism=SCRAM-SHA-1'
 
     if port:
         port = int(port)
@@ -134,8 +135,9 @@ class Context():
                     host=uri,
                     port=int(port)
                 )
-                cls.db = cls.mongo_client.subsidy
-        except (ValueError, IndexError, KeyError):
+                cls.db = cls.mongo_client.subsidieservice
+
+        except (ValueError, IndexError, KeyError, AttributeError):
             pass
 
     @classmethod

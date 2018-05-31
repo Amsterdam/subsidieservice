@@ -12,6 +12,7 @@ CTX = service.config.Context
 LOGGER = logging.getLogger('audit')
 
 # kibana
+# TODO: Move to config
 LOGSTASH_HOST = os.getenv('LOGSTASH_HOST', '127.0.0.1')
 LOGSTASH_PORT = int(os.getenv('LOGSTASH_GELF_UDP_PORT', 12201))
 
@@ -23,7 +24,6 @@ def audit(user: str, action: str, result=None):
 
 def exception(e: Exception):
     LOGGER.exception(e)
-
 
 
 def audit_log_message(user: str, action: str, result=None):

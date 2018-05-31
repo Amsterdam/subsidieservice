@@ -23,5 +23,8 @@ cat > /etc/subsidy_service/config/subsidy_service.ini <<EOF
     audit_path=/etc/subsidy_service/logs/audit.log
 EOF
 
+echo Start database update daemon
+python3 /usr/src/scripts/db_update_daemon.py start
+
 echo Start server
 python3 -m swagger_server
