@@ -20,6 +20,8 @@ services:
       MONGO_PASSWORD: "insecure"
       BUNQ_API_KEY:   "<insert key here>"
       ENV:            "develop"
+      LOGSTASH_HOST:  "logs.secure.amsterdam.nl"
+      LOGSTASH_GELF_UDP_PORT: 12201
 
   mongo:
     image: 'mongo'
