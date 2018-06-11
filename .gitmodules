@@ -1,0 +1,6 @@
+[submodule "scripts/tinker_python"]
+	path = scripts/tinker_python
+	url = git@github.com:bunq/tinker_python.git
+[submodule "scripts/tinker"]
+	path = scripts/tinker
+	url = git@github.com:bunq/tinker_python.git

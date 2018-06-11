@@ -1,3 +1,5 @@
+#! /usr/bin/env python3.6
+
 import click
 import time
 import warnings

@@ -23,7 +23,6 @@ services:
       LOGSTASH_HOST:  "localhost" #"logs.secure.amsterdam.nl"
       LOGSTASH_GELF_UDP_PORT: 12201
 
-
     env_file:
       ".env"
       
