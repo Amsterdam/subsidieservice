@@ -106,9 +106,19 @@ def delete(id):
     :param id: the id of the citizen to delete.
     :return: None
     """
-    document = service.mongo.get_by_id(id, CTX.db.citizens)
-    if document is None:
+    citizen = service.mongo.get_by_id(id, CTX.db.citizens)
+    if citizen is None:
         raise service.exceptions.NotFoundException('Citizen not found')
+
+    subsidies = service.subsidies.read_all()
+    citizen_subsidies = [sub for sub in subsidies
+                         if sub['recipient']['id'] == citizen['id']]
+    if citizen_subsidies:
+        ids = ', '.join([sub['id'] for sub in citizen_subsidies])
+
+        raise service.exceptions.BadRequestException(
+            f'Citizen has active subsidies with ids: {ids}'
+        )
 
     service.mongo.delete_by_id(id, CTX.db.citizens)
     return None
