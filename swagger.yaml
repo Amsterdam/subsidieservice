@@ -17,7 +17,7 @@ schemes:
 securityDefinitions:
   basic_auth:
     type: basic
-  
+
 tags:
 # - name: "users"
 #   description: "Create, read, update, and delete users."
