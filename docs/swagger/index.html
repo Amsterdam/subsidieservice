@@ -1,0 +1,1404 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Subsidy Service API</title>
+    <style type="text/css">
+      body {
+	font-family: Trebuchet MS, sans-serif;
+	font-size: 15px;
+	color: #444;
+	margin-right: 24px;
+}
+
+h1	{
+	font-size: 25px;
+}
+h2	{
+	font-size: 20px;
+}
+h3	{
+	font-size: 16px;
+	font-weight: bold;
+}
+hr	{
+	height: 1px;
+	border: 0;
+	color: #ddd;
+	background-color: #ddd;
+}
+
+.app-desc {
+  clear: both;
+  margin-left: 20px;
+}
+.param-name {
+  width: 100%;
+}
+.license-info {
+  margin-left: 20px;
+}
+
+.license-url {
+  margin-left: 20px;
+}
+
+.model {
+  margin: 0 0 0px 20px;
+}
+
+.method {
+  margin-left: 20px;
+}
+
+.method-notes	{
+	margin: 10px 0 20px 0;
+	font-size: 90%;
+	color: #555;
+}
+
+pre {
+  padding: 10px;
+  margin-bottom: 2px;
+}
+
+.http-method {
+ text-transform: uppercase;
+}
+
+pre.get {
+  background-color: #0f6ab4;
+}
+
+pre.post {
+  background-color: #10a54a;
+}
+
+pre.put {
+  background-color: #c5862b;
+}
+
+pre.delete {
+  background-color: #a41e22;
+}
+
+.huge	{
+	color: #fff;
+}
+
+pre.example {
+  background-color: #f3f3f3;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+code {
+  white-space: pre;
+}
+
+.nickname {
+  font-weight: bold;
+}
+
+.method-path {
+  font-size: 1.5em;
+  background-color: #0f6ab4;
+}
+
+.up {
+  float:right;
+}
+
+.parameter {
+  width: 500px;
+}
+
+.param {
+  width: 500px;
+  padding: 10px 0 0 20px;
+  font-weight: bold;
+}
+
+.param-desc {
+  width: 700px;
+  padding: 0 0 0 20px;
+  color: #777;
+}
+
+.param-type {
+  font-style: italic;
+}
+
+.param-enum-header {
+width: 700px;
+padding: 0 0 0 60px;
+color: #777;
+font-weight: bold;
+}
+
+.param-enum {
+width: 700px;
+padding: 0 0 0 80px;
+color: #777;
+font-style: italic;
+}
+
+.field-label {
+  padding: 0;
+  margin: 0;
+  clear: both;
+}
+
+.field-items	{
+	padding: 0 0 15px 0;
+	margin-bottom: 15px;
+}
+
+.return-type {
+  clear: both;
+  padding-bottom: 10px;
+}
+
+.param-header {
+  font-weight: bold;
+}
+
+.method-tags {
+  text-align: right;
+}
+
+.method-tag {
+  background: none repeat scroll 0% 0% #24A600;
+  border-radius: 3px;
+  padding: 2px 10px;
+  margin: 2px;
+  color: #FFF;
+  display: inline-block;
+  text-decoration: none;
+}
+
+    </style>
+  </head>
+  <body>
+  <h1>Subsidy Service API</h1>
+    <div class="app-desc"><p>Manage and allocate subsidies for real-time expense management.</p>
+<p>Throughout this documentation, <em>bank profile</em> will refer to a collection of bank accounts owned by the same entity, while <em>bank account</em> will refer to one specific account (i.e. having a single IBAN). Access to a bank profile from the subsidy service must be arranged with the service administrator. Similarly, a <em>subsidy</em> will refer to a specific allocation of funds into one account accessible by one citizen. A group of subsidies that are all for the same purpose should come from the same dedicated master-account.</p>
+<p>Currently, profiles at the following banks are supported:</p>
+<ul>
+<li>Bunq</li>
+</ul>
+<p>The bank information returned by <code>GET</code> calls is cached in the database. It is held as up to date as possible, but due to the caching it is not absolutely real-time. The information is updated as quickly as allowed by the bank APIs.</p>
+<p>We are using the <code>deprecated</code> tag to mark endpoints that are planned but not yet implemented, these will return a 501.</p>
+</div>
+    <div class="app-desc">More information: <a href="https://helloreverb.com">https://helloreverb.com</a></div>
+    <div class="app-desc">Contact Info: <a href="hello@helloreverb.com">hello@helloreverb.com</a></div>
+    <div class="app-desc">Version: 1.0</div>
+    <div class="app-desc">BasePath:/v1</div>
+    <div class="license-info">All rights reserved</div>
+    <div class="license-url">http://apache.org/licenses/LICENSE-2.0.html</div>
+  <h2>Access</h2>
+    <ol>
+      <li>HTTP Basic Authentication</li>
+    </ol>
+
+  <h2><a name="__Methods">Methods</a></h2>
+  [ Jump to <a href="#__Models">Models</a> ]
+
+  <h3>Table of Contents </h3>
+  <div class="method-summary"></div>
+  <h4><a href="#Citizens">Citizens</a></h4>
+  <ul>
+  <li><a href="#citizensGet"><code><span class="http-method">get</span> /citizens</code></a></li>
+  <li><a href="#citizensIdDelete"><code><span class="http-method">delete</span> /citizens/{id}</code></a></li>
+  <li><a href="#citizensIdGet"><code><span class="http-method">get</span> /citizens/{id}</code></a></li>
+  <li><a href="#citizensIdPatch"><code><span class="http-method">patch</span> /citizens/{id}</code></a></li>
+  <li><a href="#citizensIdPut"><code><span class="http-method">put</span> /citizens/{id}</code></a></li>
+  <li><a href="#citizensPost"><code><span class="http-method">post</span> /citizens</code></a></li>
+  </ul>
+  <h4><a href="#MasterAccounts">MasterAccounts</a></h4>
+  <ul>
+  <li><a href="#masterAccountsGet"><code><span class="http-method">get</span> /master-accounts</code></a></li>
+  <li><a href="#masterAccountsIdDelete"><code><span class="http-method">delete</span> /master-accounts/{id}</code></a></li>
+  <li><a href="#masterAccountsIdGet"><code><span class="http-method">get</span> /master-accounts/{id}</code></a></li>
+  <li><a href="#masterAccountsIdPatch"><code><span class="http-method">patch</span> /master-accounts/{id}</code></a></li>
+  <li><a href="#masterAccountsIdPut"><code><span class="http-method">put</span> /master-accounts/{id}</code></a></li>
+  <li><a href="#masterAccountsPost"><code><span class="http-method">post</span> /master-accounts</code></a></li>
+  </ul>
+  <h4><a href="#Subsidies">Subsidies</a></h4>
+  <ul>
+  <li><a href="#subsidiesGet"><code><span class="http-method">get</span> /subsidies</code></a></li>
+  <li><a href="#subsidiesIdActionsApprovePost"><code><span class="http-method">post</span> /subsidies/{id}/actions/approve</code></a></li>
+  <li><a href="#subsidiesIdDelete"><code><span class="http-method">delete</span> /subsidies/{id}</code></a></li>
+  <li><a href="#subsidiesIdGet"><code><span class="http-method">get</span> /subsidies/{id}</code></a></li>
+  <li><a href="#subsidiesIdPatch"><code><span class="http-method">patch</span> /subsidies/{id}</code></a></li>
+  <li><a href="#subsidiesIdPut"><code><span class="http-method">put</span> /subsidies/{id}</code></a></li>
+  <li><a href="#subsidiesPost"><code><span class="http-method">post</span> /subsidies</code></a></li>
+  </ul>
+
+  <h1><a name="Citizens">Citizens</a></h1>
+  <div class="method"><a name="citizensGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /citizens</code></pre></div>
+    <div class="method-summary">List all citizens. (<span class="nickname">citizensGet</span>)</div>
+    <div class="method-notes">Lists all known information about every citizen in the database.</div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#citizen-base">citizen-base</a>]
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[ {
+  "name" : "name",
+  "phone_number" : "phone_number",
+  "id" : "id",
+  "email" : "email"
+}, {
+  "name" : "name",
+  "phone_number" : "phone_number",
+  "id" : "id",
+  "email" : "email"
+} ]</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        
+    <h4 class="field-label">401</h4>
+    Unauthorized
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="citizensIdDelete"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /citizens/{id}</code></pre></div>
+    <div class="method-summary">Remove a citizen (<span class="nickname">citizensIdDelete</span>)</div>
+    <div class="method-notes">Remove a citizen form the subsidy service database. The citizen should not have any active subsidies. If there are any active subsidies, this call will respond with 400 and the citizen will not be deleted.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="citizensIdGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /citizens/{id}</code></pre></div>
+    <div class="method-summary">Returns a specific citizen (<span class="nickname">citizensIdGet</span>)</div>
+    <div class="method-notes">Get the information for a single citizen Currently no additional information is available compared to the list view.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#citizen">citizen</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.citizen+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#citizen">citizen</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="citizensIdPatch"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /citizens/{id}</code></pre></div>
+    <div class="method-summary">Edit a citizen's information (<span class="nickname">citizensIdPatch</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.citizen+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#citizen">citizen</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; citizen properties to be updated </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#citizen">citizen</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.citizen+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#citizen">citizen</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="citizensIdPut"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="put"><code class="huge"><span class="http-method">put</span> /citizens/{id}</code></pre></div>
+    <div class="method-summary">Re-upload a citizen's information (<span class="nickname">citizensIdPut</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.citizen+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#citizen">citizen</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; citizen details </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#citizen">citizen</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.citizen+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#citizen">citizen</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="citizensPost"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /citizens</code></pre></div>
+    <div class="method-summary">Create a new citizen (<span class="nickname">citizensPost</span>)</div>
+    <div class="method-notes">A new citizen will be created in the database and assigned a unique id. The <code>name</code> and <code>phone_number</code> are required to make use of the subsidy service. The <code>phone_number</code> must be unique per citizen.</div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.citizen+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#citizen">citizen</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; citizen to add </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#citizen">citizen</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.citizen+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    Created
+        <a href="#citizen">citizen</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="MasterAccounts">MasterAccounts</a></h1>
+  <div class="method"><a name="masterAccountsGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /master-accounts</code></pre></div>
+    <div class="method-summary">List all master-accounts. (<span class="nickname">masterAccountsGet</span>)</div>
+    <div class="method-notes">Returns an overview list of master-accounts. These do not contain the transactions, to get transactions these please see <code>GET /master-accounts/{id}</code>. The <code>last_updated</code> property reflects the last time this entry was refreshed in the database, this is updated automatically.</div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#master-account-base">master-account-base</a>]
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[ "", "" ]</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="masterAccountsIdDelete"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /master-accounts/{id}</code></pre></div>
+    <div class="method-summary">Remove a master-account (<span class="nickname">masterAccountsIdDelete</span>)</div>
+    <div class="method-notes">Delete a master-account from the database. Note that this does <strong>NOT</strong> delete the account on the bank's end, it only removes it from the subsidy service system. The master account does not need to have zero balance. If the account itself is to be deleted, please also do this using the banking interface directly.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="masterAccountsIdGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /master-accounts/{id}</code></pre></div>
+    <div class="method-summary">Get the details of a specific master-account (<span class="nickname">masterAccountsIdGet</span>)</div>
+    <div class="method-notes">The detailed view of a master-account includes the list of transactions to and from that master-account. The <code>id</code> should correspond to one of the <code>id</code>s listed by <code>GET /master-accounts</code> or the call will return a 404.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#master-account">master-account</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.master-account+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#master-account">master-account</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="masterAccountsIdPatch"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /master-accounts/{id}</code></pre></div>
+    <div class="method-summary">Edit a master-account's information (<span class="nickname">masterAccountsIdPatch</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.master-account+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#master-account">master-account</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; master-account properties to be updated </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#master-account">master-account</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.master-account+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#master-account">master-account</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="masterAccountsIdPut"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="put"><code class="huge"><span class="http-method">put</span> /master-accounts/{id}</code></pre></div>
+    <div class="method-summary">Re-upload a master-account's information (<span class="nickname">masterAccountsIdPut</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.master-account+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#master-account">master-account</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; master-account details </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#master-account">master-account</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.master-account+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#master-account">master-account</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="masterAccountsPost"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /master-accounts</code></pre></div>
+    <div class="method-summary">Create a new master-account (<span class="nickname">masterAccountsPost</span>)</div>
+    <div class="method-notes">A new master-account will be created in the system and assigned a unique id. If <code>iban</code> is provided, an account with that IBAN is assumed to exist in the linked bank profile, and this one will be added to the database for caching. If no <code>iban</code> is provided, a new bank account will be opened under the name of the linked account. The details of the new or existing account are returned.</div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.master-account+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#master-account-base">master-account-base</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; master-account to add </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#master-account">master-account</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.master-account+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    Created
+        <a href="#master-account">master-account</a>
+  </div> <!-- method -->
+  <hr/>
+  <h1><a name="Subsidies">Subsidies</a></h1>
+  <div class="method"><a name="subsidiesGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /subsidies</code></pre></div>
+    <div class="method-summary">List all subsidies (<span class="nickname">subsidiesGet</span>)</div>
+    <div class="method-notes">Subsidies are listed without their transactions. To get the transaction for the account associated with a particular subsidy, please use <code>GET /subsidies/{id}</code>.</div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">status (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; <p>The subsidy status filter can have the following values:</p>
+<ul>
+<li>
+<p><strong>PENDING_ACCOUNT</strong>: The citizen does not yet have a profile at a supported bank, and so has not received the subsidy</p>
+</li>
+<li>
+<p><strong>PENDING_ACCEPT</strong>: The citizen does have an available bank profile, but has not yet accepted the request to access the subsidy account</p>
+</li>
+<li>
+<p><strong>OPEN</strong>: The citizen has access to the subsidy</p>
+</li>
+<li>
+<p><strong>SHARE_CLOSED</strong>: The citizen has canceled their access to the subsidy account and can no longer access the funds</p>
+</li>
+<li>
+<p><strong>CLOSED</strong>: The subsidy has been ended via the subsidy service and the associated bank account is closed</p>
+</li>
+<li>
+<p><strong>ALL</strong>: Lists all subsidies regardless of status.</p>
+</li>
+</ul>
+<p>If <code>status</code> left blank or not provided, this endpoint will list all PENDING_* and OPEN subsidies.</p>
+ </div>
+    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#subsidy-base">subsidy-base</a>]
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[ {
+  "end_date" : "2000-01-23",
+  "amount" : 0.6027456183070403,
+  "last_updated" : "last_updated",
+  "name" : "name",
+  "recipient" : {
+    "name" : "name",
+    "phone_number" : "phone_number",
+    "id" : "id",
+    "email" : "email"
+  },
+  "comment" : "comment",
+  "id" : "id",
+  "account" : {
+    "last_updated" : "last_updated",
+    "balance" : 0.8008281904610115,
+    "iban" : "iban",
+    "name" : "name",
+    "description" : "description"
+  },
+  "master" : "",
+  "frequency" : "frequency",
+  "start_date" : "2000-01-23",
+  "status" : "status"
+}, {
+  "end_date" : "2000-01-23",
+  "amount" : 0.6027456183070403,
+  "last_updated" : "last_updated",
+  "name" : "name",
+  "recipient" : {
+    "name" : "name",
+    "phone_number" : "phone_number",
+    "id" : "id",
+    "email" : "email"
+  },
+  "comment" : "comment",
+  "id" : "id",
+  "account" : {
+    "last_updated" : "last_updated",
+    "balance" : 0.8008281904610115,
+    "iban" : "iban",
+    "name" : "name",
+    "description" : "description"
+  },
+  "master" : "",
+  "frequency" : "frequency",
+  "start_date" : "2000-01-23",
+  "status" : "status"
+} ]</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="subsidiesIdActionsApprovePost"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /subsidies/{id}/actions/approve</code></pre></div>
+    <div class="method-summary">Approve a subsidy (<span class="nickname">subsidiesIdActionsApprovePost</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.user+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#user">user</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; user approving subsidy </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#subsidy">subsidy</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.user+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#subsidy">subsidy</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="subsidiesIdDelete"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /subsidies/{id}</code></pre></div>
+    <div class="method-summary">Close a subsidy (<span class="nickname">subsidiesIdDelete</span>)</div>
+    <div class="method-notes"><p>When closing a subsidy, the following steps are carried out:</p>
+<ul>
+<li>
+<p>The share with the recipient citizen is ended, such that they lose access to the associated bank account</p>
+</li>
+<li>
+<p>Any remaining funds are transferred from the bank account to the master account</p>
+</li>
+<li>
+<p>The bank account is closed at the bank</p>
+</li>
+<li>
+<p>The <code>status</code> is changed to CLOSED</p>
+</li>
+</ul>
+<p>Since the object is never actually deleted from the database, past subsidies can still be inspected using <code>GET /subsidies/{id}</code>, or <code>GET /subsidies?status=CLOSED</code>.</p>
+</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#"></a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="subsidiesIdGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /subsidies/{id}</code></pre></div>
+    <div class="method-summary">Returns a specific subsidy (<span class="nickname">subsidiesIdGet</span>)</div>
+    <div class="method-notes">Subsidies gotten by <code>id</code> include all the information listed in <code>GET /subsidies</code>, plus all the transactions from the associated account.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#subsidy">subsidy</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.subsidy+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#subsidy">subsidy</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="subsidiesIdPatch"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="patch"><code class="huge"><span class="http-method">patch</span> /subsidies/{id}</code></pre></div>
+    <div class="method-summary">Edit a subsidy's information (<span class="nickname">subsidiesIdPatch</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.subsidy+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#subsidy-base">subsidy-base</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; subsidy properties to be updated </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#subsidy">subsidy</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.subsidy+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#subsidy">subsidy</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="subsidiesIdPut"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="put"><code class="huge"><span class="http-method">put</span> /subsidies/{id}</code></pre></div>
+    <div class="method-summary">Re-upload a subsidy's information (<span class="nickname">subsidiesIdPut</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>
+    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.subsidy+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#subsidy-base">subsidy-base</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; subsidy details </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#subsidy">subsidy</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.subsidy+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#subsidy">subsidy</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="subsidiesPost"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /subsidies</code></pre></div>
+    <div class="method-summary">Create a new subsidy (<span class="nickname">subsidiesPost</span>)</div>
+    <div class="method-notes"><p>When creating a new subsidy, the following steps are carried out:</p>
+<ol>
+<li>
+<p>A new bank account is created under the configured bank profile</p>
+</li>
+<li>
+<p>The subsidy amount is transferred from the indicated <code>master</code> to the new account</p>
+</li>
+<li>
+<p>A share request is sent to the recipient</p>
+</li>
+</ol>
+<p>For these reasons, the following fields are required in the body:</p>
+<ul>
+<li>
+<p><code>master.id</code> or <code>master.iban</code> (the master must exist in the database)</p>
+</li>
+<li>
+<p><code>recipient.id</code> or <code>recipient.phone_number</code> (the recipient must exist in the database)</p>
+</li>
+<li>
+<p><code>amount</code></p>
+</li>
+</ul>
+<p>The remaining fields will be created by the server. Note that <code>start_date</code> and <code>end_date</code> are not yet implemented and so will be ignored.</p>
+<p>If the citizen has a bank profile at a supported bank and the share request was successfully sent, the <code>status</code> will come back as PENDING_ACCEPT. Otherwise, the <code>status</code> will come back as PENDING_ACCOUNT. The system will periodically attempt to resend the share request in case the citizen has created a bank profile.</p>
+</div>
+
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="heaader">Content-Type</span> request header:
+    <ul>
+      <li><code>application/nl.kpmg.v1.subsidy-base+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#subsidy-base">subsidy-base</a> (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; The subsidy to create </div>
+
+    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#subsidy">subsidy</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: </div>
+    <pre class="example"><code></code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="heaader">Content-Type</span> response header.
+    <ul>
+      <li><code>application/nl.kpmg.v1.subsidy-base+json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    Created
+        <a href="#subsidy">subsidy</a>
+  </div> <!-- method -->
+  <hr/>
+
+  <h2><a name="__Models">Models</a></h2>
+  [ Jump to <a href="#__Methods">Methods</a> ]
+
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#account-base"><code>account-base</code> - </a></li>
+    <li><a href="#citizen-base"><code>citizen-base</code> - </a></li>
+    <li><a href="#error"><code>error</code> - </a></li>
+    <li><a href="#subsidy-base"><code>subsidy-base</code> - </a></li>
+    <li><a href="#transaction"><code>transaction</code> - </a></li>
+    <li><a href="#user"><code>user</code> - </a></li>
+    <li><a href="#account"><code>account</code> - </a></li>
+    <li><a href="#citizen"><code>citizen</code> - </a></li>
+    <li><a href="#master-account-base"><code>master-account-base</code> - </a></li>
+    <li><a href="#subsidy"><code>subsidy</code> - </a></li>
+    <li><a href="#master-account"><code>master-account</code> - </a></li>
+  </ol>
+
+  <div class="model">
+    <h3><a name="account-base"><code>account-base</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>A bank account</div>
+    <div class="field-items">
+      <div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> The name of the account holder </div>
+<div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">iban (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">balance (optional)</div><div class="param-desc"><span class="param-type"><a href="#number">BigDecimal</a></span>  </div>
+<div class="param">last_updated (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Time of last refresh in the database </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="citizen-base"><code>citizen-base</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>A citizen who may be receiving subsidies</div>
+    <div class="field-items">
+      <div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> The database ID (for use with <code>GET</code>) </div>
+<div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">email (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">phone_number (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Must be the phone number associated with the citizen's bank profile at a supported bank. </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="error"><code>error</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>The body model for a 4xx or 5xx status code</div>
+    <div class="field-items">
+      <div class="param">detail (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+<div class="param">title (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">type (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="subsidy-base"><code>subsidy-base</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>A recurring allocation of funds made available from a master-account to a recipient citizen's account</div>
+    <div class="field-items">
+      <div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">master (optional)</div><div class="param-desc"><span class="param-type"><a href="#master-account-base">master-account-base</a></span>  </div>
+<div class="param">recipient (optional)</div><div class="param-desc"><span class="param-type"><a href="#citizen-base">citizen-base</a></span>  </div>
+<div class="param">account (optional)</div><div class="param-desc"><span class="param-type"><a href="#account-base">account-base</a></span>  </div>
+<div class="param">frequency (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Not yet implemented, value currently ignored </div>
+<div class="param">amount (optional)</div><div class="param-desc"><span class="param-type"><a href="#number">BigDecimal</a></span>  </div>
+<div class="param">start_date (optional)</div><div class="param-desc"><span class="param-type"><a href="#date">date</a></span> Not yet implemented, value currently ignored format: date</div>
+<div class="param">end_date (optional)</div><div class="param-desc"><span class="param-type"><a href="#date">date</a></span> Not yet implemented, value currently ignored format: date</div>
+<div class="param">comment (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">last_updated (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Time of last refresh in the database </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="transaction"><code>transaction</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'></div>
+    <div class="field-items">
+      <div class="param">counterparty_name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">counterparty_iban (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">amount (optional)</div><div class="param-desc"><span class="param-type"><a href="#number">BigDecimal</a></span>  </div>
+<div class="param">timestamp (optional)</div><div class="param-desc"><span class="param-type"><a href="#DateTime">Date</a></span>  format: date-time</div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="user"><code>user</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>A user of the subsidy Allocation API. Users must be created by the administrator.</div>
+    <div class="field-items">
+      <div class="param">username (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">real_name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">email (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  format: email</div>
+<div class="param">phone_number (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="account"><code>account</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>A full bank account include transactions</div>
+    <div class="field-items">
+      <div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> The name of the account holder </div>
+<div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">iban (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">balance (optional)</div><div class="param-desc"><span class="param-type"><a href="#number">BigDecimal</a></span>  </div>
+<div class="param">last_updated (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Time of last refresh in the database </div>
+<div class="param">transactions (optional)</div><div class="param-desc"><span class="param-type"><a href="#transaction">array[transaction]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="citizen"><code>citizen</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>A citizen who may be receiving subsidies</div>
+    <div class="field-items">
+      <div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> The database ID (for use with <code>GET</code>) </div>
+<div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">email (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">phone_number (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Must be the phone number associated with the citizen's bank profile at a supported bank. </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="master-account-base"><code>master-account-base</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>A master-account-base serves as the source for a specific class of subsidy</div>
+    <div class="field-items">
+      <div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> The name of the account holder </div>
+<div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">iban (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">balance (optional)</div><div class="param-desc"><span class="param-type"><a href="#number">BigDecimal</a></span>  </div>
+<div class="param">last_updated (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Time of last refresh in the database </div>
+<div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> The database ID (for use with <code>GET</code>) </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="subsidy"><code>subsidy</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>A recurring allocation of funds made available from a master-account to a recipient citizen's account</div>
+    <div class="field-items">
+      <div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">master (optional)</div><div class="param-desc"><span class="param-type"><a href="#master-account-base">master-account-base</a></span>  </div>
+<div class="param">recipient (optional)</div><div class="param-desc"><span class="param-type"><a href="#citizen-base">citizen-base</a></span>  </div>
+<div class="param">account (optional)</div><div class="param-desc"><span class="param-type"><a href="#account">account</a></span>  </div>
+<div class="param">frequency (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Not yet implemented, value currently ignored </div>
+<div class="param">amount (optional)</div><div class="param-desc"><span class="param-type"><a href="#number">BigDecimal</a></span>  </div>
+<div class="param">start_date (optional)</div><div class="param-desc"><span class="param-type"><a href="#date">date</a></span> Not yet implemented, value currently ignored format: date</div>
+<div class="param">end_date (optional)</div><div class="param-desc"><span class="param-type"><a href="#date">date</a></span> Not yet implemented, value currently ignored format: date</div>
+<div class="param">comment (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">status (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">last_updated (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Time of last refresh in the database </div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="master-account"><code>master-account</code> - </a> <a class="up" href="#__Models">Up</a></h3>
+    <div class='model-description'>A master-account serves as the source for a specific class of subsidy</div>
+    <div class="field-items">
+      <div class="param">name (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> The name of the account holder </div>
+<div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">iban (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+<div class="param">balance (optional)</div><div class="param-desc"><span class="param-type"><a href="#number">BigDecimal</a></span>  </div>
+<div class="param">last_updated (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Time of last refresh in the database </div>
+<div class="param">id (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> The database ID (for use with <code>GET</code>) </div>
+<div class="param">transactions (optional)</div><div class="param-desc"><span class="param-type"><a href="#transaction">array[transaction]</a></span>  </div>
+    </div>  <!-- field-items -->
+  </div>
+  </body>
+</html>

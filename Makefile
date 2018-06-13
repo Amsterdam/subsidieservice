@@ -80,6 +80,10 @@ swagger-update: swagger.yaml
 	git diff --no-index python-flask-server/swagger_server/controllers \
 		temp-swagger-server-dir/swagger_server/controllers
 
+## Regenerate the Swagger documentation and put it in docs/swagger
+swagger-docs: swagger.yaml
+	swagger-codegen generate -i python-flask-server/swagger_server/swagger/swagger.yaml -l html -o docs/swagger
+
 
 ## Run the subsisdy_service unit tests 
 test:
