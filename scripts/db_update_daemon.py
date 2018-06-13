@@ -266,6 +266,19 @@ def update_subsidies():
                     updated_subsidy['status'] = STATUSCODE.SHARE_CLOSED
             acct.pop('shares')
 
+        if subsidy['status'] == STATUSCODE.PENDING_ACCOUNT:
+            sleep_or_terminate(1)
+            try:
+                # check for new account creation
+                new_share = service.bunq.create_share(
+                    subsidy['account']['bunq_id'],
+                    subsidy['recipient']['phone_number']
+                )
+                updated_subsidy['status'] = STATUSCODE.PENDING_ACCEPT
+                sleep_or_terminate(1)
+            except:
+                pass
+
         updated_subsidy['last_updated'] = service.utils.now()
         service.mongo.update_by_id(
             subsidy['id'],

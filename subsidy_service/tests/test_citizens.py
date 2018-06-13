@@ -70,6 +70,7 @@ class TestReadAll(unittest.TestCase):
         self.assertListEqual(citizens.read_all(), get_mock.return_value)
 
 
+@mock.patch("subsidy_service.subsidies.read_all", new=common.dummy_func([]))
 class TestDelete(unittest.TestCase):
     @mock.patch('subsidy_service.mongo.delete_by_id', autospec=True)
     @mock.patch('subsidy_service.mongo.get_by_id', return_value=None)
