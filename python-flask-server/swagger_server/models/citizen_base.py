@@ -61,6 +61,7 @@ class CitizenBase(Model):
     def id(self) -> str:
         """Gets the id of this CitizenBase.
 
+        The database ID (for use with `GET`)  # noqa: E501
 
         :return: The id of this CitizenBase.
         :rtype: str
@@ -71,6 +72,7 @@ class CitizenBase(Model):
     def id(self, id: str):
         """Sets the id of this CitizenBase.
 
+        The database ID (for use with `GET`)  # noqa: E501
 
         :param id: The id of this CitizenBase.
         :type id: str
@@ -124,6 +126,7 @@ class CitizenBase(Model):
     def phone_number(self) -> str:
         """Gets the phone_number of this CitizenBase.
 
+        Must be the phone number associated with the citizen's bank profile at a supported bank.  # noqa: E501
 
         :return: The phone_number of this CitizenBase.
         :rtype: str
@@ -134,6 +137,7 @@ class CitizenBase(Model):
     def phone_number(self, phone_number: str):
         """Sets the phone_number of this CitizenBase.
 
+        Must be the phone number associated with the citizen's bank profile at a supported bank.  # noqa: E501
 
         :param phone_number: The phone_number of this CitizenBase.
         :type phone_number: str

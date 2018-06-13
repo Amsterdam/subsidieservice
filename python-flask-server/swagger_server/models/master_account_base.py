@@ -72,6 +72,7 @@ class MasterAccountBase(Model):
     def name(self) -> str:
         """Gets the name of this MasterAccountBase.
 
+        The name of the account holder  # noqa: E501
 
         :return: The name of this MasterAccountBase.
         :rtype: str
@@ -82,6 +83,7 @@ class MasterAccountBase(Model):
     def name(self, name: str):
         """Sets the name of this MasterAccountBase.
 
+        The name of the account holder  # noqa: E501
 
         :param name: The name of this MasterAccountBase.
         :type name: str
@@ -156,6 +158,7 @@ class MasterAccountBase(Model):
     def last_updated(self) -> str:
         """Gets the last_updated of this MasterAccountBase.
 
+        Time of last refresh in the database  # noqa: E501
 
         :return: The last_updated of this MasterAccountBase.
         :rtype: str
@@ -166,6 +169,7 @@ class MasterAccountBase(Model):
     def last_updated(self, last_updated: str):
         """Sets the last_updated of this MasterAccountBase.
 
+        Time of last refresh in the database  # noqa: E501
 
         :param last_updated: The last_updated of this MasterAccountBase.
         :type last_updated: str
@@ -177,6 +181,7 @@ class MasterAccountBase(Model):
     def id(self) -> str:
         """Gets the id of this MasterAccountBase.
 
+        The database ID (for use with `GET`)  # noqa: E501
 
         :return: The id of this MasterAccountBase.
         :rtype: str
@@ -187,6 +192,7 @@ class MasterAccountBase(Model):
     def id(self, id: str):
         """Sets the id of this MasterAccountBase.
 
+        The database ID (for use with `GET`)  # noqa: E501
 
         :param id: The id of this MasterAccountBase.
         :type id: str

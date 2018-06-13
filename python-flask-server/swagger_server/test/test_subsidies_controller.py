@@ -17,7 +17,7 @@ class TestSubsidiesController(BaseTestCase):
     def test_subsidies_get(self):
         """Test case for subsidies_get
 
-        Returns a list of subsidies.
+        List all subsidies
         """
         query_string = [('status', 'status_example')]
         response = self.client.open(
@@ -44,7 +44,7 @@ class TestSubsidiesController(BaseTestCase):
     def test_subsidies_id_delete(self):
         """Test case for subsidies_id_delete
 
-        Remove a subsidy
+        Close a subsidy
         """
         response = self.client.open(
             '/v1/subsidies/{id}'.format(id='id_example'),

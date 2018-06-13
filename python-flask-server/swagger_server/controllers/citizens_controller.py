@@ -11,9 +11,9 @@ import subsidy_service as service
 @service.exceptions.exceptionHTTPencode
 @service.auth.authenticate
 def citizens_get():  # noqa: E501
-    """Returns a list of citizens.
+    """List all citizens.
 
-     # noqa: E501
+    Lists all known information about every citizen in the database. # noqa: E501
 
 
     :rtype: List[CitizenBase]
@@ -28,7 +28,8 @@ def citizens_get():  # noqa: E501
 def citizens_id_delete(id):  # noqa: E501
     """Remove a citizen
 
-     # noqa: E501
+    Remove a citizen form the subsidy service database. The citizen should not have any active subsidies. If there are any active subsidies, this call will respond with 400 and
+the citizen will not be deleted. # noqa: E501
 
     :param id: 
     :type id: str
@@ -44,7 +45,7 @@ def citizens_id_delete(id):  # noqa: E501
 def citizens_id_get(id):  # noqa: E501
     """Returns a specific citizen
 
-     # noqa: E501
+    Get the information for a single citizen Currently no additional information is available compared to the list view. # noqa: E501
 
     :param id: 
     :type id: str
@@ -102,7 +103,7 @@ def citizens_id_put(id, body):  # noqa: E501
 def citizens_post(body):  # noqa: E501
     """Create a new citizen
 
-     # noqa: E501
+    A new citizen will be created in the database and assigned a unique id. The &#x60;name&#x60; and &#x60;phone_number&#x60; are required to make use of the subsidy service. The &#x60;phone_number&#x60; must be unique per citizen. # noqa: E501
 
     :param body: citizen to add
     :type body: dict | bytes

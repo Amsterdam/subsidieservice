@@ -16,7 +16,7 @@ class TestCitizensController(BaseTestCase):
     def test_citizens_get(self):
         """Test case for citizens_get
 
-        Returns a list of citizens.
+        List all citizens.
         """
         response = self.client.open(
             '/v1/citizens',

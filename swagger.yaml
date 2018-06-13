@@ -1,155 +1,36 @@
 ---
 swagger: "2.0"
 info:
-  title: "subsidy Allocation API"
-  description: "Manage and allocate subsidies"
+  title: "Subsidy Service API"
+  description: "Manage and allocate subsidies for real-time expense management. \n\nThroughout this documentation, *bank profile* will refer to a collection of bank accounts owned by the same entity, while *bank account* will refer to one specific account (i.e. having a single IBAN). Access to a bank profile from the subsidy service must be arranged with the service administrator. Similarly, a *subsidy* will refer to a specific allocation of funds into one account accessible by one citizen. A group of subsidies that are all for the same purpose should come from the same dedicated master-account. \n\nCurrently, profiles at the following banks are supported: \n\n* Bunq \n\n The bank information returned by `GET` calls is cached in the database. It is held as up to date as possible, but due to the caching it is not absolutely real-time. The information is updated as quickly as allowed by the bank APIs. \n\nWe are using the `deprecated` tag to mark endpoints that are planned but not yet implemented, these will return a 501. "
   version: "1.0"
 
-host: "188.166.29.174:8080"
+host: "subsidieservice.amsterdam.nl"
 basePath: "/v1"
 
 schemes:
-- "http"
-
-# security:
-# - basic_auth: []
+- "https"
 
 securityDefinitions:
   basic_auth:
     type: basic
-
+    description: "Please arrange for a username and password with the subsidy service administrators"
+  
 tags:
-# - name: "users"
-#   description: "Create, read, update, and delete users."
 - name: "master-accounts"
-  description:  "Create, read, update, and delete master accounts."
+  description:  "Base accounts containing all the funds for a set of subsidies."
 - name: "citizens"
-  description:  "Create, read, update, and delete citizens."
+  description:  "Citizens who may be receiving a subsidy."
 - name: "subsidies"
-  description:  "Create, read, update, and delete subsidies."
+  description:  "An allocation of funds from a master-account to a dedicated bank account for a specific citizen."
 
 paths:
-  # /users:
-  #   get:
-  #     tags: 
-  #     - "users"
-  #     summary: "Returns a list of users."
-  #     produces:
-  #     - "application/json"
-  #     responses:
-  #       200:
-  #         description: OK
-  #         schema:
-  #           type: array
-  #           items:                
-  #             $ref: "#/definitions/user"
-  #   post:
-  #     tags: 
-  #     - "users"
-  #     summary: "Create a new user"
-  #     consumes:
-  #     - "application/nl.kpmg.v1.user+json"
-  #     produces: 
-  #     - "application/nl.kpmg.v1.user+json"
-  #     responses:
-  #       201:
-  #         description: Created
-  #         schema:
-  #           $ref: "#/definitions/user"
-  #     parameters:
-  #       - in: "body"
-  #         name: "body"
-  #         description: "user to add"
-  #         required: True
-  #         schema:
-  #           $ref: "#/definitions/user"
-                  
-  # /users/{username}:
-  #   get:
-  #     tags: 
-  #     - "users"
-  #     summary: "Returns a specific user"
-  #     produces:
-  #     - "application/nl.kpmg.v1.user+json"
-  #     responses:
-  #       200:
-  #         description: OK
-  #         schema:
-  #           $ref: "#/definitions/user"
-  #     parameters: 
-  #     - in: "path"
-  #       name: "username"
-  #       type: "string"
-  #       required: true
-        
-  #   put:
-  #     tags: 
-  #     - "users"
-  #     summary: "Re-upload user's information"
-  #     consumes:
-  #     - "application/nl.kpmg.v1.user+json"
-  #     produces:
-  #     - "application/nl.kpmg.v1.user+json"
-  #     responses:
-  #       200:
-  #         description: OK
-  #         schema:
-  #           $ref: "#/definitions/user"
-  #     parameters: 
-  #     - in: "path"
-  #       name: "username"
-  #       type: "string"
-  #       required: true
-  #     - in: "body"
-  #       name: "body"
-  #       description: "user details"
-  #       required: True
-  #       schema:
-  #         $ref: "#/definitions/user"
-
-  #   patch:
-  #     tags: 
-  #     - "users"
-  #     summary: "Edit a user's information"
-  #     consumes:
-  #     - "application/nl.kpmg.v1.user+json"
-  #     produces:
-  #     - "application/nl.kpmg.v1.user+json"
-  #     responses:
-  #       200:
-  #         description: OK
-  #         schema:
-  #           $ref: "#/definitions/user"
-  #     parameters: 
-  #     - in: "path"
-  #       name: "username"
-  #       type: "string"
-  #       required: true
-  #     - in: "body"
-  #       name: "body"
-  #       description: "user properties to be updated"
-  #       required: True
-  #       schema:
-  #         $ref: "#/definitions/user"
-        
-  #   delete:
-  #     tags: 
-  #     - "users"
-  #     summary: "Remove a user"
-  #     responses:
-  #       200:
-  #         description: OK
-  #     parameters: 
-  #     - in: "path"
-  #       name: "username"
-  #       type: "string"
-  #       required: true
-
   /master-accounts:
     get:
       tags: 
       - "master-accounts"
-      summary: "Returns a list of master-accounts."
+      summary: "List all master-accounts."
+      description: "Returns an overview list of master-accounts. These do not contain the transactions, to get transactions these please see `GET /master-accounts/{id}`. The `last_updated` property reflects the last time this entry was refreshed in the database, this is updated automatically."
       produces:
       - "application/json"
       responses:
@@ -164,6 +45,7 @@ paths:
       tags: 
       - "master-accounts"
       summary: "Create a new master-account"
+      description: "A new master-account will be created in the system and assigned a unique id. If `iban` is provided, an account with that IBAN is assumed to exist in the linked bank profile, and this one will be added to the database for caching. If no `iban` is provided, a new bank account will be opened under the name of the linked account. The details of the new or existing account are returned."
       consumes:
       - "application/nl.kpmg.v1.master-account+json"
       produces: 
@@ -185,7 +67,8 @@ paths:
     get:
       tags: 
       - "master-accounts"
-      summary: "Returns a specific master-account"
+      summary: "Get the details of a specific master-account"
+      description: "The detailed view of a master-account includes the list of transactions to and from that master-account. The `id` should correspond to one of the `id`s listed by `GET /master-accounts` or the call will return a 404."
       produces:
       - "application/nl.kpmg.v1.master-account+json"
       responses:
@@ -200,6 +83,7 @@ paths:
         required: true
         
     put:
+      deprecated: true
       tags: 
       - "master-accounts"
       summary: "Re-upload a master-account's information"
@@ -225,6 +109,7 @@ paths:
           $ref: "#/definitions/master-account"
         
     patch:
+      deprecated: true
       tags: 
       - "master-accounts"
       summary: "Edit a master-account's information"
@@ -253,6 +138,7 @@ paths:
       tags: 
       - "master-accounts"
       summary: "Remove a master-account"
+      description: "Delete a master-account from the database. Note that this does **NOT** delete the account on the bank's end, it only removes it from the subsidy service system. The master account does not need to have zero balance. If the account itself is to be deleted, please also do this using the banking interface directly."
       responses:
         200:
           description: OK
@@ -266,11 +152,10 @@ paths:
     get:
       tags: 
       - "citizens"
-      summary: "Returns a list of citizens."
+      summary: "List all citizens."
+      description: "Lists all known information about every citizen in the database."
       produces:
       - "application/json"
-      security: 
-      - basic_auth: []
       
       responses:
         200:
@@ -286,6 +171,7 @@ paths:
       tags: 
       - "citizens"
       summary: "Create a new citizen"
+      description: "A new citizen will be created in the database and assigned a unique id. The `name` and `phone_number` are required to make use of the subsidy service. The `phone_number` must be unique per citizen."
       consumes:
       - "application/nl.kpmg.v1.citizen+json"
       produces: 
@@ -308,6 +194,7 @@ paths:
       tags: 
       - "citizens"
       summary: "Returns a specific citizen"
+      description: "Get the information for a single citizen Currently no additional information is available compared to the list view." 
       produces:
       - "application/nl.kpmg.v1.citizen+json"
       responses:
@@ -322,6 +209,7 @@ paths:
         required: true
         
     put:
+      deprecated: true
       tags: 
       - "citizens"
       summary: "Re-upload a citizen's information"
@@ -347,6 +235,7 @@ paths:
           $ref: "#/definitions/citizen"
           
     patch:
+      deprecated: true
       tags: 
       - "citizens"
       summary: "Edit a citizen's information"
@@ -375,6 +264,7 @@ paths:
       tags: 
       - "citizens"
       summary: "Remove a citizen"
+      description: "Remove a citizen form the subsidy service database. The citizen should not have any active subsidies. If there are any active subsidies, this call will respond with 400 and the citizen will not be deleted."
       responses:
         200:
           description: OK
@@ -388,13 +278,14 @@ paths:
     get:
       tags: 
       - "subsidies"
-      summary: "Returns a list of subsidies."
+      summary: "List all subsidies"
+      description: "Subsidies are listed without their transactions. To get the transaction for the account associated with a particular subsidy, please use `GET /subsidies/{id}`."
       produces:
       - "application/json"
       parameters:
         - in: "query"
           name: "status"
-          description: "subsidy status filter"
+          description: "The subsidy status filter can have the following values:\n\n* **PENDING_ACCOUNT**: The citizen does not yet have a profile at a supported bank, and so has not received the subsidy\n\n* **PENDING_ACCEPT**: The citizen does have an available bank profile, but has not yet accepted the request to access the subsidy account\n\n* **OPEN**: The citizen has access to the subsidy\n\n* **SHARE_CLOSED**: The citizen has canceled their access to the subsidy account and can no longer access the funds\n\n* **CLOSED**: The subsidy has been ended via the subsidy service and the associated bank account is closed\n\n* **ALL**: Lists all subsidies regardless of status.\n\nIf `status` left blank or not provided, this endpoint will list all PENDING_* and OPEN subsidies."
           required: False
           type: string
       responses:
@@ -409,6 +300,7 @@ paths:
       tags: 
       - "subsidies"
       summary: "Create a new subsidy"
+      description: "When creating a new subsidy, the following steps are carried out:\n\n1. A new bank account is created under the configured bank profile\n\n2. The subsidy amount is transferred from the indicated `master` to the new account\n\n3. A share request is sent to the recipient\n\n For these reasons, the following fields are required in the body:\n\n* `master.id` or `master.iban` (the master must exist in the database)\n\n* `recipient.id` or `recipient.phone_number` (the recipient must exist in the database)\n\n* `amount`\n\n The remaining fields will be created by the server. Note that `start_date` and `end_date` are not yet implemented and so will be ignored.\n\n If the citizen has a bank profile at a supported bank and the share request was successfully sent, the `status` will come back as PENDING_ACCEPT. Otherwise, the `status` will come back as PENDING_ACCOUNT. The system will periodically attempt to resend the share request in case the citizen has created a bank profile."
       consumes:
       - "application/nl.kpmg.v1.subsidy-base+json"
       produces: 
@@ -421,7 +313,7 @@ paths:
       parameters:
         - in: "body"
           name: "body"
-          description: "subsidy to add"
+          description: "The subsidy to create"
           required: True
           schema:
             $ref: "#/definitions/subsidy-base"
@@ -431,6 +323,7 @@ paths:
       tags: 
       - "subsidies"
       summary: "Returns a specific subsidy"
+      description: "Subsidies gotten by `id` include all the information listed in `GET /subsidies`, plus all the transactions from the associated account."
       produces:
       - "application/nl.kpmg.v1.subsidy+json"
       responses:
@@ -445,6 +338,7 @@ paths:
         required: true
         
     put:
+      deprecated: true
       tags: 
       - "subsidies"
       summary: "Re-upload a subsidy's information"
@@ -470,6 +364,7 @@ paths:
           $ref: "#/definitions/subsidy-base"
           
     patch:
+      deprecated: true
       tags: 
       - "subsidies"
       summary: "Edit a subsidy's information"
@@ -497,7 +392,8 @@ paths:
     delete:
       tags: 
       - "subsidies"
-      summary: "Remove a subsidy"
+      summary: "Close a subsidy"
+      description: "When closing a subsidy, the following steps are carried out:\n\n* The share with the recipient citizen is ended, such that they lose access to the associated bank account\n\n* Any remaining funds are transferred from the bank account to the master account\n\n* The bank account is closed at the bank\n\n* The `status` is changed to CLOSED\n\nSince the object is never actually deleted from the database, past subsidies can still be inspected using `GET /subsidies/{id}`, or `GET /subsidies?status=CLOSED`."
       responses:
         200:
           description: OK
@@ -509,6 +405,7 @@ paths:
 
   /subsidies/{id}/actions/approve:
     post:
+      deprecated: true
       tags: 
         - "subsidies"
       summary: "Approve a subsidy"
@@ -535,8 +432,21 @@ paths:
 
          
 definitions:
+  error:
+    description: "The body model for a 4xx or 5xx status code"
+    type: object
+    properties:
+      detail: 
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+      type:
+        type: string
+      
   user:
-    description: "A user of the subsidy Allocation API"
+    description: "A user of the subsidy Allocation API. Users must be created by the administrator. "
     type: object
     properties:
       username:
@@ -555,6 +465,7 @@ definitions:
     properties:
       name:
         type: string
+        description: "The name of the account holder"
       # account_type:
       #   type: string
       description:
@@ -565,9 +476,10 @@ definitions:
         type: number
       last_updated:
         type: string
+        description: "Time of last refresh in the database"
   
   account:
-    description: "A bank account"
+    description: "A full bank account include transactions"
     allOf: 
     - $ref: "#/definitions/account-base"
     - type: object
@@ -585,6 +497,7 @@ definitions:
       properties:
         id: 
           type: string
+          description: "The database ID (for use with `GET`)"
 
   master-account:
     description: "A master-account serves as the source for a specific class of subsidy"
@@ -609,21 +522,23 @@ definitions:
     
   
   citizen-base:
-    description: "A citizen of Amsterdam who may be recieving subsidies"
+    description: "A citizen who may be receiving subsidies"
     type: object
     properties:
       id:
         type: string
+        description: "The database ID (for use with `GET`)"
       name:
         type: string
       email:
         type: string
       phone_number:
         type: string
+        description: "Must be the phone number associated with the citizen's bank profile at a supported bank."
 
 
   citizen:
-    description: "A citizen of Amsterdam who may be recieving subsidies"
+    description: "A citizen who may be receiving subsidies"
     allOf:
     - $ref: "#/definitions/citizen-base"
     # - type: object
@@ -649,6 +564,7 @@ definitions:
         $ref: "#/definitions/account-base"
       frequency:
         type: string
+        description: "Not yet implemented, value currently ignored"
         # enum:
         # - "once"
         # - "daily"
@@ -662,15 +578,18 @@ definitions:
       start_date:
         type: string
         format: date
+        description: "Not yet implemented, value currently ignored"
       end_date:
         type: string
         format: date
+        description: "Not yet implemented, value currently ignored"
       comment:
         type: string
       status:
         type: string
       last_updated:
         type: string
+        description: "Time of last refresh in the database"
         # enum:
         # - 
         # - PENDING_APPROVAL

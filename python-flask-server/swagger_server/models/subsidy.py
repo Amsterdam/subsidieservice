@@ -210,6 +210,7 @@ class Subsidy(Model):
     def frequency(self) -> str:
         """Gets the frequency of this Subsidy.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :return: The frequency of this Subsidy.
         :rtype: str
@@ -220,6 +221,7 @@ class Subsidy(Model):
     def frequency(self, frequency: str):
         """Sets the frequency of this Subsidy.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :param frequency: The frequency of this Subsidy.
         :type frequency: str
@@ -254,6 +256,7 @@ class Subsidy(Model):
     def start_date(self) -> date:
         """Gets the start_date of this Subsidy.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :return: The start_date of this Subsidy.
         :rtype: date
@@ -264,6 +267,7 @@ class Subsidy(Model):
     def start_date(self, start_date: date):
         """Sets the start_date of this Subsidy.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :param start_date: The start_date of this Subsidy.
         :type start_date: date
@@ -275,6 +279,7 @@ class Subsidy(Model):
     def end_date(self) -> date:
         """Gets the end_date of this Subsidy.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :return: The end_date of this Subsidy.
         :rtype: date
@@ -285,6 +290,7 @@ class Subsidy(Model):
     def end_date(self, end_date: date):
         """Sets the end_date of this Subsidy.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :param end_date: The end_date of this Subsidy.
         :type end_date: date
@@ -338,6 +344,7 @@ class Subsidy(Model):
     def last_updated(self) -> str:
         """Gets the last_updated of this Subsidy.
 
+        Time of last refresh in the database  # noqa: E501
 
         :return: The last_updated of this Subsidy.
         :rtype: str
@@ -348,6 +355,7 @@ class Subsidy(Model):
     def last_updated(self, last_updated: str):
         """Sets the last_updated of this Subsidy.
 
+        Time of last refresh in the database  # noqa: E501
 
         :param last_updated: The last_updated of this Subsidy.
         :type last_updated: str

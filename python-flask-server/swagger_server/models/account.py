@@ -73,6 +73,7 @@ class Account(Model):
     def name(self) -> str:
         """Gets the name of this Account.
 
+        The name of the account holder  # noqa: E501
 
         :return: The name of this Account.
         :rtype: str
@@ -83,6 +84,7 @@ class Account(Model):
     def name(self, name: str):
         """Sets the name of this Account.
 
+        The name of the account holder  # noqa: E501
 
         :param name: The name of this Account.
         :type name: str
@@ -157,6 +159,7 @@ class Account(Model):
     def last_updated(self) -> str:
         """Gets the last_updated of this Account.
 
+        Time of last refresh in the database  # noqa: E501
 
         :return: The last_updated of this Account.
         :rtype: str
@@ -167,6 +170,7 @@ class Account(Model):
     def last_updated(self, last_updated: str):
         """Sets the last_updated of this Account.
 
+        Time of last refresh in the database  # noqa: E501
 
         :param last_updated: The last_updated of this Account.
         :type last_updated: str

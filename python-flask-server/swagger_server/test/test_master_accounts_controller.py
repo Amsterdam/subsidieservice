@@ -16,7 +16,7 @@ class TestMasterAccountsController(BaseTestCase):
     def test_master_accounts_get(self):
         """Test case for master_accounts_get
 
-        Returns a list of master-accounts.
+        List all master-accounts.
         """
         response = self.client.open(
             '/v1/master-accounts',
@@ -38,7 +38,7 @@ class TestMasterAccountsController(BaseTestCase):
     def test_master_accounts_id_get(self):
         """Test case for master_accounts_id_get
 
-        Returns a specific master-account
+        Get the details of a specific master-account
         """
         response = self.client.open(
             '/v1/master-accounts/{id}'.format(id='id_example'),

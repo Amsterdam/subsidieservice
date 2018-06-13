@@ -209,6 +209,7 @@ class SubsidyBase(Model):
     def frequency(self) -> str:
         """Gets the frequency of this SubsidyBase.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :return: The frequency of this SubsidyBase.
         :rtype: str
@@ -219,6 +220,7 @@ class SubsidyBase(Model):
     def frequency(self, frequency: str):
         """Sets the frequency of this SubsidyBase.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :param frequency: The frequency of this SubsidyBase.
         :type frequency: str
@@ -253,6 +255,7 @@ class SubsidyBase(Model):
     def start_date(self) -> date:
         """Gets the start_date of this SubsidyBase.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :return: The start_date of this SubsidyBase.
         :rtype: date
@@ -263,6 +266,7 @@ class SubsidyBase(Model):
     def start_date(self, start_date: date):
         """Sets the start_date of this SubsidyBase.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :param start_date: The start_date of this SubsidyBase.
         :type start_date: date
@@ -274,6 +278,7 @@ class SubsidyBase(Model):
     def end_date(self) -> date:
         """Gets the end_date of this SubsidyBase.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :return: The end_date of this SubsidyBase.
         :rtype: date
@@ -284,6 +289,7 @@ class SubsidyBase(Model):
     def end_date(self, end_date: date):
         """Sets the end_date of this SubsidyBase.
 
+        Not yet implemented, value currently ignored  # noqa: E501
 
         :param end_date: The end_date of this SubsidyBase.
         :type end_date: date
@@ -337,6 +343,7 @@ class SubsidyBase(Model):
     def last_updated(self) -> str:
         """Gets the last_updated of this SubsidyBase.
 
+        Time of last refresh in the database  # noqa: E501
 
         :return: The last_updated of this SubsidyBase.
         :rtype: str
@@ -347,6 +354,7 @@ class SubsidyBase(Model):
     def last_updated(self, last_updated: str):
         """Sets the last_updated of this SubsidyBase.
 
+        Time of last refresh in the database  # noqa: E501
 
         :param last_updated: The last_updated of this SubsidyBase.
         :type last_updated: str

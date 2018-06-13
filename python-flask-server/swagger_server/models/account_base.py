@@ -66,6 +66,7 @@ class AccountBase(Model):
     def name(self) -> str:
         """Gets the name of this AccountBase.
 
+        The name of the account holder  # noqa: E501
 
         :return: The name of this AccountBase.
         :rtype: str
@@ -76,6 +77,7 @@ class AccountBase(Model):
     def name(self, name: str):
         """Sets the name of this AccountBase.
 
+        The name of the account holder  # noqa: E501
 
         :param name: The name of this AccountBase.
         :type name: str
@@ -150,6 +152,7 @@ class AccountBase(Model):
     def last_updated(self) -> str:
         """Gets the last_updated of this AccountBase.
 
+        Time of last refresh in the database  # noqa: E501
 
         :return: The last_updated of this AccountBase.
         :rtype: str
@@ -160,6 +163,7 @@ class AccountBase(Model):
     def last_updated(self, last_updated: str):
         """Sets the last_updated of this AccountBase.
 
+        Time of last refresh in the database  # noqa: E501
 
         :param last_updated: The last_updated of this AccountBase.
         :type last_updated: str
