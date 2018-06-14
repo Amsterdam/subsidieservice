@@ -2,6 +2,7 @@ import configparser
 import os
 import sys
 import pymongo
+import logging
 from bunq.sdk.context import ApiContext, BunqContext
 from bunq.sdk.exception import BunqException
 import subsidy_service as service
@@ -131,7 +132,7 @@ class Context():
         try:
             uri, port = _get_mongo_uri(cls.config)
             if uri:
-                service.logging.LOGGER.info(f'Trying to use mongo uri: {uri}')
+                logging.info(f'Trying to use mongo uri: {uri}')
                 cls.mongo_client = pymongo.MongoClient(
                     host=uri,
                     port=int(port)
@@ -139,7 +140,7 @@ class Context():
                 cls.db = cls.mongo_client.subsidieservice
 
         except (ValueError, IndexError, KeyError, AttributeError) as e:
-            service.logging.exception(e, 'Error getting mongo uri')
+            logging.exception('Error getting mongo uri')
 
     @classmethod
     def _reload_bunq_ctx(cls, conf_path=None):
