@@ -144,7 +144,7 @@ def log_exceptions(func: callable):
         try:
             func(*args, **kwargs)
         except Exception:
-            LOGGER.exception("Uncaught exception")
+            LOGGER.exception("Uncaught exception, exiting")
             os._exit(-1)
 
     return _wrapped
@@ -183,8 +183,9 @@ def update_masters():
 
         except service.exceptions.NotFoundException as e:
             LOGGER.exception(
-                f'Error in looking up master with id {master["id"]}'
+                f'Error in looking up master with id {master["id"]}, continuing'
             )
+            sleep_or_terminate(3)
             continue
 
         updated_master['balance'] = acct['balance']
@@ -234,7 +235,10 @@ def update_subsidies():
 
         if not master:
             # master not found -> no access, don't update
-            LOGGER.warning(f'Master not found for subsidy {subsidy["id"]}')
+            LOGGER.warning(
+                f'Master not found for subsidy {subsidy["id"]}, continuing'
+            )
+            sleep_or_terminate(2)
             continue
         else:
             updated_subsidy['master'] = master
@@ -257,6 +261,7 @@ def update_subsidies():
             LOGGER.exception(
                 f'Unable to update account info for subsidy {subsidy["id"]}'
             )
+            sleep_or_terminate(2)
             continue
 
         acct['transactions'] = payments
