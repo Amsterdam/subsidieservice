@@ -101,10 +101,10 @@ def _setup_logger():
     gh = graypy.GELFHandler(LOGSTASH_HOST, LOGSTASH_PORT)
     LOGGER.addHandler(gh)
 
-    # # write to stderr
-    # sh = logging.StreamHandler()
-    # sh.setFormatter(fmtr)
-    # LOGGER.addHandler(sh)
+    # write to stderr
+    sh = logging.StreamHandler()
+    sh.setFormatter(fmtr)
+    LOGGER.addHandler(sh)
 
 
 _setup_logger()
