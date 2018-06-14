@@ -19,7 +19,7 @@ def _get_mongo_uri(config: configparser.ConfigParser):
     Returns a (uri, port) tuple, with the uri in the format
     mongodb://[usr[:pwd]@]host
 
-    Preference is given to the config object. If no host is found,
+    Preference is given to the environment. If no host is found,
     returns (None, None).
 
     """
@@ -34,27 +34,27 @@ def _get_mongo_uri(config: configparser.ConfigParser):
     usr = None
     pwd = None
 
-    if 'host' in section:
-        host = section['host']
-    elif 'MONGO_HOST' in os.environ:
+    if 'MONGO_HOST' in os.environ:
         host = os.environ['MONGO_HOST']
+    elif 'host' in section:
+        host = section['host']
     else:
         return (None, None)
 
-    if 'port' in section:
-        port = section['port']
-    elif 'MONGO_PORT' in os.environ:
+    if 'MONGO_PORT' in os.environ:
         port = os.environ['MONGO_PORT']
+    elif 'port' in section:
+        port = section['port']
 
-    if 'user' in section:
-        usr = section['user']
-    elif 'MONGO_USER' in os.environ:
+    if 'MONGO_USER' in os.environ:
         usr = os.environ['MONGO_USER']
+    elif 'user' in section:
+        usr = section['user']
 
-    if 'password' in section:
-        pwd = section['password']
-    elif 'MONGO_PASSWORD' in os.environ:
+    if 'MONGO_PASSWORD' in os.environ:
         pwd = os.environ['MONGO_PASSWORD']
+    elif 'password' in section:
+        pwd = section['password']
 
     uri = 'mongodb://'
     if usr:
