@@ -67,6 +67,8 @@ def _get_mongo_uri(config: configparser.ConfigParser):
     uri += host  # -> mongodb://[usr[:pwd]@]host
     uri += '/subsidieservice?authMechanism=SCRAM-SHA-1'
 
+    service.logging.LOGGER.info(f'Trying to use mongo uri: {uri}')
+
     if port:
         port = int(port)
 
