@@ -22,11 +22,8 @@ def audit(user: str, action: str, result=None):
     LOGGER.info(msg)
 
 
-def exception(e: Exception, message=''):
-    try:
-        raise e
-    except Exception:
-        LOGGER.exception(message)
+def exception(e, message=''):
+    LOGGER.exception(message)
 
 
 def audit_log_message(user: str, action: str, result=None):

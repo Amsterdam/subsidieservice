@@ -101,7 +101,7 @@ def exceptionHTTPencode(func: callable):
             return connexion.problem(409, 'Conflict', e.message)
 
         except Exception as e:
-            service.logging.exception(e, 'Uncaught exception')
+            service.logging.exception(e)
             return connexion.problem(
                 500,
                 'Internal Server Error',
