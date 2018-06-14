@@ -67,8 +67,6 @@ def _get_mongo_uri(config: configparser.ConfigParser):
     uri += host  # -> mongodb://[usr[:pwd]@]host
     uri += '/subsidieservice?authMechanism=SCRAM-SHA-1'
 
-    service.logging.LOGGER.info(f'Trying to use mongo uri: {uri}')
-
     if port:
         port = int(port)
 
@@ -133,14 +131,15 @@ class Context():
         try:
             uri, port = _get_mongo_uri(cls.config)
             if uri:
+                service.logging.LOGGER.info(f'Trying to use mongo uri: {uri}')
                 cls.mongo_client = pymongo.MongoClient(
                     host=uri,
                     port=int(port)
                 )
                 cls.db = cls.mongo_client.subsidieservice
 
-        except (ValueError, IndexError, KeyError, AttributeError):
-            pass
+        except (ValueError, IndexError, KeyError, AttributeError) as e:
+            service.logging.exception(e, 'Error getting mongo uri')
 
     @classmethod
     def _reload_bunq_ctx(cls, conf_path=None):

@@ -79,6 +79,8 @@ def _convert_obj(obj):
 
 
 def _setup_logger():
+    global LOGGER
+
     LOGGER.setLevel(logging.DEBUG)
 
     # setup logger
@@ -99,6 +101,7 @@ def _setup_logger():
     LOGGER.addHandler(fh)
 
     gh = graypy.GELFHandler(LOGSTASH_HOST, LOGSTASH_PORT)
+    gh.setFormatter(fmtr)
     LOGGER.addHandler(gh)
 
     # write to stderr
