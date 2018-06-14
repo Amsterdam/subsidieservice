@@ -200,7 +200,7 @@ def update_masters():
 
         STATUS.increment_total_updates()
 
-        sleep_or_terminate(1)
+        sleep_or_terminate(2)
         if STATUS.sigterm:
             break
 
@@ -239,17 +239,25 @@ def update_subsidies():
         else:
             updated_subsidy['master'] = master
 
-        acct = service.bunq.read_account(subsidy['account']['bunq_id'],
-                                         full=full_read)
-        sleep_or_terminate(1)
+        try:
+            acct = service.bunq.read_account(subsidy['account']['bunq_id'],
+                                            full=full_read)
 
-        if STATUS.sigterm:
-            break
+            sleep_or_terminate(2)
 
-        payments = service.bunq.get_payments(subsidy['account']['bunq_id'])
+            if STATUS.sigterm:
+                break
 
-        if STATUS.sigterm:
-            break
+            payments = service.bunq.get_payments(subsidy['account']['bunq_id'])
+
+            if STATUS.sigterm:
+                break
+
+        except Exception as e:
+            LOGGER.exception(
+                f'Unable to update account info for subsidy {subsidy["id"]}'
+            )
+            continue
 
         acct['transactions'] = payments
 
@@ -267,7 +275,7 @@ def update_subsidies():
             acct.pop('shares')
 
         if subsidy['status'] == STATUSCODE.PENDING_ACCOUNT:
-            sleep_or_terminate(1)
+            sleep_or_terminate(2)
             try:
                 # check for new account creation
                 new_share = service.bunq.create_share(
@@ -275,19 +283,20 @@ def update_subsidies():
                     subsidy['recipient']['phone_number']
                 )
                 updated_subsidy['status'] = STATUSCODE.PENDING_ACCEPT
-                sleep_or_terminate(1)
+                sleep_or_terminate(2)
             except:
                 pass
 
+        updated_subsidy['account'] = acct
         updated_subsidy['last_updated'] = service.utils.now()
         service.mongo.update_by_id(
             subsidy['id'],
             updated_subsidy,
-            CTX.db.subsidies
+            CTX.db.subsidies,
         )
 
         STATUS.increment_total_updates()
-        sleep_or_terminate(1)
+        sleep_or_terminate(2)
         if STATUS.sigterm:
             break
 
