@@ -80,10 +80,10 @@ class TestGetMongoURI(unittest.TestCase):
             except KeyError:
                 pass
 
-    def test_config_priority(self):
+    def test_environ_priority(self):
         uri, port = _get_mongo_uri(DUMMY_CONFIG)
-        self.assertEqual('mongodb://usr1:pwd1@hst1/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
-        self.assertEqual(1231, port)
+        self.assertEqual('mongodb://usr2:pwd2@hst2/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
+        self.assertEqual(1232, port)
 
     def test_environ(self):
         uri, port = _get_mongo_uri({})
@@ -114,9 +114,12 @@ class TestGetMongoURI(unittest.TestCase):
         self.assertEqual('mongodb://usr2:pwd2@hst2/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
         self.assertIsNone(port)
 
-    def test_environ_fallback(self):
-        DUMMY_CONFIG['mongo'].pop('user')
+    def test_config_fallback(self):
+        os.environ.pop('MONGO_HOST')
+        os.environ.pop('MONGO_USER')
+        os.environ.pop('MONGO_PORT')
+        os.environ.pop('MONGO_PASSWORD')
         uri, port = _get_mongo_uri(DUMMY_CONFIG)
-        self.assertEqual('mongodb://usr2:pwd1@hst1/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
+        self.assertEqual('mongodb://usr1:pwd1@hst1/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
         self.assertEqual(1231, port)
 
