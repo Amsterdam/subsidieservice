@@ -18,7 +18,7 @@ def _get_mongo_uri(config: configparser.ConfigParser):
     config object or from the environment.
 
     Returns a (uri, port) tuple, with the uri in the format
-    mongodb://[usr[:pwd]@]host
+    mongodb://[usr[:pwd]@]host/subsidieservice?authMechanism=SCRAM-SHA-1
 
     Preference is given to the environment. If no host is found,
     returns (None, None).
