@@ -82,24 +82,28 @@ class TestGetMongoURI(unittest.TestCase):
 
     def test_environ_priority(self):
         uri, port = _get_mongo_uri(DUMMY_CONFIG)
-        self.assertEqual('mongodb://usr2:pwd2@hst2/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
+        self.assertEqual(
+            'mongodb://usr2:pwd2@hst2/admin?authMechanism=SCRAM-SHA-1', uri)
         self.assertEqual(1232, port)
 
     def test_environ(self):
         uri, port = _get_mongo_uri({})
-        self.assertEqual('mongodb://usr2:pwd2@hst2/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
+        self.assertEqual(
+            'mongodb://usr2:pwd2@hst2/admin?authMechanism=SCRAM-SHA-1', uri)
         self.assertEqual(1232, port)
 
     def test_no_user(self):
         os.environ.pop('MONGO_USER')
         uri, port = _get_mongo_uri({})
-        self.assertEqual('mongodb://hst2/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
+        self.assertEqual(
+            'mongodb://hst2/admin?authMechanism=SCRAM-SHA-1', uri)
         self.assertEqual(1232, port)
 
     def test_no_password(self):
         os.environ.pop('MONGO_PASSWORD')
         uri, port = _get_mongo_uri({})
-        self.assertEqual('mongodb://usr2@hst2/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
+        self.assertEqual(
+            'mongodb://usr2@hst2/admin?authMechanism=SCRAM-SHA-1', uri)
         self.assertEqual(1232, port)
 
     def test_no_host(self):
@@ -111,7 +115,8 @@ class TestGetMongoURI(unittest.TestCase):
     def test_no_port(self):
         os.environ.pop('MONGO_PORT')
         uri, port = _get_mongo_uri({})
-        self.assertEqual('mongodb://usr2:pwd2@hst2/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
+        self.assertEqual(
+            'mongodb://usr2:pwd2@hst2/admin?authMechanism=SCRAM-SHA-1', uri)
         self.assertIsNone(port)
 
     def test_config_fallback(self):
@@ -120,6 +125,7 @@ class TestGetMongoURI(unittest.TestCase):
         os.environ.pop('MONGO_PORT')
         os.environ.pop('MONGO_PASSWORD')
         uri, port = _get_mongo_uri(DUMMY_CONFIG)
-        self.assertEqual('mongodb://usr1:pwd1@hst1/subsidieservice?authMechanism=SCRAM-SHA-1', uri)
+        self.assertEqual(
+            'mongodb://usr1:pwd1@hst1/admin?authMechanism=SCRAM-SHA-1', uri)
         self.assertEqual(1231, port)
 
