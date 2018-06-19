@@ -51,9 +51,11 @@ LOGGER.addHandler(fh)
 # write to stderr
 sh = logging.StreamHandler()
 sh.setFormatter(formatter)
+sh.setLevel(logging.DEBUG)
 LOGGER.addHandler(sh)
 
 gh = graypy.GELFHandler(LOGSTASH_HOST, LOGSTASH_PORT)
+gh.setFormatter(formatter)
 gh.setLevel(logging.DEBUG)
 LOGGER.addHandler(gh)
 
