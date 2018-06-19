@@ -31,7 +31,7 @@ def read_account(id: int, full=False):
 
 def close_account(id):
     acct = read_account(id)
-    time.sleep(1)
+    time.sleep(1.5)
     revoke_all_shares(id)
 
     response = endpoint.MonetaryAccountBank.update(
@@ -379,7 +379,7 @@ def _list_all_pages(endpoint_obj, list_params: dict, *args, **kwargs):
 
     # keep getting pages while they are available
     while response.pagination.has_previous_page():
-        time.sleep(1)
+        time.sleep(1.5)
         try:
             response = endpoint_obj.list(
                 *args,
