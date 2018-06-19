@@ -445,6 +445,7 @@ def main_loop():
 
     while not STATUS.sigterm:
         try:
+            LOGGER.debug(STATUS.__str__().replace('\n', ' '))
             update_masters()
 
             sleep_or_terminate(10)
