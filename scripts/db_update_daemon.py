@@ -48,6 +48,11 @@ fh.setFormatter(formatter)
 fh.setLevel(logging.DEBUG)
 LOGGER.addHandler(fh)
 
+# write to stderr
+sh = logging.StreamHandler()
+sh.setFormatter(formatter)
+LOGGER.addHandler(sh)
+
 gh = graypy.GELFHandler(LOGSTASH_HOST, LOGSTASH_PORT)
 gh.setLevel(logging.DEBUG)
 LOGGER.addHandler(gh)
@@ -177,7 +182,7 @@ def update_masters():
 
         try:
             acct = service.bunq.read_account(master['bunq_id'])
-            time.sleep(1)
+            sleep_or_terminate(2)
             if STATUS.sigterm:
                 break
             payments = service.bunq.get_payments(master['bunq_id'])
@@ -202,7 +207,7 @@ def update_masters():
 
         STATUS.increment_total_updates()
 
-        sleep_or_terminate(1)
+        sleep_or_terminate(2)
         if STATUS.sigterm:
             break
 
@@ -441,7 +446,13 @@ def main_loop():
     while not STATUS.sigterm:
         try:
             update_masters()
+
+            sleep_or_terminate(10)
+            if STATUS.sigterm:
+                break
+
             update_subsidies()
+
         except service.exceptions.RateLimitException:
             sleep_mins = 15
             LOGGER.exception(
