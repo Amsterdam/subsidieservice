@@ -11,7 +11,7 @@ click==6.7
 clickclick==1.2.2
 connexion==1.1.9
 coverage==4.5.1
-cryptography==2.2.2
+cryptography==2.3
 Flask==0.12.2
 graypy==0.3
 idna==2.5
