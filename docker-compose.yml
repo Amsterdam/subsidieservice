@@ -17,8 +17,8 @@ services:
       MONGO_HOST:     "mongo"
       MONGO_DB:       "subsidieservice"
       MONGO_PORT:     "27017"
-      MONGO_USER:     "subsidieservice"
-      MONGO_PASSWORD: "secret"
+      MONGO_USER:     "root"
+      MONGO_PASSWORD: "root"
       ENV:            "develop"
       LOGSTASH_HOST:  "localhost" #"logs.secure.amsterdam.nl"
       LOGSTASH_GELF_UDP_PORT: 12201

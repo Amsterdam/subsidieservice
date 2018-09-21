@@ -66,6 +66,10 @@ target/
 # PyCharm
 .idea
 
+# Eclipse
+.project
+.pydevproject
+
 # Bunq conf
 *.conf
 
@@ -88,3 +92,9 @@ data/*
 *.pidfile
 *.env
 *.update
+
+scripts/rest/data/master-account-aeb.json
+scripts/rest/data/citizen_riccardo.json
+scripts/rest/data/citizen_mesut.json
+scripts/rest/data/citizen_jorrit.json
+scripts/rest/data/citizen_john.json
