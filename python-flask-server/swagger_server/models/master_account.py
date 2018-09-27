@@ -6,9 +6,7 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
-from swagger_server.models.account import Account  # noqa: F401,E501
 from swagger_server.models.master_account_base import MasterAccountBase  # noqa: F401,E501
-from swagger_server.models.transaction import Transaction  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -18,7 +16,7 @@ class MasterAccount(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, last_updated: str=None, id: str=None, transactions: List[Transaction]=None):  # noqa: E501
+    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, last_updated: str=None, id: str=None):  # noqa: E501
         """MasterAccount - a model defined in Swagger
 
         :param name: The name of this MasterAccount.  # noqa: E501
@@ -33,8 +31,6 @@ class MasterAccount(Model):
         :type last_updated: str
         :param id: The id of this MasterAccount.  # noqa: E501
         :type id: str
-        :param transactions: The transactions of this MasterAccount.  # noqa: E501
-        :type transactions: List[Transaction]
         """
         self.swagger_types = {
             'name': str,
@@ -42,8 +38,7 @@ class MasterAccount(Model):
             'iban': str,
             'balance': float,
             'last_updated': str,
-            'id': str,
-            'transactions': List[Transaction]
+            'id': str
         }
 
         self.attribute_map = {
@@ -52,8 +47,7 @@ class MasterAccount(Model):
             'iban': 'iban',
             'balance': 'balance',
             'last_updated': 'last_updated',
-            'id': 'id',
-            'transactions': 'transactions'
+            'id': 'id'
         }
 
         self._name = name
@@ -62,7 +56,6 @@ class MasterAccount(Model):
         self._balance = balance
         self._last_updated = last_updated
         self._id = id
-        self._transactions = transactions
 
     @classmethod
     def from_dict(cls, dikt) -> 'MasterAccount':
@@ -206,24 +199,3 @@ class MasterAccount(Model):
         """
 
         self._id = id
-
-    @property
-    def transactions(self) -> List[Transaction]:
-        """Gets the transactions of this MasterAccount.
-
-
-        :return: The transactions of this MasterAccount.
-        :rtype: List[Transaction]
-        """
-        return self._transactions
-
-    @transactions.setter
-    def transactions(self, transactions: List[Transaction]):
-        """Sets the transactions of this MasterAccount.
-
-
-        :param transactions: The transactions of this MasterAccount.
-        :type transactions: List[Transaction]
-        """
-
-        self._transactions = transactions

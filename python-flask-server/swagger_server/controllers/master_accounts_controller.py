@@ -5,11 +5,7 @@ from swagger_server.models.master_account import MasterAccount  # noqa: E501
 from swagger_server.models.master_account_base import MasterAccountBase  # noqa: E501
 from swagger_server import util
 
-import subsidy_service as service
 
-
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def master_accounts_get():  # noqa: E501
     """List all master-accounts.
 
@@ -18,13 +14,9 @@ def master_accounts_get():  # noqa: E501
 
     :rtype: List[MasterAccountBase]
     """
-    response = service.masters.read_all()
-    output = [MasterAccountBase().from_dict(doc) for doc in response]
-    return output
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def master_accounts_id_delete(id):  # noqa: E501
     """Remove a master-account
 
@@ -35,12 +27,9 @@ def master_accounts_id_delete(id):  # noqa: E501
 
     :rtype: None
     """
-    service.masters.delete(id)
-    return None
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def master_accounts_id_get(id):  # noqa: E501
     """Get the details of a specific master-account
 
@@ -51,12 +40,9 @@ def master_accounts_id_get(id):  # noqa: E501
 
     :rtype: MasterAccount
     """
-    response = service.masters.read(id)
-    return MasterAccount.from_dict(response)
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def master_accounts_id_patch(id, body):  # noqa: E501
     """Edit a master-account&#39;s information
 
@@ -71,13 +57,9 @@ def master_accounts_id_patch(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = MasterAccount.from_dict(connexion.request.get_json())  # noqa: E501
-    raise service.exceptions.NotImplementedException('Not yet implemented')
-    # response = service.masters.update(id, body.to_dict())
-    # return MasterAccount.from_dict(response)
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def master_accounts_id_put(id, body):  # noqa: E501
     """Re-upload a master-account&#39;s information
 
@@ -92,13 +74,9 @@ def master_accounts_id_put(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = MasterAccount.from_dict(connexion.request.get_json())  # noqa: E501
-    raise service.exceptions.NotImplementedException('Not yet implemented')
-    # response = service.masters.replace(id, body.to_dict())
-    # return MasterAccount.from_dict(response)
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def master_accounts_post(body):  # noqa: E501
     """Create a new master-account
 
@@ -111,6 +89,4 @@ def master_accounts_post(body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = MasterAccountBase.from_dict(connexion.request.get_json())  # noqa: E501
-
-    response = service.masters.create(body.to_dict())
-    return MasterAccount.from_dict(response)
+    return 'do some magic!'

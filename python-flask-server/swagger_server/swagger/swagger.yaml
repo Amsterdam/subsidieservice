@@ -27,6 +27,8 @@ tags:
 - name: "subsidies"
   description: "An allocation of funds from a master-account to a dedicated bank account\
     \ for a specific citizen."
+- name: "status"
+  description: "Various health check endpoints"
 schemes:
 - "https"
 paths:
@@ -504,6 +506,45 @@ paths:
             $ref: "#/definitions/subsidy"
       deprecated: true
       x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+  /status/services:
+    get:
+      tags:
+      - "status"
+      summary: "Returns the status of the backend services (e.g. Mongo)."
+      description: "An entry is returned for each service. This is a conventional\
+        \ endpoint for internal usage and it should not be exposed to application\
+        \ clients."
+      operationId: "status_services_get"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/service-status"
+      x-swagger-router-controller: "swagger_server.controllers.status_controller"
+  /status/endpoints:
+    get:
+      tags:
+      - "status"
+      summary: "Returns the status of the REST API endpoints."
+      description: "An entry is returned for each endpoint. This is a conventional\
+        \ endpoint for internal usage and it may be exposed to application clients."
+      operationId: "status_endpoints_get"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/endpoint-status"
+      x-swagger-router-controller: "swagger_server.controllers.status_controller"
 securityDefinitions:
   basic_auth:
     description: "Please arrange for a username and password with the subsidy service\
@@ -606,6 +647,7 @@ definitions:
   citizen:
     allOf:
     - $ref: "#/definitions/citizen-base"
+    - {}
     description: "A citizen who may be receiving subsidies"
   subsidy-base:
     type: "object"
@@ -688,3 +730,20 @@ definitions:
       timestamp:
         type: "string"
         format: "date-time"
+  status-base:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      url:
+        type: "string"
+      active:
+        type: "boolean"
+  service-status:
+    allOf:
+    - $ref: "#/definitions/status-base"
+    - {}
+  endpoint-status:
+    allOf:
+    - $ref: "#/definitions/status-base"
+    - {}

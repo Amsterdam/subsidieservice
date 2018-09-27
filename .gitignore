@@ -92,6 +92,7 @@ data/*
 *.pidfile
 *.env
 *.update
+.DS_Store
 
 scripts/rest/data/master-account-aeb.json
 scripts/rest/data/citizen_riccardo.json

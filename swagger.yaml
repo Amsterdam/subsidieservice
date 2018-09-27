@@ -23,10 +23,11 @@ tags:
   description:  "Citizens who may be receiving a subsidy."
 - name: "subsidies"
   description:  "An allocation of funds from a master-account to a dedicated bank account for a specific citizen."
+- name:  "status"
+  description: "Various health check endpoints"
 
 paths:
   /master-accounts:
-    #TESTED: curl -u ricky:7654321 -X GET http://localhost:8080/v1/master-accounts
     get:
       tags: 
       - "master-accounts"
@@ -41,15 +42,6 @@ paths:
             type: array
             items:                
               $ref: "#/definitions/master-account-base"
-    #TESTED: curl -v -u ricky:7654321 -H "Content-Type: application/json" -d @data/master-account.json -X POST http://localhost:8080/v1/master-accounts
-    #{
-    # "name": "Test Master Account - file master-account.json",
-    # "description": "This is a test master account; since no IBAN is provided, a new account will be created dynamically"
-    #}
-    #{
-    # "name": "Test Master Account - file master-account-with-iban.json",
-    # "description": "This is a test master account; an IBAN is provided, therefore the requested account will be attached; the IBAN must exist in the instantiated sandbox context - maybe just use the no-master call, delete it and resubmit the same IBAN (this is because of course by the deletion of a master account entry the underlying IBANs are *not* deleted)"
-    #}     
     post:
       tags: 
       - "master-accounts"
@@ -73,7 +65,6 @@ paths:
             $ref: "#/definitions/master-account-base"
                   
   /master-accounts/{id}:
-    #TESTED: curl -v -u ricky:7654321 -X GET http://localhost:8080/v1/master-accounts/5ba521e1b5e9320011030162
     get:
       tags: 
       - "master-accounts"
@@ -144,7 +135,6 @@ paths:
         schema:
           $ref: "#/definitions/master-account"
         
-    #TESTED: curl -v -u ricky:7654321 -X DELETE http://localhost:8080/v1/master-accounts/5ba520d7b5e9320011030161
     delete:
       tags: 
       - "master-accounts"
@@ -160,7 +150,6 @@ paths:
         required: true
   
   /citizens:
-    #TESTED - curl -u ricky:7654321 -X GET http://localhost:8080/v1/citizens
     get:
       tags: 
       - "citizens"
@@ -179,14 +168,6 @@ paths:
         401:
           description: Unauthorized
     
-    #TESTED: curl -v -u ricky:7654321 -H "Content-Type: application/json" -d @data/citizen_1.json -X POST http://localhost:8080/v1/citizens
-    #{
-    # "id": "3665",
-    # "name": "Elizabeth",
-    # "email": "jen.elizabeth@bunq.nl",
-    # "phone_number": "+31645707041"
-    #}
-    #Note: no validation takes place at this moment, i.e. it is not double-checked that these users exist.       
     post:
       tags: 
       - "citizens"
@@ -295,7 +276,6 @@ paths:
         required: true
 
   /subsidies:
-    #TESTED: curl -u ricky:7654321 -X GET http://localhost:8080/v1/subsidies   
     get:
       tags: 
       - "subsidies"
@@ -450,7 +430,38 @@ paths:
         required: True
         schema:
           $ref: "#/definitions/user"
+  
+  /status/services:
+    get:
+      tags: 
+      - "status"
+      summary: "Returns the status of the backend services (e.g. Mongo)."
+      description: "An entry is returned for each service. This is a conventional endpoint for internal usage and it should not be exposed to application clients."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:                
+              $ref: "#/definitions/service-status"
 
+  /status/endpoints:
+    get:
+      tags: 
+      - "status"
+      summary: "Returns the status of the REST API endpoints."
+      description: "An entry is returned for each endpoint. This is a conventional endpoint for internal usage and it may be exposed to application clients."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:                
+              $ref: "#/definitions/endpoint-status"
          
 definitions:
   error:
@@ -642,4 +653,22 @@ definitions:
       timestamp:
         type: string
         format: date-time
+        
+  status-base:
+    type: object
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+      active:
+        type: boolean
+  
+  service-status:
+     allOf:
+      - $ref: "#/definitions/status-base"
+      
+  endpoint-status:
+      allOf: 
+      - $ref: "#/definitions/status-base"
       

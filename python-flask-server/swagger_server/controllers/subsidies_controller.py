@@ -6,11 +6,7 @@ from swagger_server.models.subsidy_base import SubsidyBase  # noqa: E501
 from swagger_server.models.user import User  # noqa: E501
 from swagger_server import util
 
-import subsidy_service as service
 
-
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def subsidies_get(status=None):  # noqa: E501
     """List all subsidies
 
@@ -21,13 +17,9 @@ def subsidies_get(status=None):  # noqa: E501
 
     :rtype: List[SubsidyBase]
     """
-    response = service.subsidies.read_all(status)
-    output = [SubsidyBase().from_dict(doc) for doc in response]
-    return output
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def subsidies_id_actions_approve_post(id, body):  # noqa: E501
     """Approve a subsidy
 
@@ -42,11 +34,9 @@ def subsidies_id_actions_approve_post(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = User.from_dict(connexion.request.get_json())  # noqa: E501
-    raise service.exceptions.NotImplementedException('Not yet implemented')
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def subsidies_id_delete(id):  # noqa: E501
     """Close a subsidy
 
@@ -57,12 +47,9 @@ def subsidies_id_delete(id):  # noqa: E501
 
     :rtype: None
     """
-    service.subsidies.delete(id)
-    return None
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def subsidies_id_get(id):  # noqa: E501
     """Returns a specific subsidy
 
@@ -73,12 +60,9 @@ def subsidies_id_get(id):  # noqa: E501
 
     :rtype: Subsidy
     """
-    response = service.subsidies.read(id)
-    return Subsidy.from_dict(response)
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def subsidies_id_patch(id, body):  # noqa: E501
     """Edit a subsidy&#39;s information
 
@@ -93,13 +77,9 @@ def subsidies_id_patch(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-    raise service.exceptions.NotImplementedException('Not yet implemented')
-    # response = service.subsidies.update(id, body)
-    # return Subsidy.from_dict(response)
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def subsidies_id_put(id, body):  # noqa: E501
     """Re-upload a subsidy&#39;s information
 
@@ -114,13 +94,9 @@ def subsidies_id_put(id, body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-    raise service.exceptions.NotImplementedException('Not yet implemented')
-    # response = service.subsidies.replace(id, body)
-    # return Subsidy.from_dict(response)
+    return 'do some magic!'
 
 
-@service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
 def subsidies_post(body):  # noqa: E501
     """Create a new subsidy
 
@@ -133,6 +109,4 @@ def subsidies_post(body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = SubsidyBase.from_dict(connexion.request.get_json())  # noqa: E501
-
-    response = service.subsidies.create(body.to_dict())
-    return Subsidy.from_dict(response)
+    return 'do some magic!'
