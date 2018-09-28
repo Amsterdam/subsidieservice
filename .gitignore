@@ -98,3 +98,9 @@ scripts/rest/data/citizen_riccardo.json
 scripts/rest/data/citizen_mesut.json
 scripts/rest/data/citizen_jorrit.json
 scripts/rest/data/citizen_john.json
+
+.DS_Store
+docs/TODO.txt
+docs/citizen_koppeling.txt
+docs/make_subsidy.txt
+docs/master_koppeling.txt
