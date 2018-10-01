@@ -128,7 +128,8 @@ See a sandbox like a virtual user account where anything can be done, but just v
 For app-level interaction follow the setup instructions [here](https://doc.bunq.com/#/android-emulator). 
 
 Alternatively, the API interaction environment of Bunq itself, Tinker, might be even easier to get a feeling for the things, install it with:
-````bash
+
+```bash
 bash <(curl -s https://tinker.bunq.com/python/setup.sh)
 ```
 
