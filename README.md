@@ -135,16 +135,7 @@ bash <(curl -s https://tinker.bunq.com/python/setup.sh)
 
 In order to come into the same virtual world, do not forget to copy over the `bunq.conf` we create into Tinker, respecting the name just to be sure (`tinker/bunq-sandbox.conf`).
 
-If you configure the application on an empty master account, that needs to be topped up. For a sandbox setup, simply do:
-
-```python
->>> from scripts import top_up_sandbox_account
->>> top_up_sandbox_account.top_up()
-Current balance: 1000.00
-Total added: 500.00
-Total added: 1000.00
-New balance: 2000.00
-```
+When configuring the application on the sandbox backend, a master account you are adding is always empty. For example, create a master account with the IBAN from `tinker/user_overview.py`; to top it up, use `tinker/make_request.py` to the very known sugardaddy@bunq.com (maximum amount 500).
 
 If you follow the guide above, you can login as the virtual user from Tinker in the Bunq app on the emulator. You may just login directly, the login code, also displayed in Tinker, should be `000000`. Once you are in, a test account with ten cents on it is displayed.
 
@@ -166,18 +157,26 @@ NB. The application is not instance-safe nor multi-tenant, this means that an AP
 
 Important: whenever you create a file containing sensitive information (Bunq API keys, citizen or account JSON payloads...) make sure to add them to `.gitignore` - the project repo is public!
 
-### Example flow
+### Example flow (sandbox)
 
-From zero to subsidy, perform the following steps:
+From zero to subsidy for the impatient on the sandbox setup. Perform the following steps:
 
 * fetch a new sandbox key
 * create a new `bunq.conf` from the key, and copy it over to `tinker/bunq-sandbox.conf`
 * start the dockers, and create a user for the REST simple auth
 * create a master account on the main sandbox IBAN from `tinker/user_overview.py`
 * top up something on the account
-* download a second tinker
+* download a second tinker (citizen)
 * use the account of this second tinker to create a citizen
 * login in the sandbox app as this new citizen
 * perform a subsidy request; state will be `PENDING_ACCEPT`
 * in the app, you should see a connect invite under the events tab
 * accept the connect; if you check the subsidy, state will be `OPEN`
+
+To play the game again:
+* `-X DELETE` everything
+* delete the citizen tinker configuration and fetch a fresh a new user with `tinker/user_overview.sh`
+* login with this fresh citizen on the mobile (code is `000000`)
+* ask Sugar Daddy some more money
+* proceed making masters, citizens and connects
+* see the subsidy status transitioning from pending to open
