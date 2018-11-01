@@ -4,6 +4,10 @@ import json
 
 # TODO Merge the citizen and subsidy code flow, possibly externalize with add_bulk_citizens.py
 
+#Example schema:
+#Voornaam;Achternaam;Email;telefoonnummer;Connect rekening
+#Arnulfo ;Mercati ;arnulfo.mercati@bunq.nl;+31642557177;NL06BUNQ9900092430
+
 # This is to be run from the live container instance:
 # - Drop the csv to be imported in the mounted share, /data/csv (see compose)
 # - Get a python console on the docker
