@@ -1,11 +1,11 @@
 {
   "name": "Riccardo's test subsidy from the backend",
   "master": {
-    "id": "5bd1c166f0da6700105b9f6c"
+    "id": "5bdb2475c4535a00113d6139"
   },
   "recipient": {
-    "id": "5bd1c41ef0da6700105b9f6d"
+    "id": "5bdb24fec4535a00113d613a"
   },
-  "amount": 0.01,
+  "amount": 20,
   "comment": "The two master accounts are returned from two different tinker instances"
 }

@@ -10,6 +10,7 @@ services:
     volumes:
       - ./logs:/etc/subsidy_service/logs
       - ./config:/etc/subsidy_service/config
+      - ./data/csv:/data/csv
     build:
       dockerfile: ./Dockerfile
       context: .
