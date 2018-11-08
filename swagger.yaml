@@ -6,7 +6,7 @@ info:
   version: "1.0"
 
 host: "subsidieservice.amsterdam.nl"
-basePath: "/v1"
+basePath: "/api/v1"
 
 schemes:
 - "https"
