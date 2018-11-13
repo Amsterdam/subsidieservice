@@ -18,7 +18,7 @@ class TestUsersController(BaseTestCase):
         Returns a list of users.
         """
         response = self.client.open(
-            '/v1/users',
+            '/api/v1/users',
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -30,7 +30,7 @@ class TestUsersController(BaseTestCase):
         """
         body = User()
         response = self.client.open(
-            '/v1/users',
+            '/api/v1/users',
             method='POST',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.user+json')
@@ -43,7 +43,7 @@ class TestUsersController(BaseTestCase):
         Remove a user
         """
         response = self.client.open(
-            '/v1/users/{username}'.format(username='username_example'),
+            '/api/v1/users/{username}'.format(username='username_example'),
             method='DELETE')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -54,7 +54,7 @@ class TestUsersController(BaseTestCase):
         Returns a specific user
         """
         response = self.client.open(
-            '/v1/users/{username}'.format(username='username_example'),
+            '/api/v1/users/{username}'.format(username='username_example'),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -80,7 +80,7 @@ class TestUsersController(BaseTestCase):
         """
         body = User()
         response = self.client.open(
-            '/v1/users/{username}'.format(username='username_example'),
+            '/api/v1/users/{username}'.format(username='username_example'),
             method='PUT',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.user+json')
