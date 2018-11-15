@@ -40,6 +40,9 @@ def row_to_subsidy(row: pd.Series, master_id, amount, rekening_to_id):
     subsidy = {
         'name': "MaaS pilot subsidie instantie van %s %s" % (row['Voornaam'], row['Achternaam']),
         'master_id': master_id,
+        'citizen_iban': row['Connect rekening'],
+        'citizen_name': "%s %s" % (row['Voornaam'], row['Achternaam']),
+        'citizen_phone': row['telefoonnummer'],
         'recipient_id': rekening_to_id[row['Connect rekening']],
         'amount': amount,
         'comment': "Added manually from create_subsidies_mongo.py"
@@ -72,8 +75,9 @@ def bulk_add_subsidies(input, master_id, amount, rekening_to_id):
     for sub in subsidies:
         entry = {
             "name": sub['name'],
+            "account": {"iban": sub['citizen_iban']}
             "master": {"id": sub['master_id']},
-            "recipient": {"id": sub['recipient_id']},
+            "recipient": {"id": sub['recipient_id'], "name": sub['citizen_name'], "phone_number": sub['citizen_phone']},
             "amount": sub['amount'],
             "comment": sub['comment'],
             "status": "OPEN"
