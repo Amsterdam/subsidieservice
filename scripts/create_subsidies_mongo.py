@@ -12,7 +12,7 @@ import json
 # - Drop the csv to be imported in the mounted share, /data/csv (see compose)
 # - Get a python console on the docker
 # - > from scripts import create_subsidies_mongo
-# - > create_subsidies_mongo.start("/data/csv/manual_batch.csv", "NL81BUNQ9900092244", "500")
+# - > create_subsidies_mongo.start("/data/csv/manual_batch.csv", "ds76ffds67f6sdf6ds7", "500") #that is the id of the master rekening
 # - try to get the citizens or subsidies and see the new entries
 # - if you check back in the sandbox, or in the real life app, no new transactions are triggered of course
 # - status is of course persistent because this is a real insert
