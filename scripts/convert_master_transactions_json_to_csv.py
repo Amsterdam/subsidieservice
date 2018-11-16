@@ -3,7 +3,9 @@ import csv
 import click
 
 #Invoke with:
-#python convert_json_to_csv.py --subsidies-json ~/Downloads/subsi.json --transactions-json ~/Downloads/trans.json --output-file ~/Downloads/data.csv
+#python convert_master_transactions_json_to_csv.py --subsidies-json ~/Downloads/subsi.json --transactions-json ~/Downloads/trans.json --output-file ~/Downloads/data.csv
+#This is for the master transactions only; for the total, see the twin script.
+#TODO Merge the two scripts.
 
 @click.option('-s', '--subsidies-json', help='JSON file containing the subsidies as returned from GET /subsidies')
 @click.option('-t', '--transactions-json', help='JSON file containing the subsidies as returned from GET /master-accounts/{id}')
