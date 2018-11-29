@@ -1,6 +1,9 @@
 import subsidy_service as service
 import time
+import datetime
 import collections
+from dateutil.parser import parse
+from flask_csv import send_csv
 
 # Globals
 CTX = service.config.Context
@@ -128,7 +131,7 @@ def read(id):
 
     return subsidy
 
-def read_all(status: str=None):
+def read_all(status: str=None, drop_transactions: bool=True):
     """
     Get all available subsidies. If a status is provided, return only
     those subsidies with the matching status.
@@ -147,9 +150,10 @@ def read_all(status: str=None):
     if not subsidies:
         return output
 
-    for subsidy in subsidies:
-        if 'transactions' in subsidy:
-            subsidy.pop('transactions')
+    if drop_subsidies:
+        for subsidy in subsidies:
+            if 'transactions' in subsidy:
+                subsidy.pop('transactions')
 
     # # Bunq Get & Update
     # check_statuses = []
@@ -393,6 +397,47 @@ def send_payment(payment: dict):
     subsidy = service.mongo.update_by_id(id, subsidy, CTX.db.subsidies)
 
     return None
+
+def read_all_transactions(start_date: datetime=None, end_date: datetime=None):
+    """
+    Return a CSV containing all of the transactions, optionally date-filtered.
+    At this point we do expect the arguments are both datetimes or nones. We do
+    everything in memory for the time being.
+    """
+    all_subsidies = read_all(drop_transactions = False)
+    rows = []
+    for subsidy in all_subsidies:
+        if 'transactions' in subsidy:
+            transactions = subsidy['account']['transactions']
+            for t in transactions:
+                if (start_date is None and end_date is None) or (t['timestamp'] >= start_date and t['timestamp'] <= end_date):
+                    if 'recipient' in subsidy:
+                        name = subsidy['recipient']['name']
+                        phone = subsidy['recipient']['phone_number']
+                    else:
+                        name = None
+                        phone = None
+                    rows.append({
+                        'subsidie_naam': subsidy['account']['description'],
+                        'subsidie_deelnemer': name,
+                        'subsidie_balans': subsidy['account']['balance'],
+                        'subsidie_telefoon': phone,
+                        'subsidie_rekening_nummer': subsidy['account']['iban'],
+                        'transactie_omschrijving': t['description'],
+                        'transactie_tegenpartij': t['counterparty_name'],
+                        'transactie_tegenpartij_iban': t['counterparty_iban'],
+                        'transactie_bedrag': t['amount'],
+                        'transactie_datum': t['timestamp'],
+                    })
+    if (start_date is None and end_date is None):
+        suffix = "full_dump"
+    else:
+        suffix = "from_%s_to_%s" % (str(start_date), str(end_date))
+    filename = "transaction_%s.csv" % suffix
+    if rows == []:
+        return send_csv([], filename, ["NO TRANSACTIONS FOUND FOR GIVEN TIME PERIOD"])
+    else:
+        return send_csv(rows, filename, rows[0].keys())
 
 # utils
 def get_and_update(id, master_balance=False):

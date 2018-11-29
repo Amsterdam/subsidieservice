@@ -505,6 +505,37 @@ paths:
           schema:
             $ref: "#/definitions/payment"
       x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+  /subsidies/transactions:
+    get:
+      tags:
+      - "subsidies"
+      summary: "Download all transactions; supports filtering."
+      description: "For each known subsidy, its transactions are returned as a CSV.\
+        \ It supports ISO date filtering so that just the transactions in a given\
+        \ time interval may be returned. If no filter is provided, then all transactions\
+        \ from the very beginning are returned."
+      operationId: "subsidies_transactions_get"
+      produces:
+      - "text/csv"
+      parameters:
+      - name: "from"
+        in: "query"
+        description: "The start date for the report. Must be used together with `to`."
+        required: false
+        type: "string"
+        format: "date"
+      - name: "to"
+        in: "query"
+        description: "The end date for the report. Must be used together with `from`."
+        required: false
+        type: "string"
+        format: "date"
+      responses:
+        200:
+          description: "CSV dump"
+          schema:
+            type: "file"
+      x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
   /subsidies/{id}/actions/approve:
     post:
       tags:

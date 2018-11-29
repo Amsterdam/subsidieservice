@@ -1,5 +1,6 @@
 import connexion
 import six
+from dateutil.parser import parse
 
 from swagger_server.models.subsidy import Subsidy  # noqa: E501
 from swagger_server.models.subsidy_base import SubsidyBase  # noqa: E501
@@ -153,3 +154,38 @@ def subsidies_payments_post(body):  # noqa: E501
 
     response = service.subsidies.send_payment(body.to_dict())
     return Payment.from_dict(response)
+
+def subsidies_transactions_get(_from=None, to=None):  # noqa: E501
+    """Download all transactions; supports filtering.
+
+    For each known subsidy, its transactions are returned as a CSV. It supports ISO date filtering so that just the transactions in a given time interval may be returned. If no filter is provided, then all transactions from the very beginning are returned. # noqa: E501
+
+    :param _from: The start date for the report. Must be used together with &#x60;to&#x60;.
+    :type _from: str
+    :param to: The end date for the report. Must be used together with &#x60;from&#x60;.
+    :type to: str
+
+    :rtype: str
+
+    A lot of validation unfortunately because current Swagger version does not support:
+    - conditional optionality
+    - dependencies between arguments
+    We have some minimum guarantee because format is specified to be date in the yaml.
+    """
+    if (_from is None and to is not None) or (_from is not None and to is None):
+        raise service.exceptions.BadRequestException("Both date intervals must be specified, or none at all for full dump")
+
+    if _from is not None and to is not None:
+        start_date = None
+        end_date = None
+        try:
+            start_date = parse(_from, dayfirst = True)
+            end_date = parse(to, dayfirst = True)
+        except:
+            raise service.exceptions.BadRequestException("Malformed date(s); accepted format: RFC 3339, section 5.6 with day precedence")
+        if not start_date <= end_date:
+            raise service.exceptions.BadRequestException("Malformed dates: start date 'from' must be earlier than end date 'to'")
+        else:
+            return service.subsidies.read_all_transactions(start_date, end_date)
+    else:
+        return service.subsidies.read_all_transactions() #--- implement !!!
