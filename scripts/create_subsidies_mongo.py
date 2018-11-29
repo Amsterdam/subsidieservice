@@ -75,7 +75,7 @@ def bulk_add_subsidies(input, master_id, amount, rekening_to_id):
     for sub in subsidies:
         entry = {
             "name": sub['name'],
-            "account": {"iban": sub['citizen_iban']}
+            "account": {"iban": sub['citizen_iban']},
             "master": {"id": sub['master_id']},
             "recipient": {"id": sub['recipient_id'], "name": sub['citizen_name'], "phone_number": sub['citizen_phone']},
             "amount": sub['amount'],
