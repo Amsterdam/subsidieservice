@@ -42,7 +42,13 @@ paths:
       operationId: "master_accounts_get"
       produces:
       - "application/json"
-      parameters: []
+      parameters:
+      - name: "initiative"
+        in: "query"
+        description: "An initiative to filter on; this is useful for clients interested\
+          \ only in the master accounts and associated transactions for a given initiative."
+        required: false
+        type: "string"
       responses:
         200:
           description: "OK"
@@ -564,24 +570,77 @@ paths:
             $ref: "#/definitions/subsidy"
       deprecated: true
       x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+  /initiatives:
+    get:
+      tags:
+      - "initiatives"
+      summary: "List all smart subsidy initiatives"
+      description: "A subsidy initiative, like MaaS for example. One and exactly one\
+        \ of the instances is flagged as default: domain entities not carrying an\
+        \ initiative field of their own will be assumed to be under the default one;\
+        \ this is very important to maintain backwards compatibility."
+      operationId: "initiatives_get"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/initiative"
+      x-swagger-router-controller: "swagger_server.controllers.initiatives_controller"
+    post:
+      tags:
+      - "initiatives"
+      summary: "Create a new initiative; names must be unique."
+      operationId: "initiatives_post"
+      consumes:
+      - "application/nl.kpmg.v1.initiative+json"
+      produces:
+      - "application/nl.kpmg.v1.initiative+json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The initiative to create"
+        required: true
+        schema:
+          $ref: "#/definitions/initiative"
+      responses:
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/initiative"
+      x-swagger-router-controller: "swagger_server.controllers.initiatives_controller"
+    delete:
+      tags:
+      - "initiatives"
+      summary: "Delete an initiative."
+      description: "Delete an initiative - this just removes the instance, no associated\
+        \ data e.g. master accounts are modified. Attention: when no initiative argument\
+        \ is provided to the endpoints, all entities of unknown or missing initiative\
+        \ (that is, the initiative field is null or it has an unkown value), are returned,\
+        \ so all data will always be accessible. But it is highly suggested to always\
+        \ keep consistency by not removing initiatives, and to always keep a default\
+        \ one."
+      operationId: "initiatives_delete"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+      deprecated: true
+      x-swagger-router-controller: "swagger_server.controllers.initiatives_controller"
 securityDefinitions:
   basic_auth:
     description: "Please arrange for a username and password with the subsidy service\
       \ administrators"
     type: "basic"
 definitions:
-  error:
-    type: "object"
-    properties:
-      detail:
-        type: "string"
-      status:
-        type: "integer"
-      title:
-        type: "string"
-      type:
-        type: "string"
-    description: "The body model for a 4xx or 5xx status code"
   user:
     type: "object"
     properties:
@@ -636,6 +695,8 @@ definitions:
         id:
           type: "string"
           description: "The database ID (for use with `GET`)"
+        initiative:
+          $ref: "#/definitions/initiative"
     description: "A master-account-base serves as the source for a specific class\
       \ of subsidy"
   master-account:
@@ -764,3 +825,13 @@ definitions:
         $ref: "#/definitions/master-account-base"
       to:
         $ref: "#/definitions/subsidy-base"
+  initiative:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      default:
+        type: "boolean"
+    example:
+      default: true
+      name: "name"

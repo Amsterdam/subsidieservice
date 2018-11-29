@@ -139,6 +139,8 @@ def subsidies_post(body):  # noqa: E501
     response = service.subsidies.create(body.to_dict())
     return Subsidy.from_dict(response)
 
+@service.exceptions.exceptionHTTPencode
+@service.auth.authenticate
 def subsidies_payments_post(body):  # noqa: E501
     """Perform a one-off payment transfering a desired amount to the subsidy from the associated master account.
 
@@ -155,6 +157,8 @@ def subsidies_payments_post(body):  # noqa: E501
     response = service.subsidies.send_payment(body.to_dict())
     return Payment.from_dict(response)
 
+@service.exceptions.exceptionHTTPencode
+@service.auth.authenticate
 def subsidies_transactions_get(_from=None, to=None):  # noqa: E501
     """Download all transactions; supports filtering.
 

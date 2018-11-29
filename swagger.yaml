@@ -32,6 +32,12 @@ paths:
       - "master-accounts"
       summary: "List all master-accounts."
       description: "Returns an overview list of master-accounts. These do not contain the transactions, to get transactions these please see `GET /master-accounts/{id}`. The `last_updated` property reflects the last time this entry was refreshed in the database, this is updated automatically."
+      parameters:
+        - in: "query"
+          name: "initiative"
+          type: string
+          description: "An initiative to filter on; this is useful for clients interested only in the master accounts and associated transactions for a given initiative."
+          required: false
       produces:
       - "application/json"
       responses:
@@ -500,22 +506,59 @@ paths:
         required: True
         schema:
           $ref: "#/definitions/user"
-
-         
+  
+  /initiatives:
+    get:
+      tags:
+        - "initiatives"
+      summary: "List all smart subsidy initiatives"
+      description: "A subsidy initiative, like MaaS for example. One and exactly one of the instances is flagged as default: domain entities not carrying an initiative field of their own will be assumed to be under the default one; this is very important to maintain backwards compatibility."
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:                
+              $ref: "#/definitions/initiative"
+    post:
+      tags: 
+      - "initiatives"
+      summary: "Create a new initiative; names must be unique."
+      consumes:
+      - "application/nl.kpmg.v1.initiative+json"
+      produces: 
+      - "application/nl.kpmg.v1.initiative+json"
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/initiative"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "The initiative to create"
+          required: True
+          schema:
+            $ref: "#/definitions/initiative"
+    delete:
+      deprecated: true
+      tags: 
+      - "initiatives"
+      summary: "Delete an initiative."
+      description: "Delete an initiative - this just removes the instance, no associated data e.g. master accounts are modified. Attention: when no initiative argument is provided to the endpoints, all entities of unknown or missing initiative (that is, the initiative field is null or it has an unkown value), are returned, so all data will always be accessible. But it is highly suggested to always keep consistency by not removing initiatives, and to always keep a default one."
+      responses:
+        200:
+          description: OK
+      parameters: 
+      - in: "path"
+        name: "id"
+        type: "string"
+        required: true
+            
 definitions:
-  error:
-    description: "The body model for a 4xx or 5xx status code"
-    type: object
-    properties:
-      detail: 
-        type: string
-      status:
-        type: integer
-      title:
-        type: string
-      type:
-        type: string
-      
+
   user:
     description: "A user of the subsidy Allocation API. Users must be created by the administrator. "
     type: object
@@ -569,7 +612,9 @@ definitions:
         id: 
           type: string
           description: "The database ID (for use with `GET`)"
-
+        initiative:
+          $ref: "#/definitions/initiative"
+          
   master-account:
     description: "A master-account serves as the source for a specific class of subsidy"
     allOf:
@@ -708,5 +753,13 @@ definitions:
         $ref: "#/definitions/master-account-base"
       to:
         $ref: "#/definitions/subsidy-base"
+        
+  initiative:
+    type: object
+    properties:
+      name:
+        type: string
+      default:
+        type: boolean
       
       

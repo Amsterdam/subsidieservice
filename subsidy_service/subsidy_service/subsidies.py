@@ -333,6 +333,8 @@ def send_payment(payment: dict):
     subsidy itself because we could think of accessory accounts for this kind of
     operations Futhermore, an app-level check on the amount is performed
     here too, even if this is validated at request level already.
+
+    :return: None
     """
     amount = service.utils.drop_nones(payment['amount'])
     if amount > 500:
@@ -403,6 +405,9 @@ def read_all_transactions(start_date: datetime=None, end_date: datetime=None):
     Return a CSV containing all of the transactions, optionally date-filtered.
     At this point we do expect the arguments are both datetimes or nones. We do
     everything in memory for the time being.
+
+    :param start_date: the starting date to filter on
+    :param end_date: the ending date to filter on
     """
     all_subsidies = read_all(drop_transactions = False)
     rows = []

@@ -20,6 +20,13 @@ def create(master: dict):
     """
     master = service.utils.drop_nones(master.copy())
 
+    if 'initiative' in master:
+        existing = service.mongo.find({'name': master['initiative']}, CTX.db.initiatives)
+        if existing is None:
+            existing = service.mongo.find({'id': master['initiative']}, CTX.db.initiatives)
+            if existing is None:
+                raise service.exceptions.NotFoundException('Initiative not found; use an existing one or omit for default')
+
     if 'iban' in master:
         existing = service.mongo.find({'iban': master['iban']}, CTX.db.masters)
 
@@ -65,10 +72,11 @@ def read(id):
     return master
 
 
-def read_all():
+def read_all(initiative: str=None):
     """
     Get all available masters
 
+    :param id: the initiative to filter on
     :return: dict
     """
     masters = service.mongo.get_collection(CTX.db.masters)
@@ -78,12 +86,35 @@ def read_all():
     #     time.sleep(1)
     if not masters:
         return []
-    for master in masters:
+    
+    if initiative is None:
+        # no initiative specified - return all initiatives
+        filtered_masters = masters
+    else:
+        existing = service.mongo.find({'name': initiative}, CTX.db.initiatives)
+        if existing is None:
+            # initiative does not exist - return all initiatives
+            filtered_masters = masters
+        else:
+            # initiative exists: we want to return only the masters:
+            # - belonging to it explicitly thus those which show the requested initiative 
+            # - not belonging to any initiative if this existing initiative is the default
+            for master in masters:
+                # master account has some initiative value explicitly set...
+                if 'initiative' in master:
+                    # but if it is not the requested one, we drop the value
+                    if master['initiative'] is not initiative:
+                        masters.remove(master)
+                # if the master does not have an initiative name at all and the
+                #requested initiative is not a default then we drop it too
+                else:
+                    if not existing['default']:
+                        masters.remove(master)
+            filtered_masters = masters
+    for master in filtered_masters:
         if 'transactions' in master:
             master.pop('transactions')
-
-    return masters
-
+    return filtered_masters
 
 def update(id, master: dict):
     """
