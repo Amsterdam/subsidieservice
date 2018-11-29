@@ -476,6 +476,35 @@ paths:
             $ref: "#/definitions/subsidy"
       deprecated: true
       x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
+  /subsidies/payments:
+    post:
+      tags:
+      - "subsidies"
+      summary: "Perform a one-off payment transfering a desired amount to the subsidy\
+        \ from the associated master account."
+      description: "Sometimes the subsidy owner has to pay for unforeseen expenses\
+        \ from the budget of the subsidy itself. In mobility contexts for example,\
+        \ this could be the deposit for renting a car. This functionality offers the\
+        \ option to top-up an existing subsidy. It will be recorded as a standard\
+        \ transaction from the master account."
+      operationId: "subsidies_payments_post"
+      consumes:
+      - "application/nl.kpmg.v1.payment+json"
+      produces:
+      - "application/nl.kpmg.v1.payment+json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The payment to send"
+        required: true
+        schema:
+          $ref: "#/definitions/payment"
+      responses:
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/payment"
+      x-swagger-router-controller: "swagger_server.controllers.subsidies_controller"
   /subsidies/{id}/actions/approve:
     post:
       tags:
@@ -606,6 +635,7 @@ definitions:
   citizen:
     allOf:
     - $ref: "#/definitions/citizen-base"
+    - {}
     description: "A citizen who may be receiving subsidies"
   subsidy-base:
     type: "object"
@@ -688,3 +718,18 @@ definitions:
       timestamp:
         type: "string"
         format: "date-time"
+  payment:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      amount:
+        type: "number"
+        minimum: 0
+        maximum: 500
+      comment:
+        type: "string"
+      from:
+        $ref: "#/definitions/master-account-base"
+      to:
+        $ref: "#/definitions/subsidy-base"

@@ -423,6 +423,29 @@ paths:
         name: "id"
         type: "string"
         required: true
+        
+  /subsidies/payments:
+    post:
+      tags: 
+      - "subsidies"
+      summary: "Perform a one-off payment transfering a desired amount to the subsidy from the associated master account."
+      description: "Sometimes the subsidy owner has to pay for unforeseen expenses from the budget of the subsidy itself. In mobility contexts for example, this could be the deposit for renting a car. This functionality offers the option to top-up an existing subsidy. It will be recorded as a standard transaction from the master account."
+      consumes:
+      - "application/nl.kpmg.v1.payment+json"
+      produces: 
+      - "application/nl.kpmg.v1.payment+json"
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/payment"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "The payment to send"
+          required: True
+          schema:
+            $ref: "#/definitions/payment"
 
   /subsidies/{id}/actions/approve:
     post:
@@ -642,4 +665,21 @@ definitions:
       timestamp:
         type: string
         format: date-time
+        
+  payment:
+    type: object
+    properties:
+      name:
+        type: string
+      amount: 
+        type: number
+        minimum: 0
+        maximum: 500
+      comment:
+        type: string
+      from:
+        $ref: "#/definitions/master-account-base"
+      to:
+        $ref: "#/definitions/subsidy-base"
+      
       

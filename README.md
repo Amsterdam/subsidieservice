@@ -180,3 +180,20 @@ To play the game again:
 * ask Sugar Daddy some more money
 * proceed making masters, citizens and connects
 * see the subsidy status transitioning from pending to open
+
+### When creating a new endpoint
+
+It is important to leverage code generation in Swagger but also to understand that blindly copypasting can cause troubles. A suggested flow:
+
+* copy `swagger.yaml`
+* paste it into the [https://editor.swagger.io](Swagger editor)
+* add the new verb and related models - stick to the same structure and convention
+* click to generate server code for `python-flask` and download it, but not in the project folder
+* copy from the editor back into `swagger.yaml` 
+* replace `./python-flask-server/swagger_server/swagger/swagger.yaml` with its downloaded version (this is not the same as `swagger.yaml`!)
+* from the download, copy any new models into `./python-flask-server/swagger_server/models`, just the changes
+* the same for the controllers, e.g. paste just the new controller function into the existing `./python-flask-server/swagger_server/controllers/subsidies_controller.py`; fill in the controller to call the expected service in `./subsidy_service/subsidy_service`
+* add new unit tests or suites into `./python-flask-server/swagger_server/test`
+* create new functionality in the service
+
+There could be of course little variation on this, if you feel confident enough you may just copy all at once, point is that you should always `git diff` to make sure that nothing could break (this does not replace local testing of course, before acceptance when possible).

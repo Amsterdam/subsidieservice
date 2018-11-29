@@ -105,6 +105,19 @@ class TestSubsidiesController(BaseTestCase):
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
+    def test_subsidies_payments_post(self):
+        """Test case for subsidies_payments_post
+
+        Perform a one-off payment transfering a desired amount to the subsidy from the associated master account.
+        """
+        body = Payment()
+        response = self.client.open(
+            '/api/v1/subsidies/payments',
+            method='POST',
+            data=json.dumps(body),
+            content_type='application/nl.kpmg.v1.payment+json')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
 
 if __name__ == '__main__':
     import unittest

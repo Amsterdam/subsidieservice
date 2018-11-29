@@ -263,6 +263,7 @@ def delete(id):
 
     balance = float(service.bunq.get_balance(subsidy['account']['bunq_id']))
 
+    # TODO Put in a function
     if balance > 0:
         pmt = service.bunq.make_payment_to_acct_id(
             subsidy['account']['bunq_id'],
@@ -319,6 +320,79 @@ def approve(id):
 #
 #     return accts_db
 
+def send_payment(payment: dict):
+    """
+    Send a one-off payment to a subsidy account. While the request allows for
+    specifying arbitrary from's and to's, the from account must be one owned by
+    the application of course, otherwise it will not work; more specifically, a
+    master account. We do not want it to limit it to the master account of the
+    subsidy itself because we could think of accessory accounts for this kind of
+    operations Futhermore, an app-level check on the amount is performed
+    here too, even if this is validated at request level already.
+    """
+    amount = service.utils.drop_nones(payment['amount'])
+    if amount > 500:
+        raise service.exceptions.BadRequestException('Payment amount not supported: %s' % amount)
+
+    # check required CTX.db objects                                                                                       
+    master = service.utils.drop_nones(payment['from'])
+    master = service.mongo.find(master, CTX.db.masters)
+    if master is None:
+        raise service.exceptions.NotFoundException(
+            f'Master with id {master[id]} not found'
+        )
+    subsidy = service.utils.drop_nones(payment['to'])
+    subsidy = service.mongo.find(subsidies, CTX.db.subsidies)
+    if master is None:
+        raise service.exceptions.NotFoundException(
+            f'Subsidy with id {subsidy[id]} not found'
+        )
+
+    name = service.utils.drop_nones(payment['name'])
+    comment = service.utils.drop_nones(payment['comment'])
+
+    #TODO Put in a function
+    try:
+        pmt = service.bunq.make_payment_to_acct_id(
+            master['bunq_id'],
+            subsidy['account']['bunq_id'],
+            amount,
+            'Payment: %s; comment: %s' % (name, comment)
+        )
+    except Exception as e:
+        raise type(e)(e.message + ' Payment could not be sent - is the balance on the master sufficient?')
+
+    # updating the master entry:
+    # - new balance: current balance + transferred amount
+    # - update transactions (not necessary per se since the background update daemon does that)
+    # - update timestamp
+
+    #TODO Create functions
+
+    time.sleep(1)
+    payments = service.masters.get_payments_if_available(
+        master['bunq_id']
+    )
+
+    id = master['id']
+    master['transactions'] = payments
+    master['balance'] = master['balance'] - amount
+    master['last_updated'] = service.utils.now()
+    
+    master = service.mongo.update_by_id(id, master, CTX.db.masters)
+
+    # updating the subsidy entry: same
+    time.sleep(1)
+    payments =  service.bunq.get_payments(subsidy['account']['bunq_id'])
+    
+    id = subsidy['id']
+    subsidy['account']['transactions'] = payments
+    subsidy['account']['balance'] = subsidy['account']['balance'] + amount
+    subsidy['last_updated'] = service.utils.now()
+
+    subsidy = service.mongo.update_by_id(id, subsidy, CTX.db.subsidies)
+
+    return None
 
 # utils
 def get_and_update(id, master_balance=False):

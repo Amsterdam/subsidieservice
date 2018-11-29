@@ -3,6 +3,7 @@ import six
 
 from swagger_server.models.subsidy import Subsidy  # noqa: E501
 from swagger_server.models.subsidy_base import SubsidyBase  # noqa: E501
+from swagger_server.models.payment import Payment  # noqa: E501
 from swagger_server.models.user import User  # noqa: E501
 from swagger_server import util
 
@@ -136,3 +137,19 @@ def subsidies_post(body):  # noqa: E501
 
     response = service.subsidies.create(body.to_dict())
     return Subsidy.from_dict(response)
+
+def subsidies_payments_post(body):  # noqa: E501
+    """Perform a one-off payment transfering a desired amount to the subsidy from the associated master account.
+
+    Sometimes the subsidy owner has to pay for unforeseen expenses from the budget of the subsidy itself. In mobility contexts for example, this could be the deposit for renting a car. This functionality offers the option to top-up an existing subsidy. It will be recorded as a standard transaction from the master account. # noqa: E501
+
+    :param body: The payment to send
+    :type body: dict | bytes
+
+    :rtype: Payment
+    """
+    if connexion.request.is_json:
+        body = Payment.from_dict(connexion.request.get_json())  # noqa: E501
+
+    response = service.subsidies.send_payment(body.to_dict())
+    return Payment.from_dict(response)
