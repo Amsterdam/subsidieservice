@@ -8,53 +8,54 @@ import getpass
 CTX = service.config.Context
 CRYPT_CTX = passlib.context.CryptContext(schemes=['bcrypt_sha256'])
 
+# decorator with argument
+def authenticate(as_admin: bool = False):
 
-def authenticate(func: callable):
-    """
-    Decorator to require authentication before calling controller function.
+    def authenticate(func: callable): # decorator implementation
+        """
+        Decorator to require authentication before calling controller function.
 
-    Username and password is extracted from current active request header. If
-    no header is available or the header doesn't contain basic authorization,
-    the returned function will raise a
-    subsidy_service.exceptions.UnauthorizedException. If basicauth headers are
-    available but the user is not in the database collection or the password is
-    incorrect, the returned raises an exceptions.ForbiddenException. If the user
-    is authorized, then the input controller function is returned unchanged.
+        Username and password is extracted from current active request header. If
+        no header is available or the header doesn't contain basic authorization,
+        the returned function will raise a
+        subsidy_service.exceptions.UnauthorizedException. If basicauth headers are
+        available but the user is not in the database collection or the password is
+        incorrect, the returned raises an exceptions.ForbiddenException. If the user
+        is authorized, then the input controller function is returned unchanged.
 
-    :param func: The controller function to wrap
-    :return: function
-    """
+        :param func: The controller function to wrap
+        :return: function
+        """
 
-    @functools.wraps(func)  # propagate docstring etc
-    def authenticated(*args, **kwargs):
-        try:
-            auth = connexion.request.authorization
-        except RuntimeError:
-            # No active request -> no headers at all
-            raise service.exceptions.UnauthorizedException(
-                'Please authenticate with username and password to call '
-                + func.__name__
-            )
-
-        if auth is None:
+        @functools.wraps(func)  # wrapper; propagate docstring etc
+        def authenticated(*args, **kwargs):
+            try:
+                auth = connexion.request.authorization
+            except RuntimeError:
+                # No active request -> no headers at all
+                raise service.exceptions.UnauthorizedException(
+                    'Please authenticate with username and password to call '
+                    + func.__name__
+                )
+            if auth is None:
             # no login headers provided
-            raise service.exceptions.UnauthorizedException(
-                'Please authenticate with username and password to call '
-                + func.__name__
-            )
+                raise service.exceptions.UnauthorizedException(
+                    'Please authenticate with username and password to call '
+                    + func.__name__
+                )
 
-        if not verify_user(auth.username, auth.password):
-            # user not found/password incorrect
-            raise service.exceptions.ForbiddenException(
-                "Username or password incorrect."
-            )
-        else:
-            # successfully authenticated
-            output = func(*args, **kwargs)
-            service.logging.audit(auth.username, func.__name__, output)
-            return output
-
-    return authenticated
+            if not verify_user(auth.username, auth.password, as_admin):
+                # user not found/password incorrect, or admin-only endpoint
+                raise service.exceptions.ForbiddenException(
+                    "Username/password incorrect or admin rights required."
+                )
+            else:
+                # successfully authenticated
+                output = func(*args, **kwargs)
+                service.logging.audit(auth.username, func.__name__, output)
+                return output
+        return authenticated
+    return authenticate
 
 
 def authenticate_promt(func: callable):
@@ -90,20 +91,25 @@ def authenticate_promt(func: callable):
     return authenticated
 
 
-def verify_user(username: str, password: str):
+def verify_user(username: str, password: str, as_admin: bool=False):
     """
-    Verify that a user exists in the database and that the password is correct.
+    Verify that a user exists in the database and that the password is correct, checking admin rights if requested.
 
     :param username:
     :param password:
+    :param as_admin:
     :return: bool
     """
     user = service.mongo.find({'username': username}, CTX.db.users)
     if user is None:
         # username not found
         return False
-
-    return verify_password(password, user['password'])
+    else:
+        if as_admin and 'is_admin' in user and user['is_admin'] is not as_admin:
+            # username found but not admin
+            return False
+        else:
+            return verify_password(password, user['password'])
 
 
 def validate_password(pwd: str):

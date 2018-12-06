@@ -15,11 +15,13 @@ class User(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, username: str=None, real_name: str=None, email: str=None, phone_number: str=None):  # noqa: E501
+    def __init__(self, username: str=None, password: str=None, real_name: str=None, email: str=None, phone_number: str=None):  # noqa: E501
         """User - a model defined in Swagger
 
         :param username: The username of this User.  # noqa: E501
         :type username: str
+        :param password: The password of this User.  # noqa: E501
+        :type password: str
         :param real_name: The real_name of this User.  # noqa: E501
         :type real_name: str
         :param email: The email of this User.  # noqa: E501
@@ -29,6 +31,7 @@ class User(Model):
         """
         self.swagger_types = {
             'username': str,
+            'password': str,
             'real_name': str,
             'email': str,
             'phone_number': str
@@ -36,12 +39,14 @@ class User(Model):
 
         self.attribute_map = {
             'username': 'username',
+            'password': 'password',
             'real_name': 'real_name',
             'email': 'email',
             'phone_number': 'phone_number'
         }
 
         self._username = username
+        self._password = password
         self._real_name = real_name
         self._email = email
         self._phone_number = phone_number
@@ -77,6 +82,27 @@ class User(Model):
         """
 
         self._username = username
+
+    @property
+    def password(self) -> str:
+        """Gets the password of this User.
+
+
+        :return: The password of this User.
+        :rtype: str
+        """
+        return self._password
+
+    @password.setter
+    def password(self, password: str):
+        """Sets the password of this User.
+
+
+        :param password: The password of this User.
+        :type password: str
+        """
+
+        self._password = password
 
     @property
     def real_name(self) -> str:

@@ -13,25 +13,30 @@ CRYPT_CTX = auth.CRYPT_CTX
 class TestVerifyUser(unittest.TestCase):
     @mock.patch('subsidy_service.mongo.find', autospec=True, return_value=None)
     def test_db_lookup(self, find_mock: mock.Mock):
-        auth.verify_user('usr', 'pwd')
+        auth.verify_user('usr', 'pwd', False)
         find_mock.assert_called_once()
 
     @mock.patch('subsidy_service.mongo.find', autospec=True, return_value=None)
     def test_user_not_found(self, find_mock: mock.Mock):
-        self.assertFalse(auth.verify_user('usr', 'pwd'))
+        self.assertFalse(auth.verify_user('usr', 'pwd', False))
 
     @mock.patch('subsidy_service.auth.verify_password', return_value=False)
     @mock.patch('subsidy_service.mongo.find', autospec=True,
                 return_value={'username': 'usr', 'password': 'pwd'})
     def test_wrong_password(self, find_mock: mock.Mock, verify_mock: mock.Mock):
-        self.assertFalse(auth.verify_user('usr', 'wrong_pwd'))
+        self.assertFalse(auth.verify_user('usr', 'wrong_pwd', False))
 
     @mock.patch('subsidy_service.auth.verify_password', return_value=True)
     @mock.patch('subsidy_service.mongo.find', autospec=True,
                 return_value={'username': 'usr', 'password': 'pwd'})
     def test_right_password(self, find_mock: mock.Mock, verify_mock: mock.Mock):
-        self.assertTrue(auth.verify_user('usr', 'pwd'))
+        self.assertTrue(auth.verify_user('usr', 'pwd', False))
 
+    @mock.patch('subsidy_service.auth.verify_user', return_value=True)
+    @mock.patch('subsidy_service.mongo.find', autospec=True,
+                return_value={'username': 'usr', 'password': 'pwd', 'is_admin': True})
+    def test_admin_rights(self, find_mock: mock.Mock, verify_mock: mock.Mock):
+        self.assertTrue(auth.verify_user('usr', 'pwd', True))
 
 class TestValidatePassword(unittest.TestCase):
     def test_anything(self):
@@ -48,14 +53,14 @@ class TestAuthenticate(unittest.TestCase):
 
     def test_no_request(self):
         input = lambda x: x
-        output = auth.authenticate(input)
+        output = auth.authenticate()(input) # we have a decorator wrapper now because introduced an argument in the wrapper
         with self.assertRaises(exceptions.UnauthorizedException):
             output(123)
 
     @mock.patch('connexion.request', new=REQUEST(authorization=None))
     def test_no_auth_header(self):
         input = lambda x: x
-        output = auth.authenticate(input)
+        output = auth.authenticate()(input)
         with self.assertRaises(exceptions.UnauthorizedException):
             output(123)
 
@@ -64,7 +69,7 @@ class TestAuthenticate(unittest.TestCase):
     @mock.patch('subsidy_service.auth.verify_user', return_value=False)
     def test_not_verified(self, verify_mock: mock.Mock):
         input = lambda x: x
-        output = auth.authenticate(input)
+        output = auth.authenticate()(input)
         with self.assertRaises(exceptions.ForbiddenException):
             output(123)
 
@@ -73,7 +78,7 @@ class TestAuthenticate(unittest.TestCase):
     @mock.patch('subsidy_service.auth.verify_user', return_value=True)
     def test_verified(self, verify_mock: mock.Mock):
         input = lambda x: x
-        output = auth.authenticate(input)
+        output = auth.authenticate()(input)
         self.assertEqual(output(123), input(123))
 
 

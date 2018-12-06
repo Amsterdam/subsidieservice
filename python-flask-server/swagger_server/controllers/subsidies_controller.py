@@ -192,4 +192,4 @@ def subsidies_transactions_get(_from=None, to=None):  # noqa: E501
         else:
             return service.subsidies.read_all_transactions(start_date, end_date)
     else:
-        return service.subsidies.read_all_transactions() #--- implement !!!
+        return service.subsidies.read_all_transactions()

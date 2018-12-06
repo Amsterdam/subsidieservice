@@ -15,13 +15,15 @@ def find(document, collection):
     doc = _drop_id(doc)
     return doc
 
-
 def get_collection(collection):
     docs = []
-    for doc in collection.find():
-        docs.append(_drop_id(doc))
-
-    return docs
+    hits = find({}, collection)
+    if hits is None:
+        return docs
+    else:
+        for doc in hits:
+            docs.append(_drop_id(doc))
+        return docs
 
 
 def add_and_copy_id(document: dict, collection, id_field='id'):
