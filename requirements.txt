@@ -14,6 +14,7 @@ coverage==4.5.1
 cryptography==2.3
 Flask==0.12.2
 Flask-CSV==1.1.0
+Flask-CORS==3.0.7
 graypy==0.3
 idna==2.5
 inflection==0.3.1
