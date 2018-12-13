@@ -15,24 +15,29 @@ class Initiative(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, default: bool=None):  # noqa: E501
+    def __init__(self, id: str=None, name: str=None, default: bool=None):  # noqa: E501
         """Initiative - a model defined in Swagger
 
+        :param id: The id of this Initiative.  # noqa: E501
+        :type id: str
         :param name: The name of this Initiative.  # noqa: E501
         :type name: str
         :param default: The default of this Initiative.  # noqa: E501
         :type default: bool
         """
         self.swagger_types = {
+            'id': str,
             'name': str,
             'default': bool
         }
 
         self.attribute_map = {
+            'id': 'id',
             'name': 'name',
             'default': 'default'
         }
 
+        self._id = id
         self._name = name
         self._default = default
 
@@ -46,6 +51,27 @@ class Initiative(Model):
         :rtype: Initiative
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def id(self) -> str:
+        """Gets the id of this Initiative.
+
+
+        :return: The id of this Initiative.
+        :rtype: str
+        """
+        return self._id
+
+    @id.setter
+    def id(self, id: str):
+        """Sets the id of this Initiative.
+
+
+        :param id: The id of this Initiative.
+        :type id: str
+        """
+
+        self._id = id
 
     @property
     def name(self) -> str:

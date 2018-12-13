@@ -92,7 +92,7 @@ def read_all(initiative: str=None):
         filtered_masters = masters
     else:
         existing = service.mongo.find({'name': initiative}, CTX.db.initiatives)
-        if existing is None:
+        if existing == None:
             # initiative does not exist - return all initiatives
             filtered_masters = masters
         else:
@@ -103,7 +103,7 @@ def read_all(initiative: str=None):
                 # master account has some initiative value explicitly set...
                 if 'initiative' in master:
                     # but if it is not the requested one, we drop the value
-                    if master['initiative'] is not initiative:
+                    if master['initiative'] != initiative:
                         masters.remove(master)
                 # if the master does not have an initiative name at all and the
                 #requested initiative is not a default then we drop it too

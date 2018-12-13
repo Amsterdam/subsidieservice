@@ -10,7 +10,7 @@ import subsidy_service as service
 
 @service.exceptions.exceptionHTTPencode
 @service.auth.authenticate()
-def master_accounts_get():  # noqa: E501
+def master_accounts_get(initiative=None):  # noqa: E501
     """List all master-accounts.
 
     Returns an overview list of master-accounts. These do not contain the transactions, to get transactions these please see &#x60;GET /master-accounts/{id}&#x60;. The &#x60;last_updated&#x60; property reflects the last time this entry was refreshed in the database, this is updated automatically. # noqa: E501
@@ -18,7 +18,7 @@ def master_accounts_get():  # noqa: E501
 
     :rtype: List[MasterAccountBase]
     """
-    response = service.masters.read_all()
+    response = service.masters.read_all(initiative)
     output = [MasterAccountBase().from_dict(doc) for doc in response]
     return output
 

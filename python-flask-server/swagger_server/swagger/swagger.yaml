@@ -736,7 +736,7 @@ paths:
       - in: "body"
         name: "body"
         description: "user properties to be updated; at the moment of writing, its\
-          \ pass and admin rights."
+          \ pass."
         required: true
         schema:
           $ref: "#/definitions/user"
@@ -954,6 +954,8 @@ definitions:
   initiative:
     type: "object"
     properties:
+      id:
+        type: "string"
       name:
         type: "string"
       default:
@@ -961,3 +963,4 @@ definitions:
     example:
       default: true
       name: "name"
+      id: "id"
