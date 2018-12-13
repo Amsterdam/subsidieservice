@@ -9,7 +9,7 @@ import subsidy_service as service
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def master_accounts_get():  # noqa: E501
     """List all master-accounts.
 
@@ -24,7 +24,7 @@ def master_accounts_get():  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def master_accounts_id_delete(id):  # noqa: E501
     """Remove a master-account
 
@@ -40,7 +40,7 @@ def master_accounts_id_delete(id):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def master_accounts_id_get(id):  # noqa: E501
     """Get the details of a specific master-account
 
@@ -56,7 +56,7 @@ def master_accounts_id_get(id):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def master_accounts_id_patch(id, body):  # noqa: E501
     """Edit a master-account&#39;s information
 
@@ -77,7 +77,7 @@ def master_accounts_id_patch(id, body):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def master_accounts_id_put(id, body):  # noqa: E501
     """Re-upload a master-account&#39;s information
 
@@ -98,7 +98,7 @@ def master_accounts_id_put(id, body):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def master_accounts_post(body):  # noqa: E501
     """Create a new master-account
 

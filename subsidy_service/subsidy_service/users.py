@@ -6,6 +6,15 @@ CTX = service.config.Context
 # TODO: Verify this interface (breaks convention but also isn't to be used in
 #       the same way)
 
+def add(username: str, password: str):
+    """
+    Add a user to DB.users if the password passes validation by
+    password_validate.
+    :param username:
+    :param password:
+    :return: dict (user added)
+    """
+    return create({"username": username, "password": password})
 
 def create(user: dict):
     """
@@ -36,7 +45,7 @@ def create(user: dict):
     else:
         users = service.mongo.get_collection(CTX.db.users)
         # The very first user we create gets admin rights.
-        if users is []:
+        if users == []:
             is_admin = True
         else:
             is_admin = False
@@ -62,36 +71,49 @@ def get(username: str):
     """
     return service.mongo.find({'username': username}, CTX.db.users)
 
-def update(id, modified_user: dict):
+def update(user_id, modified_user: dict):
     """
-    Update a user. At the moment, ignore everything but the password and the admin flag.
-    
+    Update a user. At the moment, ignore everything but the username, password and admin flag.
+    Username is not strictly needed since we verify the id, but we add it for clarity.
+
     :param id:
     :param user:
     :return: dict
     """
-    user = service.mongo.get_by_id(id, CTX.db.users)
+    if 'username' in modified_user and modified_user['username'] == None:
+        modified_user.pop('username')
+    if 'password' in modified_user and modified_user['password'] == None:
+        modified_user.pop('password')
+    if 'is_admin' in modified_user and modified_user['is_admin'] == None:
+        modified_user.pop('is_admin')
+    user = service.mongo.get_by_id(user_id, CTX.db.users)
     if not user:
         raise service.exceptions.NotFoundException(
-            f'User "{id}" not found in database.'
+            f'User "{user_id}" not found in database.'
+        )
+    elif 'username' not in modified_user:
+        raise service.exceptions.BadRequestException(
+            "No username specified."
         )
     elif 'password' not in modified_user and 'is_admin' not in modified_user:
-        raise service.exception.BadRequestException(
+        raise service.exceptions.BadRequestException(
             "Current implementation only supports password change and giving admin rights, please provide either."
+        )
+    elif modified_user['username'] != user['username']:
+        raise service.exceptions.BadRequestException(
+            "User ID does not match request username"
         )
     else:
         if 'password' in modified_user and 'is_admin' in modified_user:
             update_password(modified_user['username'], modified_user['password'])
-            user['password'] = modified_user['password']
-            user['is_admin'] = modified_user['is_admin']
-            return user
+            update_admin_rights(modified_user['username'], modified_user['is_admin'])
+            return modified_user
         elif 'password' in modified_user:
             update_password(modified_user['username'], modified_user['password'])
-            user['password'] = modified_user['password']
-            return user
+            return modified_user
         elif 'is_admin' in modified_user:
-            user['is_admin'] = modified_user['is_admin']
-            return user
+            update_admin_rights(modified_user['username'], modified_user['is_admin'])
+            return modified_user
 
 def update_password(username: str, new_password: str):
     """
@@ -119,6 +141,26 @@ def update_password(username: str, new_password: str):
             CTX.db.users
         )
 
+def update_admin_rights(username: str, new_admin_rights: bool):
+    """
+    Update the admin rights of a user. Does not require verification with the old password but this is only callable as admin (see controller).
+
+    :param username:
+    :param new_admin_rights:
+    :return: None
+    """
+    existing = get(username)
+
+    if existing is None:
+        raise service.exceptions.NotFoundException(
+            f'User "{username}" not found in database.'
+        )
+    else:
+        service.mongo.update_by_id(
+            existing['id'],
+            {'is_admin': new_admin_rights},
+            CTX.db.users
+        )
 
 def authenticate(username: str, password: str):
     """
@@ -131,17 +173,17 @@ def authenticate(username: str, password: str):
     return service.auth.verify_user(username, password)
 
 
-def delete(username: str):
+def delete(user_id: str):
     """
     Remove a user from the database. Does not require verification but this is only callable as admin (see controller).
 
     :param username:
     :return: dict: success or error
     """
-    user = service.mongo.get_by_id(id, CTX.db.users)
+    user = service.mongo.get_by_id(user_id, CTX.db.users)
     if not user:
         raise service.exceptions.NotFoundException(
-            f'User "{id}" not found in database.'
+            f'User "{user_id}" not found in database.'
         )
     elif 'is_admin' in user and user['is_admin']:
         raise service.exceptions.ForbiddenException('Admin user may not be removed')
@@ -159,4 +201,8 @@ def read_all():
     if not users:
         return []
     else:
-        return users
+        output = []
+        for u in users:
+            u.pop('password')
+            output.append(u)
+        return output

@@ -652,6 +652,8 @@ definitions:
     description: "A user of the subsidy Allocation API. Users must be created by the administrator. "
     type: object
     properties:
+      id:
+        type: string
       username:
         type: string
       password:

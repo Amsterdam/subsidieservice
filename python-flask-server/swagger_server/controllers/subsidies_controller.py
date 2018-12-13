@@ -12,7 +12,7 @@ import subsidy_service as service
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def subsidies_get(status=None):  # noqa: E501
     """List all subsidies
 
@@ -29,7 +29,7 @@ def subsidies_get(status=None):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def subsidies_id_actions_approve_post(id, body):  # noqa: E501
     """Approve a subsidy
 
@@ -48,7 +48,7 @@ def subsidies_id_actions_approve_post(id, body):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def subsidies_id_delete(id):  # noqa: E501
     """Close a subsidy
 
@@ -64,7 +64,7 @@ def subsidies_id_delete(id):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def subsidies_id_get(id):  # noqa: E501
     """Returns a specific subsidy
 
@@ -80,7 +80,7 @@ def subsidies_id_get(id):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def subsidies_id_patch(id, body):  # noqa: E501
     """Edit a subsidy&#39;s information
 
@@ -101,7 +101,7 @@ def subsidies_id_patch(id, body):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def subsidies_id_put(id, body):  # noqa: E501
     """Re-upload a subsidy&#39;s information
 
@@ -122,7 +122,7 @@ def subsidies_id_put(id, body):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def subsidies_post(body):  # noqa: E501
     """Create a new subsidy
 
@@ -140,7 +140,7 @@ def subsidies_post(body):  # noqa: E501
     return Subsidy.from_dict(response)
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def subsidies_payments_post(body):  # noqa: E501
     """Perform a one-off payment transfering a desired amount to the subsidy from the associated master account.
 
@@ -158,7 +158,7 @@ def subsidies_payments_post(body):  # noqa: E501
     return Payment.from_dict(response)
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def subsidies_transactions_get(_from=None, to=None):  # noqa: E501
     """Download all transactions; supports filtering.
 

@@ -24,6 +24,7 @@ def login_post(body):  # noqa: E501
         raise service.exceptions.BadRequestException('Please provide both username and password to login')
     if service.users.authenticate(user['username'], user['password']):
         response = service.users.get(user['username'])
+        response.pop('password')
         return User.from_dict(response)
     else:
         raise service.exceptions.ForbiddenException("Username/password incorrect")

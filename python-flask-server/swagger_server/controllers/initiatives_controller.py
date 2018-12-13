@@ -7,8 +7,8 @@ from swagger_server import util
 import subsidy_service as service
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
-def initiatives_delete(id):  # noqa: E501
+@service.auth.authenticate()
+def initiatives_delete(init_id):  # noqa: E501
     """Delete an initiative.
 
     Delete an initiative - this just removes the instance, no associated data e.g. master accounts are modified. Attention: when no initiative argument is provided to the endpoints, all entities of unknown or missing initiative (that is, the initiative field is null or it has an unkown value), are returned, so all data will always be accessible. But it is highly suggested to always keep consistency by not removing initiatives, and to always keep a default one. # noqa: E501
@@ -21,7 +21,7 @@ def initiatives_delete(id):  # noqa: E501
     raise service.exceptions.NotImplementedException('Not yet implemented')
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def initiatives_get():  # noqa: E501
     """List all smart subsidy initiatives
 
@@ -35,7 +35,7 @@ def initiatives_get():  # noqa: E501
     return output
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def initiatives_post(body):  # noqa: E501
     """Create a new initiative; names must be unique.
 

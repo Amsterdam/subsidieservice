@@ -9,7 +9,7 @@ import subsidy_service as service
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def citizens_get():  # noqa: E501
     """List all citizens.
 
@@ -24,7 +24,7 @@ def citizens_get():  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def citizens_id_delete(id):  # noqa: E501
     """Remove a citizen
 
@@ -41,7 +41,7 @@ the citizen will not be deleted. # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def citizens_id_get(id):  # noqa: E501
     """Returns a specific citizen
 
@@ -57,7 +57,7 @@ def citizens_id_get(id):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def citizens_id_patch(id, body):  # noqa: E501
     """Edit a citizen&#39;s information
 
@@ -78,7 +78,7 @@ def citizens_id_patch(id, body):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def citizens_id_put(id, body):  # noqa: E501
     """Re-upload a citizen&#39;s information
 
@@ -99,7 +99,7 @@ def citizens_id_put(id, body):  # noqa: E501
 
 
 @service.exceptions.exceptionHTTPencode
-@service.auth.authenticate
+@service.auth.authenticate()
 def citizens_post(body):  # noqa: E501
     """Create a new citizen
 

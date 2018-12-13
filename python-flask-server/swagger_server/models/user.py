@@ -15,13 +15,17 @@ class User(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, username: str=None, password: str=None, real_name: str=None, email: str=None, phone_number: str=None):  # noqa: E501
+    def __init__(self, id: str=None, username: str=None, password: str=None, is_admin: bool=None, real_name: str=None, email: str=None, phone_number: str=None):  # noqa: E501
         """User - a model defined in Swagger
 
+        :param id: The id of this User.  # noqa: E501
+        :type id: str
         :param username: The username of this User.  # noqa: E501
         :type username: str
         :param password: The password of this User.  # noqa: E501
         :type password: str
+        :param is_admin: The is_admin of this User.  # noqa: E501
+        :type is_admin: bool
         :param real_name: The real_name of this User.  # noqa: E501
         :type real_name: str
         :param email: The email of this User.  # noqa: E501
@@ -30,23 +34,29 @@ class User(Model):
         :type phone_number: str
         """
         self.swagger_types = {
+            'id': str,
             'username': str,
             'password': str,
+            'is_admin': bool,
             'real_name': str,
             'email': str,
             'phone_number': str
         }
 
         self.attribute_map = {
+            'id': 'id',
             'username': 'username',
             'password': 'password',
+            'is_admin': 'is_admin',
             'real_name': 'real_name',
             'email': 'email',
             'phone_number': 'phone_number'
         }
 
+        self._id = id
         self._username = username
         self._password = password
+        self._is_admin = is_admin
         self._real_name = real_name
         self._email = email
         self._phone_number = phone_number
@@ -61,6 +71,27 @@ class User(Model):
         :rtype: User
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def id(self) -> str:
+        """Gets the id of this User.
+
+
+        :return: The id of this User.
+        :rtype: str
+        """
+        return self._id
+
+    @id.setter
+    def id(self, id: str):
+        """Sets the id of this User.
+
+
+        :param id: The id of this User.
+        :type id: str
+        """
+
+        self._id = id
 
     @property
     def username(self) -> str:
@@ -103,6 +134,27 @@ class User(Model):
         """
 
         self._password = password
+
+    @property
+    def is_admin(self) -> bool:
+        """Gets the is_admin of this User.
+
+
+        :return: The is_admin of this User.
+        :rtype: bool
+        """
+        return self._is_admin
+
+    @is_admin.setter
+    def is_admin(self, is_admin: bool):
+        """Sets the is_admin of this User.
+
+
+        :param is_admin: The is_admin of this User.
+        :type is_admin: bool
+        """
+
+        self._is_admin = is_admin
 
     @property
     def real_name(self) -> str:
