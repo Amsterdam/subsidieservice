@@ -13,7 +13,8 @@ def create(initiative: dict):
     """
     Create a new initiative, e.g. MaaS. The name is the unique identifier and case
     matters. In case the new initiative is requested as default but a default
-    initiative already exists, the request is discarded.
+    initiative already exists, the request is discarded. Also, the very first
+    initiative will be flagged as default.
 
     :return: dict: the created object
     """
@@ -35,7 +36,11 @@ def create(initiative: dict):
         else:
             default = True
     else:
-        default = False
+        initiatives = read_all()
+        if initiatives == []:
+            default = True
+        else:
+            default = False
 
     init = {}
     init['name'] = name
@@ -57,4 +62,4 @@ def read_all():
     if not initiatives:
         return []
     else:
-        return initatives
+        return initiatives

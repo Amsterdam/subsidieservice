@@ -16,4 +16,4 @@ from subsidy_service import auth
 from subsidy_service import users
 
 # 5. Controller interfaces
-from subsidy_service import citizens, subsidies, masters
+from subsidy_service import citizens, subsidies, masters, initiatives
