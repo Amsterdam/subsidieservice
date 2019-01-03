@@ -1,0 +1,11 @@
+{
+  "name": "John's test subsidy from the AEB account",
+  "master": {
+    "id": "5baca47af9e2e0001189443c"
+  },
+  "recipient": {
+    "id": "5bacc8bdf9e2e00011894443"
+  },
+  "amount": 0.01,
+  "comment": "This is a test but against real accounts and money; the amount is one cent"
+}

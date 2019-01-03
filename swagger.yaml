@@ -6,7 +6,7 @@ info:
   version: "1.0"
 
 host: "subsidieservice.amsterdam.nl"
-basePath: "/v1"
+basePath: "/api/v1"
 
 schemes:
 - "https"
@@ -26,6 +26,7 @@ tags:
 
 paths:
   /master-accounts:
+    #TESTED: curl -u ricky:7654321 -X GET http://localhost:8080/v1/master-accounts
     get:
       tags: 
       - "master-accounts"
@@ -40,7 +41,15 @@ paths:
             type: array
             items:                
               $ref: "#/definitions/master-account-base"
-              
+    #TESTED: curl -v -u ricky:7654321 -H "Content-Type: application/json" -d @data/master-account.json -X POST http://localhost:8080/v1/master-accounts
+    #{
+    # "name": "Test Master Account - file master-account.json",
+    # "description": "This is a test master account; since no IBAN is provided, a new account will be created dynamically"
+    #}
+    #{
+    # "name": "Test Master Account - file master-account-with-iban.json",
+    # "description": "This is a test master account; an IBAN is provided, therefore the requested account will be attached; the IBAN must exist in the instantiated sandbox context - maybe just use the no-master call, delete it and resubmit the same IBAN (this is because of course by the deletion of a master account entry the underlying IBANs are *not* deleted)"
+    #}     
     post:
       tags: 
       - "master-accounts"
@@ -64,6 +73,7 @@ paths:
             $ref: "#/definitions/master-account-base"
                   
   /master-accounts/{id}:
+    #TESTED: curl -v -u ricky:7654321 -X GET http://localhost:8080/v1/master-accounts/5ba521e1b5e9320011030162
     get:
       tags: 
       - "master-accounts"
@@ -134,6 +144,7 @@ paths:
         schema:
           $ref: "#/definitions/master-account"
         
+    #TESTED: curl -v -u ricky:7654321 -X DELETE http://localhost:8080/v1/master-accounts/5ba520d7b5e9320011030161
     delete:
       tags: 
       - "master-accounts"
@@ -149,6 +160,7 @@ paths:
         required: true
   
   /citizens:
+    #TESTED - curl -u ricky:7654321 -X GET http://localhost:8080/v1/citizens
     get:
       tags: 
       - "citizens"
@@ -166,7 +178,15 @@ paths:
               $ref: "#/definitions/citizen-base"
         401:
           description: Unauthorized
-              
+    
+    #TESTED: curl -v -u ricky:7654321 -H "Content-Type: application/json" -d @data/citizen_1.json -X POST http://localhost:8080/v1/citizens
+    #{
+    # "id": "3665",
+    # "name": "Elizabeth",
+    # "email": "jen.elizabeth@bunq.nl",
+    # "phone_number": "+31645707041"
+    #}
+    #Note: no validation takes place at this moment, i.e. it is not double-checked that these users exist.       
     post:
       tags: 
       - "citizens"
@@ -274,7 +294,8 @@ paths:
         type: "string"
         required: true
 
-  /subsidies:    
+  /subsidies:
+    #TESTED: curl -u ricky:7654321 -X GET http://localhost:8080/v1/subsidies   
     get:
       tags: 
       - "subsidies"

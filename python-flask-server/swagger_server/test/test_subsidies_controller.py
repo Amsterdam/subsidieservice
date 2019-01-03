@@ -21,7 +21,7 @@ class TestSubsidiesController(BaseTestCase):
         """
         query_string = [('status', 'status_example')]
         response = self.client.open(
-            '/v1/subsidies',
+            '/api/v1/subsidies',
             method='GET',
             query_string=query_string)
         self.assert200(response,
@@ -34,7 +34,7 @@ class TestSubsidiesController(BaseTestCase):
         """
         body = User()
         response = self.client.open(
-            '/v1/subsidies/{id}/actions/approve'.format(id='id_example'),
+            '/api/v1/subsidies/{id}/actions/approve'.format(id='id_example'),
             method='POST',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.user+json')
@@ -47,7 +47,7 @@ class TestSubsidiesController(BaseTestCase):
         Close a subsidy
         """
         response = self.client.open(
-            '/v1/subsidies/{id}'.format(id='id_example'),
+            '/api/v1/subsidies/{id}'.format(id='id_example'),
             method='DELETE')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -58,7 +58,7 @@ class TestSubsidiesController(BaseTestCase):
         Returns a specific subsidy
         """
         response = self.client.open(
-            '/v1/subsidies/{id}'.format(id='id_example'),
+            '/api/v1/subsidies/{id}'.format(id='id_example'),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -70,7 +70,7 @@ class TestSubsidiesController(BaseTestCase):
         """
         body = SubsidyBase()
         response = self.client.open(
-            '/v1/subsidies/{id}'.format(id='id_example'),
+            '/api/v1/subsidies/{id}'.format(id='id_example'),
             method='PATCH',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.subsidy+json')
@@ -84,7 +84,7 @@ class TestSubsidiesController(BaseTestCase):
         """
         body = SubsidyBase()
         response = self.client.open(
-            '/v1/subsidies/{id}'.format(id='id_example'),
+            '/api/v1/subsidies/{id}'.format(id='id_example'),
             method='PUT',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.subsidy+json')
@@ -98,7 +98,7 @@ class TestSubsidiesController(BaseTestCase):
         """
         body = SubsidyBase()
         response = self.client.open(
-            '/v1/subsidies',
+            '/api/v1/subsidies',
             method='POST',
             data=json.dumps(body),
             content_type='application/nl.kpmg.v1.subsidy-base+json')

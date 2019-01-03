@@ -46,13 +46,20 @@ This will create a virtualenv and a symlink to the activation script. You can ac
 source activate
 ```
 
+You may have to install required packages e.g.:
+
+```bash
+pip install bunq_sdk --upgrade
+pip install click
+```
+
 If your API key is for the Bunq sandbox, you can generate your file using
 
 ```bash
 python3 scripts/generate_bunq_conf.py --sandbox --output_path config/bunq.conf "YOUR_API_KEY"
 ```
 
-If your key is for the production environment (real money), just remove the `--sandbox` flag. For multiple bunq confs, save them to different files. Don't forget to indicate which bunq conf you are using in the `[bunq]` section of `config/subsidy_service.ini`.
+If your key is for the production environment (real money), just remove the `--sandbox` flag. For multiple bunq confs, save them to different files. Don't forget to indicate which bunq conf you are using in the `[bunq]` section of `config/subsidy_service.ini` (and other places as needed).
 
 
 ### 2. Dockers
@@ -62,6 +69,19 @@ The subsidy service runs on a docker with port 8080 exposed, and will attempt to
 ```bash
 make docker-build docker-run
 ```
+
+You might have to install `docker-compose` separately (see [here](https://docs.docker.com/compose/install/)). Some installer versions on OSX have been reported not to create the standard symlinks - you may fix this with:
+```bash
+PATH=$PATH:/Applications/Docker.app/Contents/Resources/bin/; export PATH
+```
+
+Also, do not forget to create the referenced environment file:
+```bash
+touch .env
+```
+where you can set the environment variables for the images, also referenced in the `docker_run.sh`. For example, set the Mongo user and password to `root` if you want to match the Mongo default configuration appearing in the `docker-compose.sh`.
+
+and to start the Docker daemon of course.
 
 Now you will have the subsidy service API running on `localhost:8080`, and the mongoDB will be accessible at `localhost:27017`. if you have already build images, then `make docker-run` is enough to get everything up and running from the previous build.
 
@@ -99,3 +119,64 @@ You are now ready to make API calls over HTTPS, authenticated with basicauth usi
 To view the interactive Swagger documentation, open the [Swagger Editor](https://editor.swagger.io/) and select `File > Import File > swagger.yaml`, or just copy/paste the contents of `swagger.yaml` into the editor. You will see the generated documentation on the right side of the screen. To generate the flask server skeleton, select `Generate Server > python-flask` in the editor. This will download all required files in a zip. For details of the yaml specification syntax, please see the documentation [here](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md). **Note that we are using Swagger v2.0**. 
 
 The swagger documentation is also hosted by the service. If you have the service running, you can see the documentation at https://localhost:8080/v1/ui/. 
+
+## Testing
+
+Bunq offers the possibility to test on full functionality by exposing a sandbox environment, see [here](https://doc.bunq.com/). When working against this endpoint no activity from and towards real world bank accounts is supported, but one can work with virtual internal accounts.
+See a sandbox like a virtual user account where anything can be done, but just virtual money. For a random profile, multiple accounts can be created, payments made etc. 
+
+To close the circle, app-level interaction via an emulator is also possible, follow the setup instructions [here](https://doc.bunq.com/#/android-emulator). 
+
+The API interaction environment of Bunq itself, Tinker, is the interface to this "fake" bank backend where you can create multiple IBANs and top up money for a virtual user; install it with:
+
+```bash
+bash <(curl -s https://tinker.bunq.com/python/setup.sh)
+```
+
+In order to come into the same virtual world, do not forget to copy over the `bunq.conf` we create into Tinker, respecting the name just to be sure (`tinker/bunq-sandbox.conf`).
+
+When configuring the application on the sandbox backend, a master account you are adding is always empty. For example, create a master account with the IBAN from `tinker/user_overview.py`; to top it up, use `tinker/make_request.py` to the very known sugardaddy@bunq.com (maximum amount 500).
+
+If you follow the guide above, you can login as the virtual user from Tinker in the Bunq app on the emulator. You may just login directly, the login code, also displayed in Tinker, should be `000000`. Once you are in, a test account with ten cents on it is displayed.
+
+All in all it is just easier to test the deployment with real, controlled accounts, transfering small amounts. The flow is as follows:
+
+1. Open a real account with Bunq, possibly a business one
+2. Create an API key for it; this can be done from the mobile app itself, from Profile -> Security -> Developer (check out the docs)
+3. With this key, create a `bunq.conf` (see above)
+4. `POST` a new master account; `name` and `description` are free, but make sure to fill in the `iban` of the account itself
+5. `POST` a few citizens, in particular:
+  1. An existing and active Bunq account
+  2. An existing one, but inactive (ie pending identity validation)
+  3. A non-existing account
+6. `POST` a subsidy; at the moment of writing, the API just needs a master account, a target citizen and an amount (timings not impl.)
+7. For 4.1 wait for the person to accept the Bunq connect; the other two cases are covered by the cron scripts which take care of fetching the state from Bunq - is the connect sent now (4.2) or retrying the creation (4.3)
+8. Go further with more complex testing flows
+
+NB. The application is not instance-safe nor multi-tenant, this means that an API key and Bunq account may be used in at most one and only one deployment. For example, if you have tested and you want to go to production on the same account, first `DELETE` everything locally and stop the instance, then move to the prod. env.
+
+Important: whenever you create a file containing sensitive information (Bunq API keys, citizen or account JSON payloads...) make sure to add them to `.gitignore` - the project repo is public!
+
+### Example flow (sandbox)
+
+From zero to subsidy for the impatient on the sandbox setup. Perform the following steps:
+
+* fetch a new sandbox key
+* create a new `bunq.conf` from the key, and copy it over to `tinker/bunq-sandbox.conf`
+* start the dockers, and create a user for the REST simple auth
+* create a master account on the main sandbox IBAN from `tinker/user_overview.py`
+* top up something on the account
+* download a second tinker (citizen)
+* use the account of this second tinker to create a citizen
+* login in the sandbox app as this new citizen
+* perform a subsidy request; state will be `PENDING_ACCEPT`
+* in the app, you should see a connect invite under the events tab
+* accept the connect; if you check the subsidy, state will be `OPEN`
+
+To play the game again:
+* `-X DELETE` everything
+* delete the citizen tinker configuration and fetch a fresh a new user with `tinker/user_overview.sh`
+* login with this fresh citizen on the mobile (code is `000000`)
+* ask Sugar Daddy some more money
+* proceed making masters, citizens and connects
+* see the subsidy status transitioning from pending to open

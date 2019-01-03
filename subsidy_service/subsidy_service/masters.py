@@ -122,7 +122,7 @@ def delete(id):
     :return: None
     """
     # TODO: Do we want to close the acct in Bunq too?
-    document = service.mongo.get_by_id(id)
+    document = service.mongo.get_by_id(id, CTX.db.masters)
     if document is None:
         raise service.exceptions.NotFoundException('Master account not found')
     # service.bunq.close_account(id)
