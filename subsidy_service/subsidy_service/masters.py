@@ -20,12 +20,14 @@ def create(master: dict):
     """
     master = service.utils.drop_nones(master.copy())
 
-    if 'initiative' in master:
-        existing = service.mongo.find({'name': master['initiative']}, CTX.db.initiatives)
+    initiative = None
+    print(master)
+    if 'initiative' in master and 'id' in master['initiative']:
+        existing = service.mongo.find({'id': master['initiative']['id']}, CTX.db.initiatives)
         if existing is None:
-            existing = service.mongo.find({'id': master['initiative']}, CTX.db.initiatives)
-            if existing is None:
-                raise service.exceptions.NotFoundException('Initiative not found; use an existing one or omit for default')
+            raise service.exceptions.NotFoundException('Initiative not found; use an existing one or omit for default')
+        else:
+           initiative = master['initiative']['id']
 
     if 'iban' in master:
         existing = service.mongo.find({'iban': master['iban']}, CTX.db.masters)
@@ -47,6 +49,7 @@ def create(master: dict):
         mast = service.bunq.create_account()
 
     mast['bunq_id'] = mast.pop('id')
+    mast['initiative'] = {'id': initiative}
     mast = service.mongo.add_and_copy_id(mast, CTX.db.masters)
     mast['transactions'] = get_payments_if_available(mast['bunq_id'])
 
@@ -98,19 +101,18 @@ def read_all(initiative: str=None):
         else:
             # initiative exists: we want to return only the masters:
             # - belonging to it explicitly thus those which show the requested initiative 
-            # - not belonging to any initiative if this existing initiative is the default
+            # - not belonging to any initiative if this existing initiative only if this is the default
+            filtered_masters = masters[:]
             for master in masters:
-                # master account has some initiative value explicitly set...
-                if 'initiative' in master:
-                    # but if it is not the requested one, we drop the value
-                    if master['initiative'] != initiative:
-                        masters.remove(master)
-                # if the master does not have an initiative name at all and the
-                #requested initiative is not a default then we drop it too
-                else:
+                master_initiative = service.mongo.find({'id': master['initiative']['id']}, CTX.db.initiatives)
+                #value could be "7sd78sdf7d6ssf" or None
+                #if None we return the master only if the argument initiative is the default one
+                if master_initiative == None:
                     if not existing['default']:
-                        masters.remove(master)
-            filtered_masters = masters
+                        filtered_masters.remove(master)
+                #if "7sd78sdf7d6ssf" this initiative must have a name which is exactly matching
+                elif master_initiative['name'] != initiative:
+                    filtered_masters.remove(master)
     for master in filtered_masters:
         if 'transactions' in master:
             master.pop('transactions')

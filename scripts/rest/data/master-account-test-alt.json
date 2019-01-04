@@ -1,8 +1,8 @@
 {
   "name": "Test Master Account",
   "description": "This is a test master account",
-  "iban": "NL95BUNQ9900108094",
+  "iban": "NL83BUNQ9900110153",
   "initiative": {
-      "id": "5c128e7e913b830011996117"
+      "id": "5c129274263d33001010f7b7"
   }
 }

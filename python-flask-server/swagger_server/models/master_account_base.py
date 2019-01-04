@@ -7,6 +7,7 @@ from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
 from swagger_server.models.account_base import AccountBase  # noqa: F401,E501
+from swagger_server.models.initiative import Initiative  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -16,7 +17,7 @@ class MasterAccountBase(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, last_updated: str=None, id: str=None):  # noqa: E501
+    def __init__(self, name: str=None, description: str=None, iban: str=None, balance: float=None, last_updated: str=None, id: str=None, initiative: Initiative=None):  # noqa: E501
         """MasterAccountBase - a model defined in Swagger
 
         :param name: The name of this MasterAccountBase.  # noqa: E501
@@ -31,6 +32,8 @@ class MasterAccountBase(Model):
         :type last_updated: str
         :param id: The id of this MasterAccountBase.  # noqa: E501
         :type id: str
+        :param initiative: The initiative of this MasterAccountBase.  # noqa: E501
+        :type initiative: Initiative
         """
         self.swagger_types = {
             'name': str,
@@ -38,7 +41,8 @@ class MasterAccountBase(Model):
             'iban': str,
             'balance': float,
             'last_updated': str,
-            'id': str
+            'id': str,
+            'initiative': Initiative
         }
 
         self.attribute_map = {
@@ -47,7 +51,8 @@ class MasterAccountBase(Model):
             'iban': 'iban',
             'balance': 'balance',
             'last_updated': 'last_updated',
-            'id': 'id'
+            'id': 'id',
+            'initiative': 'initiative'
         }
 
         self._name = name
@@ -56,6 +61,7 @@ class MasterAccountBase(Model):
         self._balance = balance
         self._last_updated = last_updated
         self._id = id
+        self._initiative = initiative
 
     @classmethod
     def from_dict(cls, dikt) -> 'MasterAccountBase':
@@ -199,3 +205,24 @@ class MasterAccountBase(Model):
         """
 
         self._id = id
+
+    @property
+    def initiative(self) -> Initiative:
+        """Gets the initiative of this MasterAccountBase.
+
+
+        :return: The initiative of this MasterAccountBase.
+        :rtype: Initiative
+        """
+        return self._initiative
+
+    @initiative.setter
+    def initiative(self, initiative: Initiative):
+        """Sets the initiative of this MasterAccountBase.
+
+
+        :param initiative: The initiative of this MasterAccountBase.
+        :type initiative: Initiative
+        """
+
+        self._initiative = initiative
