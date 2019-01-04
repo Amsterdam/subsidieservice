@@ -457,16 +457,14 @@ paths:
       description: "For each known subsidy, its transactions are returned as a CSV. It supports ISO date filtering so that just the transactions in a given time interval may be returned. If no filter is provided, then all transactions from the very beginning are returned."
       parameters:
         - in: "query"
-          name: "from"
+          name: "start"
           type: string
-          format: date
-          description: "The start date for the report. Must be used together with `to`."
+          description: "The start date for the report. Must be used together with `end`."
           required: false
         - in: "query"
-          name: "to"
+          name: "end"
           type: string
-          format: date
-          description: "The end date for the report. Must be used together with `from`."
+          description: "The end date for the report. Must be used together with `start`."
           required: false
       produces:
       - "text/csv"

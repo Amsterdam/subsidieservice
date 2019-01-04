@@ -529,18 +529,16 @@ paths:
       produces:
       - "text/csv"
       parameters:
-      - name: "from"
+      - name: "start"
         in: "query"
-        description: "The start date for the report. Must be used together with `to`."
+        description: "The start date for the report. Must be used together with `end`."
         required: false
         type: "string"
-        format: "date"
-      - name: "to"
+      - name: "end"
         in: "query"
-        description: "The end date for the report. Must be used together with `from`."
+        description: "The end date for the report. Must be used together with `start`."
         required: false
         type: "string"
-        format: "date"
       responses:
         200:
           description: "CSV dump"

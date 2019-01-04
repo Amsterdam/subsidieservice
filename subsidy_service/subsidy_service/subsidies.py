@@ -3,7 +3,6 @@ import time
 import datetime
 import collections
 from dateutil.parser import parse
-from flask_csv import send_csv
 
 # Globals
 CTX = service.config.Context
@@ -150,7 +149,7 @@ def read_all(status: str=None, drop_transactions: bool=True):
     if not subsidies:
         return output
 
-    if drop_subsidies:
+    if drop_transactions:
         for subsidy in subsidies:
             if 'transactions' in subsidy:
                 subsidy.pop('transactions')
@@ -336,26 +335,26 @@ def send_payment(payment: dict):
 
     :return: None
     """
-    amount = service.utils.drop_nones(payment['amount'])
+    amount = payment['amount']
     if amount > 500:
         raise service.exceptions.BadRequestException('Payment amount not supported: %s' % amount)
 
     # check required CTX.db objects                                                                                       
-    master = service.utils.drop_nones(payment['from'])
+    master = service.utils.drop_nones(payment['_from'])
     master = service.mongo.find(master, CTX.db.masters)
     if master is None:
         raise service.exceptions.NotFoundException(
             f'Master with id {master[id]} not found'
         )
     subsidy = service.utils.drop_nones(payment['to'])
-    subsidy = service.mongo.find(subsidies, CTX.db.subsidies)
-    if master is None:
+    subsidy = service.mongo.find(subsidy, CTX.db.subsidies)
+    if subsidy is None:
         raise service.exceptions.NotFoundException(
             f'Subsidy with id {subsidy[id]} not found'
         )
 
-    name = service.utils.drop_nones(payment['name'])
-    comment = service.utils.drop_nones(payment['comment'])
+    name = payment['name']
+    comment = payment['comment']
 
     #TODO Put in a function
     try:
@@ -372,6 +371,7 @@ def send_payment(payment: dict):
     # - new balance: current balance + transferred amount
     # - update transactions (not necessary per se since the background update daemon does that)
     # - update timestamp
+    # updating the subsidy entry: current amount + transferred amount
 
     #TODO Create functions
 
@@ -382,7 +382,7 @@ def send_payment(payment: dict):
 
     id = master['id']
     master['transactions'] = payments
-    master['balance'] = master['balance'] - amount
+    master['balance'] = float(master['balance']) - amount
     master['last_updated'] = service.utils.now()
     
     master = service.mongo.update_by_id(id, master, CTX.db.masters)
@@ -393,8 +393,9 @@ def send_payment(payment: dict):
     
     id = subsidy['id']
     subsidy['account']['transactions'] = payments
-    subsidy['account']['balance'] = subsidy['account']['balance'] + amount
+    subsidy['account']['balance'] = float(subsidy['account']['balance']) + amount
     subsidy['last_updated'] = service.utils.now()
+    subsidy['amount'] = float(subsidy['amount']) + amount
 
     subsidy = service.mongo.update_by_id(id, subsidy, CTX.db.subsidies)
 
@@ -412,7 +413,7 @@ def read_all_transactions(start_date: datetime=None, end_date: datetime=None):
     all_subsidies = read_all(drop_transactions = False)
     rows = []
     for subsidy in all_subsidies:
-        if 'transactions' in subsidy:
+        if 'account' in subsidy and 'transactions' in subsidy['account']:
             transactions = subsidy['account']['transactions']
             for t in transactions:
                 if (start_date is None and end_date is None) or (t['timestamp'] >= start_date and t['timestamp'] <= end_date):
@@ -440,9 +441,9 @@ def read_all_transactions(start_date: datetime=None, end_date: datetime=None):
         suffix = "from_%s_to_%s" % (str(start_date), str(end_date))
     filename = "transaction_%s.csv" % suffix
     if rows == []:
-        return send_csv([], filename, ["NO TRANSACTIONS FOUND FOR GIVEN TIME PERIOD"])
+        return ([], filename, ["NO TRANSACTIONS FOUND FOR GIVEN TIME PERIOD"])
     else:
-        return send_csv(rows, filename, rows[0].keys())
+        return (rows, filename, rows[0].keys())
 
 # utils
 def get_and_update(id, master_balance=False):

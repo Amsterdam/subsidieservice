@@ -104,7 +104,12 @@ def read_all(initiative: str=None):
             # - not belonging to any initiative if this existing initiative only if this is the default
             filtered_masters = masters[:]
             for master in masters:
-                master_initiative = service.mongo.find({'id': master['initiative']['id']}, CTX.db.initiatives)
+                master_initiative = None
+                try:
+                    master_initiative = service.mongo.find({'id': master['initiative']['id']}, CTX.db.initiatives)
+                # we keyerror only if the master is coming from v1, ie is missing the initiative altogether
+                except KeyError:
+                    pass 
                 #value could be "7sd78sdf7d6ssf" or None
                 #if None we return the master only if the argument initiative is the default one
                 if master_initiative == None:

@@ -197,3 +197,16 @@ It is important to leverage code generation in Swagger but also to understand th
 * create new functionality in the service
 
 There could be of course little variation on this, if you feel confident enough you may just copy all at once, point is that you should always `git diff` to make sure that nothing could break (this does not replace local testing of course, before acceptance when possible).
+
+### Migrating from the first iteration
+
+Anything before the commits `v2`, `second_iteration` and the like is referred to as *first iteration*. Before firing up the v2 UI on a v1 Mongo the following `curl` iterations must take place:
+* create a first initiative; this will be the default initiative: `curl -v -u admin:admin -H "Content-Type: application/json" -d @scripts/rest/data/maas-initiative.json -X POST http://localhost:8080/api/v1/initiatives`
+* create others; they will not be default (optional): `curl -v -u admin:admin -H "Content-Type: application/json" -d @scripts/rest/data/leraren-initiative.json -X POST http://localhost:8080/api/v1/initiatives`
+* grant any existing user admin access from the Python shell:
+  1. `import subsidy_service as service`
+  2. `service.users.get('admin')`
+  3. `{'username': 'admin', 'password': '$bcrypt-sha256$2b,12$SCkv2VzI4Pt2tmcpXK/OtO$Jocia5lH7AIwjh6knoVbvse.HTelsbm', 'id': '5c3f3be5b4fd67002205ec7f'}`
+  4. `service.users.update('5c3f3be5b4fd67002205ec7f', {"username": "admin", "is_admin": True})`
+  5. `{'username': 'admin', 'is_admin': True}`
+  6. if already logged in the UI, logout and login again to see the admin panel
