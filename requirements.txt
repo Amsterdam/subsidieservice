@@ -3,7 +3,7 @@ asn1crypto==0.24.0
 attrs==17.4.0
 bcrypt==3.1.4
 bunq==0.0.2
-bunq-sdk==0.12.4
+bunq-sdk==1.1.0
 certifi==2018.1.18
 cffi==1.11.5
 chardet==3.0.4
