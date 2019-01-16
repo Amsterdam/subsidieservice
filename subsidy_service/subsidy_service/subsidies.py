@@ -416,7 +416,7 @@ def read_all_transactions(start_date: datetime=None, end_date: datetime=None):
         if 'account' in subsidy and 'transactions' in subsidy['account']:
             transactions = subsidy['account']['transactions']
             for t in transactions:
-                if (start_date is None and end_date is None) or (t['timestamp'] >= start_date and t['timestamp'] <= end_date):
+                if (start_date is None and end_date is None) or (parse(t['timestamp']) >= start_date and parse(t['timestamp']) <= end_date):
                     if 'recipient' in subsidy:
                         name = subsidy['recipient']['name']
                         phone = subsidy['recipient']['phone_number']

@@ -9,6 +9,7 @@ from swagger_server import util
 
 import subsidy_service as service
 
+from flask import request
 from flask_csv import send_csv
 from datetime import datetime
 
@@ -160,18 +161,25 @@ def subsidies_payments_post(body):  # noqa: E501
 
 @service.exceptions.exceptionHTTPencode
 @service.auth.authenticate()
-def subsidies_transactions_get(starting=None, ending=None):  # noqa: E501
+def subsidies_transactions_get():  # noqa: E501
     """Download all transactions; supports filtering.
 
     For each known subsidy, its transactions are returned as a CSV. It supports ISO date filtering so that just the transactions in a given time interval may be returned. If no filter is provided, then all transactions from the very beginning are returned. # noqa: E501
 
-    :param _from: The start date for the report. Must be used together with &#x60;to&#x60;.
-    :type _from: str
-    :param to: The end date for the report. Must be used together with &#x60;from&#x60;.
-    :type to: str
+    Due to a bug in the Swagger code generation the query arguments are never filled in the method argoments, therefore we just use Flask's own facilities to retrieve them.
 
     :rtype: file
     """
+    starting = request.args.get("from")
+    ending = request.args.get("to")
+    initiative = request.args.get("initiative")
+
+    if initiative != None:
+        try:
+            raise service.exceptions.BadRequestException("Filtering by initiative in the CSV report is not supported - ignoring parameter")
+        except Exception:
+            pass
+
     if (starting == None and ending != None) or (starting != None and ending == None):
         raise service.exceptions.BadRequestException("Both date intervals must be specified, or none at all for full dump")
 

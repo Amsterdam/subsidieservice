@@ -539,6 +539,11 @@ paths:
         description: "The end date for the report. Must be used together with `start`."
         required: false
         type: "string"
+      - name: "initiative"
+        in: "query"
+        description: "The initiative to filter on for the report. Not implemented."
+        required: false
+        type: "string"
       responses:
         200:
           description: "CSV dump"
