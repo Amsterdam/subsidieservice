@@ -22,7 +22,7 @@ def users_get():  # noqa: E501
 
 @service.exceptions.exceptionHTTPencode
 @service.auth.authenticate(as_admin=True)
-def users_id_delete(user_id):  # noqa: E501
+def users_id_delete(id):  # noqa: E501
     """Delete a user. The administrator user may not be deleted.
 
      # noqa: E501
@@ -32,7 +32,7 @@ def users_id_delete(user_id):  # noqa: E501
 
     :rtype: None
     """
-    service.users.delete(user_id)
+    service.users.delete(id)
     return None
 
 @service.exceptions.exceptionHTTPencode
