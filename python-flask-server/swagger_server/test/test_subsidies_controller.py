@@ -21,7 +21,7 @@ class TestSubsidiesController(BaseTestCase):
         """
         query_string = [('status', 'status_example')]
         response = self.client.open(
-            '/api/v1/subsidies',
+            '/api/v2/subsidies',
             method='GET',
             query_string=query_string)
         self.assert200(response,
@@ -34,10 +34,10 @@ class TestSubsidiesController(BaseTestCase):
         """
         body = User()
         response = self.client.open(
-            '/api/v1/subsidies/{id}/actions/approve'.format(id='id_example'),
+            '/api/v2/subsidies/{id}/actions/approve'.format(id='id_example'),
             method='POST',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.user+json')
+            content_type='application/nl.kpmg.v2.user+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -47,7 +47,7 @@ class TestSubsidiesController(BaseTestCase):
         Close a subsidy
         """
         response = self.client.open(
-            '/api/v1/subsidies/{id}'.format(id='id_example'),
+            '/api/v2/subsidies/{id}'.format(id='id_example'),
             method='DELETE')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -58,7 +58,7 @@ class TestSubsidiesController(BaseTestCase):
         Returns a specific subsidy
         """
         response = self.client.open(
-            '/api/v1/subsidies/{id}'.format(id='id_example'),
+            '/api/v2/subsidies/{id}'.format(id='id_example'),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -70,10 +70,10 @@ class TestSubsidiesController(BaseTestCase):
         """
         body = SubsidyBase()
         response = self.client.open(
-            '/api/v1/subsidies/{id}'.format(id='id_example'),
+            '/api/v2/subsidies/{id}'.format(id='id_example'),
             method='PATCH',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.subsidy+json')
+            content_type='application/nl.kpmg.v2.subsidy+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -84,10 +84,10 @@ class TestSubsidiesController(BaseTestCase):
         """
         body = SubsidyBase()
         response = self.client.open(
-            '/api/v1/subsidies/{id}'.format(id='id_example'),
+            '/api/v2/subsidies/{id}'.format(id='id_example'),
             method='PUT',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.subsidy+json')
+            content_type='application/nl.kpmg.v2.subsidy+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -98,10 +98,10 @@ class TestSubsidiesController(BaseTestCase):
         """
         body = SubsidyBase()
         response = self.client.open(
-            '/api/v1/subsidies',
+            '/api/v2/subsidies',
             method='POST',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.subsidy-base+json')
+            content_type='application/nl.kpmg.v2.subsidy-base+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -112,10 +112,10 @@ class TestSubsidiesController(BaseTestCase):
         """
         body = Payment()
         response = self.client.open(
-            '/api/v1/subsidies/payments',
+            '/api/v2/subsidies/payments',
             method='POST',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.payment+json')
+            content_type='application/nl.kpmg.v2.payment+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 

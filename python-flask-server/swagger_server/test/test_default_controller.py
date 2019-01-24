@@ -19,10 +19,10 @@ class TestDefaultController(BaseTestCase):
         """
         body = User()
         response = self.client.open(
-            '/api/v1/login',
+            '/api/v2/login',
             method='POST',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.user+json')
+            content_type='application/nl.kpmg.v2.user+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 

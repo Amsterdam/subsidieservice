@@ -1,6 +1,6 @@
 #!/bin/sh
+#Easier: set up a tinker with tinker/user_overview.py deleing the existing bunq-sandbox.conf in case of errors and copy the new one to config/bunq.conf
 
-#!/bin/sh
 curl https://public-api.sandbox.bunq.com/v1/sandbox-user -X POST \
     --header "Content-Type: application/json" \
     --header "Cache-Control: none" \

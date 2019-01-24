@@ -18,7 +18,7 @@ class TestInitiativesController(BaseTestCase):
         Delete an initiative.
         """
         response = self.client.open(
-            '/api/v1/initiatives'.format(id='id_example'),
+            '/api/v2/initiatives'.format(id='id_example'),
             method='DELETE')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -29,7 +29,7 @@ class TestInitiativesController(BaseTestCase):
         List all smart subsidy initiatives
         """
         response = self.client.open(
-            '/api/v1/initiatives',
+            '/api/v2/initiatives',
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -41,10 +41,10 @@ class TestInitiativesController(BaseTestCase):
         """
         body = Initiative()
         response = self.client.open(
-            '/api/v1/initiatives',
+            '/api/v2/initiatives',
             method='POST',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.initiative+json')
+            content_type='application/nl.kpmg.v2.initiative+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 

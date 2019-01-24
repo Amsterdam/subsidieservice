@@ -19,7 +19,7 @@ class TestCitizensController(BaseTestCase):
         List all citizens.
         """
         response = self.client.open(
-            '/api/v1/citizens',
+            '/api/v2/citizens',
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -30,7 +30,7 @@ class TestCitizensController(BaseTestCase):
         Remove a citizen
         """
         response = self.client.open(
-            '/api/v1/citizens/{id}'.format(id='id_example'),
+            '/api/v2/citizens/{id}'.format(id='id_example'),
             method='DELETE')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -41,7 +41,7 @@ class TestCitizensController(BaseTestCase):
         Returns a specific citizen
         """
         response = self.client.open(
-            '/api/v1/citizens/{id}'.format(id='id_example'),
+            '/api/v2/citizens/{id}'.format(id='id_example'),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -53,10 +53,10 @@ class TestCitizensController(BaseTestCase):
         """
         body = Citizen()
         response = self.client.open(
-            '/api/v1/citizens/{id}'.format(id='id_example'),
+            '/api/v2/citizens/{id}'.format(id='id_example'),
             method='PATCH',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.citizen+json')
+            content_type='application/nl.kpmg.v2.citizen+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -67,10 +67,10 @@ class TestCitizensController(BaseTestCase):
         """
         body = Citizen()
         response = self.client.open(
-            '/api/v1/citizens/{id}'.format(id='id_example'),
+            '/api/v2/citizens/{id}'.format(id='id_example'),
             method='PUT',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.citizen+json')
+            content_type='application/nl.kpmg.v2.citizen+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -81,10 +81,10 @@ class TestCitizensController(BaseTestCase):
         """
         body = Citizen()
         response = self.client.open(
-            '/api/v1/citizens',
+            '/api/v2/citizens',
             method='POST',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.citizen+json')
+            content_type='application/nl.kpmg.v2.citizen+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 

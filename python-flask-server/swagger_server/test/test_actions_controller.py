@@ -20,10 +20,10 @@ class TestActionsController(BaseTestCase):
         """
         body = User()
         response = self.client.open(
-            '/api/v1/subsidies/{id}/actions/approve'.format(id='id_example'),
+            '/api/v2/subsidies/{id}/actions/approve'.format(id='id_example'),
             method='POST',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.user+json')
+            content_type='application/nl.kpmg.v2.user+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 

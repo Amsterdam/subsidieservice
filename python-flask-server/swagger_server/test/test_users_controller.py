@@ -18,7 +18,7 @@ class TestUsersController(BaseTestCase):
         List all API users created by the administrator. One of the users is flagged as the administrator; that is the very first user created and may not be deleted.
         """
         response = self.client.open(
-            '/api/v1/users',
+            '/api/v2/users',
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -29,7 +29,7 @@ class TestUsersController(BaseTestCase):
         Delete a user. The administrator user may not be deleted.
         """
         response = self.client.open(
-            '/api/v1/users/{id}'.format(id='id_example'),
+            '/api/v2/users/{id}'.format(id='id_example'),
             method='DELETE')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -41,10 +41,10 @@ class TestUsersController(BaseTestCase):
         """
         body = User()
         response = self.client.open(
-            '/api/v1/users/{id}'.format(id='id_example'),
+            '/api/v2/users/{id}'.format(id='id_example'),
             method='PATCH',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.user+json')
+            content_type='application/nl.kpmg.v2.user+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -55,10 +55,10 @@ class TestUsersController(BaseTestCase):
         """
         body = User()
         response = self.client.open(
-            '/api/v1/users',
+            '/api/v2/users',
             method='POST',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.user+json')
+            content_type='application/nl.kpmg.v2.user+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 

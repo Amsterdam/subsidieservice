@@ -19,7 +19,7 @@ class TestMasterAccountsController(BaseTestCase):
         List all master-accounts.
         """
         response = self.client.open(
-            '/api/v1/master-accounts',
+            '/api/v2/master-accounts',
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -30,7 +30,7 @@ class TestMasterAccountsController(BaseTestCase):
         Remove a master-account
         """
         response = self.client.open(
-            '/v1/master-accounts/{id}'.format(id='id_example'),
+            '/v2/master-accounts/{id}'.format(id='id_example'),
             method='DELETE')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -41,7 +41,7 @@ class TestMasterAccountsController(BaseTestCase):
         Get the details of a specific master-account
         """
         response = self.client.open(
-            '/api/v1/master-accounts/{id}'.format(id='id_example'),
+            '/api/v2/master-accounts/{id}'.format(id='id_example'),
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
@@ -53,10 +53,10 @@ class TestMasterAccountsController(BaseTestCase):
         """
         body = MasterAccount()
         response = self.client.open(
-            '/api/v1/master-accounts/{id}'.format(id='id_example'),
+            '/api/v2/master-accounts/{id}'.format(id='id_example'),
             method='PATCH',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.master-account+json')
+            content_type='application/nl.kpmg.v2.master-account+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -67,10 +67,10 @@ class TestMasterAccountsController(BaseTestCase):
         """
         body = MasterAccount()
         response = self.client.open(
-            '/api/v1/master-accounts/{id}'.format(id='id_example'),
+            '/api/v2/master-accounts/{id}'.format(id='id_example'),
             method='PUT',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.master-account+json')
+            content_type='application/nl.kpmg.v2.master-account+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
@@ -81,10 +81,10 @@ class TestMasterAccountsController(BaseTestCase):
         """
         body = MasterAccountBase()
         response = self.client.open(
-            '/api/v1/master-accounts',
+            '/api/v2/master-accounts',
             method='POST',
             data=json.dumps(body),
-            content_type='application/nl.kpmg.v1.master-account+json')
+            content_type='application/nl.kpmg.v2.master-account+json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 

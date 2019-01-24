@@ -17,6 +17,7 @@
 ```
 
 This is the repository for the back end of the Subsidy Service for Gemeente Amsterdam. This README assumes that all commands are run from the root directory of this repository.
+NOTE: most links will show `/api/v1` but pay attention if you are deploying targeting `/api/v1` or `/api/v2`!
 
 ## Installation
 
