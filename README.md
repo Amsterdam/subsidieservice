@@ -211,3 +211,17 @@ Anything before the commits `v2`, `second_iteration` and the like is referred to
   4. `service.users.update('5c3f3be5b4fd67002205ec7f', {"username": "admin", "is_admin": True})`
   5. `{'username': 'admin', 'is_admin': True}`
   6. if already logged in the UI, logout and login again to see the admin panel
+
+### Manually modifying the database
+
+Important: as always, datastores should never be accessed directly. One case where this may be needed is if users are added manually via `create_subsidies_mongo.py` or others but some properties e.g. `bunq_id` were forgotten and the system status becomes inconsistent.
+
+1. Connect to the instance, e.g. `mongo localhost:27017/admin -u root -p root`
+2. `use subsidieservice`
+3. `db.subsidies.find()`
+4. property to fill in or modify: `subsidy[account][bunq_id]`
+5. `db.subsidies.update({'_id' : ObjectId("5c631a4c7e6c4d00103db8d8")}, {'$set' : {'account': {'bunq_id': 'XXX'}}})` where...
+6. ... `XXX` is the Bunq ID for the connect account: you can get them with `tinker`:
+  - using the production configuration ie `config/bunq.conf`
+  - using `create_production_configuration.py --api-key [api-key]`
+  
