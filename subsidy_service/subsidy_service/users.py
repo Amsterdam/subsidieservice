@@ -45,7 +45,7 @@ def create(user: dict):
     else:
         users = service.mongo.get_collection(CTX.db.users)
         # The very first user we create gets admin rights.
-        if users == []:
+        if users == [] or user['is_admin']:
             is_admin = True
         else:
             is_admin = False
