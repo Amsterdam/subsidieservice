@@ -38,7 +38,7 @@ pytest==3.5.1
 pytest-cov==2.5.1
 python-dateutil==2.6.0
 pytz==2018.4
-PyYAML==3.12
+PyYAML==5.4
 requests==2.18.1
 simplejson==3.11.1
 six==1.11.0
